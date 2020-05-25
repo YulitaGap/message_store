@@ -1,0 +1,12 @@
+html, body, h1 {
+    height: 98%;
+    width: 99%;
+}
+
+h1 {
+    margin: 0;
+    font-size: 300%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
