@@ -18,7 +18,6 @@ CREATE TABLE author_agent
     author_id integer REFERENCES author (id)
 );
 
-
 CREATE TABLE style
 (
     id   serial      PRIMARY KEY,
@@ -34,10 +33,8 @@ CREATE TABLE principal
 CREATE TABLE account
 (
     id           serial  PRIMARY KEY,
-    principal_id integer REFERENCES principal (id),
-    share_with   integer REFERENCES agent (id)
+    principal_id integer REFERENCES principal (id)
 );
-
 
 CREATE TABLE discount
 (
@@ -48,13 +45,6 @@ CREATE TABLE discount
     discount numeric NULL
 );
 
-
-CREATE TABLE to_share_group
-(
-    agent_id   integer NOT NULL REFERENCES agent (id),
-    account_id integer NOT NULL REFERENCES account (id)
-);
-
 CREATE TABLE posts
 (
     id         serial  PRIMARY KEY,
@@ -63,7 +53,6 @@ CREATE TABLE posts
     style_id   integer NOT NULL REFERENCES style (id),
     date       date    NOT NULL
 );
-
 
 CREATE TABLE orders
 (
