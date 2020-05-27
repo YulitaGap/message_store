@@ -30,11 +30,20 @@ CREATE TABLE principal
     name varchar(50) NOT NULL
 );
 
+CREATE TABLE social_network
+(
+    id   serial      PRIMARY KEY,
+    name varchar(50) NOT NULL
+);
+
 CREATE TABLE account
 (
     id           serial  PRIMARY KEY,
-    principal_id integer REFERENCES principal (id)
+    principal_id integer REFERENCES principal (id),
+	social_network_id integer REFERENCES social_network (id)
 );
+
+
 
 CREATE TABLE discount
 (
