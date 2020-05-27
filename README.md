@@ -30,8 +30,8 @@ Please make sure to update tests as appropriate.
 - [Yuriy Pasichnyk](https://github.com/Fenix-125)
 - [Artem Teliuk](https://github.com/Katerunner)
 - [Yulia Gapunovych](https://github.com/YulitaGap)
-- [Anastasia Tanananaiska](https://github.com/8bit-number)
 - [Ihor Titov](https://github.com/lurak)
+- [Anastasia Tanananaiska](https://github.com/8bit-number)
 
 ## License
 [MIT](https://choosealicense.com/licenses/mit/)

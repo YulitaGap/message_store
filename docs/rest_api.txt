@@ -1,0 +1,237 @@
+///////////////////////////////////////////////////////////////////////////////
+            Message Store Gateway REST Api usage
+///////////////////////////////////////////////////////////////////////////////
+
+///////////////////////////////////////////
+    Now All rest api actions at address
+/api/<action>[&<param1>[&<param..>]]
+///////////////////////////////////////////
+
+//////////////// Template /////////////////
+Action:
+	<action name>
+Desc:
+	<action small description>
+Params:
+    <param name>=<small param description>
+Sample:
+	/api/clients_trusted_authors&client_id=1
+Result: in JSON
+	{}
+
+/////////////////////////////// List of actions ///////////////////////////////
+__________________________________ 1 __________________________________________
+Action:
+	constant_clients
+Desc:
+	Для автора A знайти усiх покупцiв, якi замовляли у нього повiдомлення
+	хоча б N разiв за вказаний перiод (з дати F по дату T)
+Params:
+    author_id=<author id>(int)
+    order_threshold=<min orders num of author>(int)
+    begin_date=<begin of search period>(yyyy-mm-dd)
+    end_date=<end of search period>(yyyy-mm-dd)
+
+Sample:
+    /api/constant_clients&author_id=1&order_threshold=10&begin_date=2020-05-01&end_date=2020-05-24
+Result: in JSON
+    {}
+
+__________________________________ 2 __________________________________________
+Action:
+	client_used_authors
+Desc:
+	Для покупця С знайти усiх авторiв, у яких вiн замовляв повiдомлення
+	чи статтi за вказаний перiод (з дати F по дату T)
+Params:
+    client_id=<client id>(int)
+    begin_date=<begin of search period>(yyyy-mm-dd)
+    end_date=<end of search period>(yyyy-mm-dd)
+Sample:
+	/api/client_used_authors&client_id=1&begin_date=2020-05-01&end_date=2020-05-24
+Result: in JSON
+	{}
+
+__________________________________ 3 __________________________________________
+Action:
+	popular_authors
+Desc:
+	Знайти усiх авторiв, якi отримували замовлення вiд щонайменше N рiзних
+	покупцiв за вказаний перiод (з дати F по дату T)
+Params:
+    order_threshold=<min order num of author>(int)
+    begin_date=<begin of search period>(yyyy-mm-dd)
+    end_date=<end of search period>(yyyy-mm-dd)
+Sample:
+	/api/popular_authors&order_threshold=10&begin_date=2020-05-01&end_date=2020-05-24
+Result: in JSON
+	{}
+
+__________________________________ 4 __________________________________________
+Action:
+	active_clients
+Desc:
+	Знайти усiх покупцiв, якi зробили хоча б N замовлень за вказаний перiод
+	(з дати F по дату T)
+Params:
+    order_threshold=<min order num of author>(int)
+    begin_date=<begin of search period>(yyyy-mm-dd)
+    end_date=<end of search period>(yyyy-mm-dd)
+Sample:
+	/api/active_clients&order_threshold=10&begin_date=2020-05-01&end_date=2020-05-24
+Result: in JSON
+	{}
+__________________________________ 5 __________________________________________
+Action:
+	client_active_networks
+Desc:
+	Для покупця С знайти усi соцiальнi мережi, для яких вiн зробив хоча б N
+	замовлень за вказаний перiод (з дати F по дату T)
+Params:
+    client_id=<client id>(int)
+    order_threshold=<min order num of author>(int)
+    begin_date=<begin of search period>(yyyy-mm-dd)
+    end_date=<end of search period>(yyyy-mm-dd)
+Sample:
+	/api/client_active_networks&client_id=1&order_threshold=10&begin_date=2020-05-01&end_date=2020-05-24
+Result: in JSON
+	{}
+__________________________________ 6 __________________________________________
+Action:
+	rated_authors_distinct_clients
+Desc:
+	Знайти усiх авторiв, якi отримували замовлення вiд щонайменше N рiзних
+	покупцiв за вказаний перiод (з дати F по дату T)
+Params:
+    order_threshold=<min order num of author>(int)
+    begin_date=<begin of search period>(yyyy-mm-dd)
+    end_date=<end of search period>(yyyy-mm-dd)
+Sample:
+	/api/rated_authors_distinct_clients&order_threshold=10&begin_date=2020-05-01&end_date=2020-05-24
+Result: in JSON
+	{}
+__________________________________ 7 __________________________________________
+Action:
+	popular_clients
+Desc:
+	Знайти усiх покупцiв, якi зробили хоча б N замовлень за вказаний перiод
+	(з дати F по дату T)
+Params:
+    order_threshold=<min order num of author>(int)
+    begin_date=<begin of search period>(yyyy-mm-dd)
+    end_date=<end of search period>(yyyy-mm-dd)
+Sample:
+	/api/popular_clients&order_threshold=10&begin_date=2020-05-01&end_date=2020-05-24
+Result: in JSON
+	{}
+__________________________________ 8 __________________________________________
+Action:
+	clients_popular_networks
+Desc:
+	Для покупця С знайти усi соцiальнi мережi, для яких вiн зробив хоча б N
+	замовлень за вказаний перiод (з дати F по дату T)
+Params:
+    order_threshold=<min order num of author>(int)
+    begin_date=<begin of search period>(yyyy-mm-dd)
+    end_date=<end of search period>(yyyy-mm-dd)
+Sample:
+	/api/clients_popular_networks&order_threshold=10&begin_date=2020-05-01&end_date=2020-05-24
+Result: in JSON
+	{}
+__________________________________ 9 __________________________________________
+Action:
+	author_used_accounts
+Desc:
+	Для автора А знайти усi облiковi записи у соцiальних мережах, до яких вiн
+	мав доступ протягом вказаного перiоду (з дати F по дату T)
+Params:
+    author_id=<author id>(int)
+    begin_date=<begin of search period>(yyyy-mm-dd)
+    end_date=<end of search period>(yyyy-mm-dd)
+Sample:
+	/api/author_used_accounts&author_id=1&begin_date=2020-05-01&end_date=2020-05-24
+Result: in JSON
+	{}
+__________________________________ 10 _________________________________________
+Action:
+	clients_trusted_authors
+Desc:
+	Для покупця С знайти усiх авторiв, яким вiн надав доступ до хоча б одного
+	облiкового запису у соцiальнiй мережi, а потiм позбавив його цього доступу.
+Params:
+    client_id=<client id>(int)
+Sample:
+	/api/clients_trusted_authors&client_id=1
+Result: in JSON
+	{}
+__________________________________ 11 _________________________________________
+Action:
+	client_user_relations
+Desc:
+	Знайти усi спiльнi подiї для автора A та покупця С за вказаний перiод
+	(з дати F по дату T)
+Params:
+    client_id=<client id>(int)
+    author_id=<author id>(int)
+    begin_date=<begin of search period>(yyyy-mm-dd)
+    end_date=<end of search period>(yyyy-mm-dd)
+Sample:
+	/api/client_user_relations&client_id=1&author_id=1&begin_date=2020-05-01&end_date=2020-05-24
+Result: in JSON
+	{}
+__________________________________ 12 _________________________________________
+Action:
+	author_team_works_by_network
+Desc:
+	Для автора A та кожної соцiальної мережi, у якiй вiн писав статтю, знайти
+	скiльки разiв за вказаний перiод (з дати F по дату T) вiн писав її у групi
+	з щонайменше N авторiв.
+Params:
+    author_id=<author id>(int)
+    begin_date=<begin of search period>(yyyy-mm-dd)
+    end_date=<end of search period>(yyyy-mm-dd)
+Sample:
+	/api/end_point_name&author_id=1&begin_date=2020-05-01&end_date=2020-05-24
+Result: in JSON
+	{}
+__________________________________ 13 _________________________________________
+Action:
+	clients_half_discounts_by_style
+Desc:
+	Для покупця С та кожного стилю, у якому вiн замовляв повiдомлення, знайти
+	скiльки замовлень за вказаний перiод (з дати F по дату T) отримали 50%
+	знижку.
+Params:
+    client_id=<client id>(int)
+    begin_date=<begin of search period>(yyyy-mm-dd)
+    end_date=<end of search period>(yyyy-mm-dd)
+Sample:
+	/api/clients_half_discounts_by_style&client_id=1&begin_date=2020-05-01&end_date=2020-05-24
+Result: in JSON
+	{}
+__________________________________ 14 _________________________________________
+Action:
+	orders_count_by_months
+Desc:
+	Знайти сумарну кiлькiсть замовлень по мiсяцях.
+Params:
+    None
+Sample:
+	/api/orders_count_by_months
+Result: in JSON
+	{}
+__________________________________ 14 _________________________________________
+Action:
+	authors_ordered_top_networks
+Desc:
+	Вивести соцiальнi мережi у порядку спадання середньої кiлькостi повiдомлень
+	по усiх стилях, що були написанi автором A за вказаний перiод
+	(з дати F по дату T).
+Params:
+    author_id=<author id>(int)
+    begin_date=<begin of search period>(yyyy-mm-dd)
+    end_date=<end of search period>(yyyy-mm-dd)
+Sample:
+	/api/authors_ordered_top_networks&author_id=1&begin_date=2020-05-01&end_date=2020-05-24
+Result: in JSON
+	{}
