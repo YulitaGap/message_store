@@ -1,0 +1,58 @@
+--- queries for user view ---
+
+-- add account
+INSERT INTO account(principal_id, social_network_id, login, password) VALUES (1, 1, 30, 'password');
+
+-- view active authors
+select id, name, price_per_1000 from author
+where active is TRUE;
+
+-- view current orders for user
+select * from orders
+where principal_id = 1 and status != 'closed';
+
+-- create order
+INSERT INTO orders(principal_id, agent_id, volume, post_id, price, date, status) VALUES (1, 1, 100, 1, 100, '2020-05-26', 'opened');
+
+--- queries for author view ---
+
+-- view current orders for author
+select orders.* from orders
+inner join agent on (agent.id = orders.agent_id)
+inner join author_agent on (agent.id = author_agent.group_id)
+group by orders.id, agent.id, author_agent.group_id, author_agent.author_id
+having author_agent.author_id = 30 and status != 'closed';
+
+-- set price for 1K symbols
+UPDATE author SET price_per_1000 = 500 WHERE id = 30;
+
+-- set active
+UPDATE author SET active = FALSE WHERE id = 30;
+
+-- set 1 day sale (repeat for all styles)
+INSERT INTO discount(author_id, style_id, sale_to, discount) VALUES (30, 1, (CURRENT_DATE + INTERVAL '1 day'), 0.9);
+
+-- set 1 week sale on style
+INSERT INTO discount(author_id, style_id, sale_to, discount) VALUES (30, 1, (CURRENT_DATE + INTERVAL '1 week'), 0.9);
+
+--- queries for post (user view) ---
+
+-- set status
+UPDATE orders SET status = 'closed' WHERE id = (select id from orders
+where principal_id = 1 and id = 1);
+
+UPDATE orders SET status = 'closed' WHERE id = 1;
+
+-- set visibility
+UPDATE posts SET visible = TRUE WHERE id = (select posts.id from posts
+inner join orders on (posts.id = orders.post_id)
+where orders.principal_id = 1 and orders.id = 1);
+
+UPDATE posts SET visible = TRUE WHERE id = 1;
+
+--- queries for post (author view) ---
+
+-- add text
+
+UPDATE posts SET text = '' WHERE id = 1;
+
