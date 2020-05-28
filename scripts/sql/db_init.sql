@@ -4,7 +4,8 @@ CREATE TABLE authentication
 (
 	id serial PRIMARY KEY,
 	login varchar(50) NOT NULL,
-	password varchar(50) NOT NULL
+	password varchar(50) NOT NULL,
+	author boolean NOT NULL
 );
 
 CREATE TABLE author
