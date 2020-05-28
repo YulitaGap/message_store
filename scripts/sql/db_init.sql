@@ -6,7 +6,8 @@ CREATE TABLE author
     name varchar(50) NOT NULL,
 	login varchar(50) NOT NULL,
 	password varchar(50) NOT NULL,
-	price_per_1000 numeric NOT NULL
+	price_per_1000 numeric NOT NULL,
+	active boolean NOT NULL
 );
 
 CREATE TABLE agent
