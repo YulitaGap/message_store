@@ -1,5 +1,5 @@
 #!/usr/bin/python3
-from flask_restful import Resource
+from flask_restful import Resource, reqparse
 
 """
 The REST API documentation is at 'docs/rest_api.txt'
@@ -12,8 +12,16 @@ _STATUS_INVALID_PARAMETERS = 400
 
 class BaseApiEndpoint(Resource):
     @staticmethod
-    def data_base_query(query):
+    def data_base_query(query: str) -> dict:
         return {}
+
+    @staticmethod
+    def is_valid_date(date: str) -> bool:
+        return True
+
+    @staticmethod
+    def not_null(*args) -> bool:
+        return True
 
 
 class ConstantClients(BaseApiEndpoint):
@@ -26,6 +34,10 @@ class ConstantClients(BaseApiEndpoint):
     """
     SQL_QUERY = ""
     ROUTE = "/constant_clients"
+    PARSER = reqparse.RequestParser()
+    PARSER.add_argument('client_id', type=int, help='id of the client')
+    PARSER.add_argument('begin_date', type=str, help='begin of search period')
+    PARSER.add_argument('end_date', type=str, help='end of search period')
 
     def get(self):
         """
@@ -34,6 +46,7 @@ class ConstantClients(BaseApiEndpoint):
             begin_date=<begin of search period>(yyyy-mm-dd)
             end_date=<end of search period>(yyyy-mm-dd)
         """
+        args = ConstantClients.PARSER.parse_args(strict=True)
         return self.data_base_query(ConstantClients.SQL_QUERY), \
                _STATUS_FOUND
 
@@ -48,6 +61,10 @@ class ClientUsedAuthors(BaseApiEndpoint):
     """
     SQL_QUERY = ""
     ROUTE = "/client_used_authors"
+    PARSER = reqparse.RequestParser()
+    PARSER.add_argument('client_id', type=int, help='id of the client')
+    PARSER.add_argument('begin_date', type=str, help='begin of search period')
+    PARSER.add_argument('end_date', type=str, help='end of search period')
 
     def get(self):
         """
@@ -56,8 +73,10 @@ class ClientUsedAuthors(BaseApiEndpoint):
             begin_date=<begin of search period>(yyyy-mm-dd)
             end_date=<end of search period>(yyyy-mm-dd)
         """
-        return self.data_base_query(ClientUsedAuthors.SQL_QUERY), \
-               _STATUS_FOUND
+        args = ClientUsedAuthors.PARSER.parse_args(strict=True)
+        return args
+        # return self.data_base_query(ClientUsedAuthors.SQL_QUERY), \
+        #        _STATUS_FOUND
 
 
 class PopularAuthors(BaseApiEndpoint):
@@ -70,6 +89,11 @@ class PopularAuthors(BaseApiEndpoint):
     """
     SQL_QUERY = ""
     ROUTE = "/popular_authors"
+    PARSER = reqparse.RequestParser()
+    PARSER.add_argument('order_threshold', type=int,
+                        help='min order num of author')
+    PARSER.add_argument('begin_date', type=str, help='begin of search period')
+    PARSER.add_argument('end_date', type=str, help='end of search period')
 
     def get(self):
         """
@@ -78,8 +102,10 @@ class PopularAuthors(BaseApiEndpoint):
             begin_date=<begin of search period>(yyyy-mm-dd)
             end_date=<end of search period>(yyyy-mm-dd)
         """
-        return self.data_base_query(PopularAuthors.SQL_QUERY), \
-               _STATUS_FOUND
+        args = PopularAuthors.PARSER.parse_args(strict=True)
+        return args
+        # return self.data_base_query(PopularAuthors.SQL_QUERY), \
+        #        _STATUS_FOUND
 
 
 class ActiveClients(BaseApiEndpoint):
@@ -92,6 +118,11 @@ class ActiveClients(BaseApiEndpoint):
     """
     SQL_QUERY = ""
     ROUTE = "/active_clients"
+    PARSER = reqparse.RequestParser()
+    PARSER.add_argument('order_threshold', type=int,
+                        help='min order num of author')
+    PARSER.add_argument('begin_date', type=str, help='begin of search period')
+    PARSER.add_argument('end_date', type=str, help='end of search period')
 
     def get(self):
         """
@@ -100,8 +131,10 @@ class ActiveClients(BaseApiEndpoint):
             begin_date=<begin of search period>(yyyy-mm-dd)
             end_date=<end of search period>(yyyy-mm-dd)
         """
-        return self.data_base_query(ActiveClients.SQL_QUERY), \
-               _STATUS_FOUND
+        args = ActiveClients.PARSER.parse_args(strict=True)
+        return args
+        # return self.data_base_query(ActiveClients.SQL_QUERY), \
+        #        _STATUS_FOUND
 
 
 class ClientActiveNetworks(BaseApiEndpoint):
@@ -114,6 +147,12 @@ class ClientActiveNetworks(BaseApiEndpoint):
     """
     SQL_QUERY = ""
     ROUTE = "/client_active_networks"
+    PARSER = reqparse.RequestParser()
+    PARSER.add_argument('client_id', type=int, help='id of the client')
+    PARSER.add_argument('order_threshold', type=int,
+                        help='min order num of author')
+    PARSER.add_argument('begin_date', type=str, help='begin of search period')
+    PARSER.add_argument('end_date', type=str, help='end of search period')
 
     def get(self):
         """
@@ -123,8 +162,10 @@ class ClientActiveNetworks(BaseApiEndpoint):
             begin_date=<begin of search period>(yyyy-mm-dd)
             end_date=<end of search period>(yyyy-mm-dd)
         """
-        return self.data_base_query(ClientActiveNetworks.SQL_QUERY), \
-               _STATUS_FOUND
+        args = ClientActiveNetworks.PARSER.parse_args(strict=True)
+        return args
+        # return self.data_base_query(ClientActiveNetworks.SQL_QUERY), \
+        #        _STATUS_FOUND
 
 
 class RatedAuthorsDistinctClients(BaseApiEndpoint):
@@ -137,6 +178,11 @@ class RatedAuthorsDistinctClients(BaseApiEndpoint):
     """
     SQL_QUERY = ""
     ROUTE = "/rated_authors_distinct_clients"
+    PARSER = reqparse.RequestParser()
+    PARSER.add_argument('order_threshold', type=int,
+                        help='min order num of author')
+    PARSER.add_argument('begin_date', type=str, help='begin of search period')
+    PARSER.add_argument('end_date', type=str, help='end of search period')
 
     def get(self):
         """
@@ -145,8 +191,10 @@ class RatedAuthorsDistinctClients(BaseApiEndpoint):
             begin_date=<begin of search period>(yyyy-mm-dd)
             end_date=<end of search period>(yyyy-mm-dd)
         """
-        return self.data_base_query(RatedAuthorsDistinctClients.SQL_QUERY), \
-               _STATUS_FOUND
+        args = RatedAuthorsDistinctClients.PARSER.parse_args(strict=True)
+        return args
+        # return self.data_base_query(RatedAuthorsDistinctClients.SQL_QUERY), \
+        #        _STATUS_FOUND
 
 
 class PopularClients(BaseApiEndpoint):
@@ -159,6 +207,11 @@ class PopularClients(BaseApiEndpoint):
     """
     SQL_QUERY = ""
     ROUTE = "/popular_clients"
+    PARSER = reqparse.RequestParser()
+    PARSER.add_argument('order_threshold', type=int,
+                        help='min order num of author')
+    PARSER.add_argument('begin_date', type=str, help='begin of search period')
+    PARSER.add_argument('end_date', type=str, help='end of search period')
 
     def get(self):
         """
@@ -167,8 +220,10 @@ class PopularClients(BaseApiEndpoint):
             begin_date=<begin of search period>(yyyy-mm-dd)
             end_date=<end of search period>(yyyy-mm-dd)
         """
-        return self.data_base_query(PopularClients.SQL_QUERY), \
-               _STATUS_FOUND
+        args = PopularClients.PARSER.parse_args(strict=True)
+        return args
+        # return self.data_base_query(PopularClients.SQL_QUERY), \
+        #        _STATUS_FOUND
 
 
 class ClientsPopularNetworks(BaseApiEndpoint):
@@ -181,16 +236,25 @@ class ClientsPopularNetworks(BaseApiEndpoint):
     """
     SQL_QUERY = ""
     ROUTE = "/clients_popular_networks"
+    PARSER = reqparse.RequestParser()
+    PARSER.add_argument('client_id', type=int, help='id of the client')
+    PARSER.add_argument('order_threshold', type=int,
+                        help='min order num of author')
+    PARSER.add_argument('begin_date', type=str, help='begin of search period')
+    PARSER.add_argument('end_date', type=str, help='end of search period')
 
     def get(self):
         """
         Params:
+            client_id=<client id>(int)
             order_threshold=<min order num of author>(int)
             begin_date=<begin of search period>(yyyy-mm-dd)
             end_date=<end of search period>(yyyy-mm-dd)
         """
-        return self.data_base_query(ClientsPopularNetworks.SQL_QUERY), \
-               _STATUS_FOUND
+        args = ClientsPopularNetworks.PARSER.parse_args(strict=True)
+        return args
+        # return self.data_base_query(ClientsPopularNetworks.SQL_QUERY), \
+        #        _STATUS_FOUND
 
 
 class AuthorUsedAccounts(BaseApiEndpoint):
@@ -203,6 +267,10 @@ class AuthorUsedAccounts(BaseApiEndpoint):
     """
     SQL_QUERY = ""
     ROUTE = "/author_used_accounts"
+    PARSER = reqparse.RequestParser()
+    PARSER.add_argument('author_id', type=int, help='id of the author')
+    PARSER.add_argument('begin_date', type=str, help='begin of search period')
+    PARSER.add_argument('end_date', type=str, help='end of search period')
 
     def get(self):
         """
@@ -211,8 +279,10 @@ class AuthorUsedAccounts(BaseApiEndpoint):
             begin_date=<begin of search period>(yyyy-mm-dd)
             end_date=<end of search period>(yyyy-mm-dd)
         """
-        return self.data_base_query(AuthorUsedAccounts.SQL_QUERY), \
-               _STATUS_FOUND
+        args = AuthorUsedAccounts.PARSER.parse_args(strict=True)
+        return args
+        # return self.data_base_query(AuthorUsedAccounts.SQL_QUERY), \
+        #        _STATUS_FOUND
 
 
 class ClientsTrustedAuthors(BaseApiEndpoint):
@@ -225,14 +295,18 @@ class ClientsTrustedAuthors(BaseApiEndpoint):
     """
     SQL_QUERY = ""
     ROUTE = "/clients_trusted_authors"
+    PARSER = reqparse.RequestParser()
+    PARSER.add_argument('client_id', type=int, help='id of the client')
 
     def get(self):
         """
         Params:
             client_id=<client id>(int)
         """
-        return self.data_base_query(ClientsTrustedAuthors.SQL_QUERY), \
-               _STATUS_FOUND
+        args = ClientsTrustedAuthors.PARSER.parse_args(strict=True)
+        return args
+        # return self.data_base_query(ClientsTrustedAuthors.SQL_QUERY), \
+        #        _STATUS_FOUND
 
 
 class ClientUserRelations(BaseApiEndpoint):
@@ -245,6 +319,11 @@ class ClientUserRelations(BaseApiEndpoint):
     """
     SQL_QUERY = ""
     ROUTE = "/client_user_relations"
+    PARSER = reqparse.RequestParser()
+    PARSER.add_argument('client_id', type=int, help='id of the client')
+    PARSER.add_argument('author_id', type=int, help='id of the author')
+    PARSER.add_argument('begin_date', type=str, help='begin of search period')
+    PARSER.add_argument('end_date', type=str, help='end of search period')
 
     def get(self):
         """
@@ -254,8 +333,10 @@ class ClientUserRelations(BaseApiEndpoint):
             begin_date=<begin of search period>(yyyy-mm-dd)
             end_date=<end of search period>(yyyy-mm-dd)
         """
-        return self.data_base_query(ClientUserRelations.SQL_QUERY), \
-               _STATUS_FOUND
+        args = ClientUserRelations.PARSER.parse_args(strict=True)
+        return args
+        # return self.data_base_query(ClientUserRelations.SQL_QUERY), \
+        #        _STATUS_FOUND
 
 
 class AuthorTeamWorksByNetwork(BaseApiEndpoint):
@@ -269,6 +350,10 @@ class AuthorTeamWorksByNetwork(BaseApiEndpoint):
     """
     SQL_QUERY = ""
     ROUTE = "/author_team_works_by_network"
+    PARSER = reqparse.RequestParser()
+    PARSER.add_argument('author_id', type=int, help='id of the author')
+    PARSER.add_argument('begin_date', type=str, help='begin of search period')
+    PARSER.add_argument('end_date', type=str, help='end of search period')
 
     def get(self):
         """
@@ -277,8 +362,10 @@ class AuthorTeamWorksByNetwork(BaseApiEndpoint):
             begin_date=<begin of search period>(yyyy-mm-dd)
             end_date=<end of search period>(yyyy-mm-dd)
         """
-        return self.data_base_query(AuthorTeamWorksByNetwork.SQL_QUERY), \
-               _STATUS_FOUND
+        args = AuthorTeamWorksByNetwork.PARSER.parse_args(strict=True)
+        return args
+        # return self.data_base_query(AuthorTeamWorksByNetwork.SQL_QUERY), \
+        #        _STATUS_FOUND
 
 
 class ClientsHalfDiscountsByStyle(BaseApiEndpoint):
@@ -292,6 +379,10 @@ class ClientsHalfDiscountsByStyle(BaseApiEndpoint):
     """
     SQL_QUERY = ""
     ROUTE = "/clients_half_discounts_by_style"
+    PARSER = reqparse.RequestParser()
+    PARSER.add_argument('client_id', type=int, help='id of the client')
+    PARSER.add_argument('begin_date', type=str, help='begin of search period')
+    PARSER.add_argument('end_date', type=str, help='end of search period')
 
     def get(self):
         """
@@ -300,8 +391,10 @@ class ClientsHalfDiscountsByStyle(BaseApiEndpoint):
             begin_date=<begin of search period>(yyyy-mm-dd)
             end_date=<end of search period>(yyyy-mm-dd)
         """
-        return self.data_base_query(ClientsHalfDiscountsByStyle.SQL_QUERY), \
-               _STATUS_FOUND
+        args = ClientsHalfDiscountsByStyle.PARSER.parse_args(strict=True)
+        return args
+        # return self.data_base_query(ClientsHalfDiscountsByStyle.SQL_QUERY), \
+        #        _STATUS_FOUND
 
 
 class OrdersCountByMonths(BaseApiEndpoint):
@@ -318,8 +411,10 @@ class OrdersCountByMonths(BaseApiEndpoint):
         """
         No params
         """
-        return self.data_base_query(OrdersCountByMonths.SQL_QUERY), \
-               _STATUS_FOUND
+        args = OrdersCountByMonths.PARSER.parse_args(strict=True)
+        return args
+        # return self.data_base_query(OrdersCountByMonths.SQL_QUERY), \
+        #        _STATUS_FOUND
 
 
 class AuthorsOrderedTopNetworks(BaseApiEndpoint):
@@ -333,6 +428,10 @@ class AuthorsOrderedTopNetworks(BaseApiEndpoint):
     """
     SQL_QUERY = ""
     ROUTE = "/authors_ordered_top_networks"
+    PARSER = reqparse.RequestParser()
+    PARSER.add_argument('author_id', type=int, help='id of the author')
+    PARSER.add_argument('begin_date', type=str, help='begin of search period')
+    PARSER.add_argument('end_date', type=str, help='end of search period')
 
     def get(self):
         """
@@ -341,8 +440,10 @@ class AuthorsOrderedTopNetworks(BaseApiEndpoint):
             begin_date=<begin of search period>(yyyy-mm-dd)
             end_date=<end of search period>(yyyy-mm-dd)
         """
-        return self.data_base_query(AuthorsOrderedTopNetworks.SQL_QUERY), \
-               _STATUS_FOUND
+        args = AuthorsOrderedTopNetworks.PARSER.parse_args(strict=True)
+        return args
+        # return self.data_base_query(AuthorsOrderedTopNetworks.SQL_QUERY), \
+        #        _STATUS_FOUND
 
 
 ENDPOINTS_LIST = [

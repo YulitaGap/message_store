@@ -15,7 +15,7 @@ Desc:
 Params:
     <param name>=<small param description>
 Sample:
-	/api/clients_trusted_authors&client_id=1
+	/api/clients_trusted_authors?client_id=1
 Result: in JSON
 	{}
 
@@ -33,7 +33,7 @@ Params:
     end_date=<end of search period>(yyyy-mm-dd)
 
 Sample:
-    /api/constant_clients&author_id=1&order_threshold=10&begin_date=2020-05-01&end_date=2020-05-24
+    /api/constant_clients?author_id=1&order_threshold=10&begin_date=2020-05-01&end_date=2020-05-24
 Result: in JSON
     {}
 
@@ -48,7 +48,7 @@ Params:
     begin_date=<begin of search period>(yyyy-mm-dd)
     end_date=<end of search period>(yyyy-mm-dd)
 Sample:
-	/api/client_used_authors&client_id=1&begin_date=2020-05-01&end_date=2020-05-24
+	/api/client_used_authors?client_id=1&begin_date=2020-05-01&end_date=2020-05-24
 Result: in JSON
 	{}
 
@@ -63,7 +63,7 @@ Params:
     begin_date=<begin of search period>(yyyy-mm-dd)
     end_date=<end of search period>(yyyy-mm-dd)
 Sample:
-	/api/popular_authors&order_threshold=10&begin_date=2020-05-01&end_date=2020-05-24
+	/api/popular_authors?order_threshold=10&begin_date=2020-05-01&end_date=2020-05-24
 Result: in JSON
 	{}
 
@@ -78,7 +78,7 @@ Params:
     begin_date=<begin of search period>(yyyy-mm-dd)
     end_date=<end of search period>(yyyy-mm-dd)
 Sample:
-	/api/active_clients&order_threshold=10&begin_date=2020-05-01&end_date=2020-05-24
+	/api/active_clients?order_threshold=10&begin_date=2020-05-01&end_date=2020-05-24
 Result: in JSON
 	{}
 __________________________________ 5 __________________________________________
@@ -93,7 +93,7 @@ Params:
     begin_date=<begin of search period>(yyyy-mm-dd)
     end_date=<end of search period>(yyyy-mm-dd)
 Sample:
-	/api/client_active_networks&client_id=1&order_threshold=10&begin_date=2020-05-01&end_date=2020-05-24
+	/api/client_active_networks?client_id=1&order_threshold=10&begin_date=2020-05-01&end_date=2020-05-24
 Result: in JSON
 	{}
 __________________________________ 6 __________________________________________
@@ -107,7 +107,7 @@ Params:
     begin_date=<begin of search period>(yyyy-mm-dd)
     end_date=<end of search period>(yyyy-mm-dd)
 Sample:
-	/api/rated_authors_distinct_clients&order_threshold=10&begin_date=2020-05-01&end_date=2020-05-24
+	/api/rated_authors_distinct_clients?order_threshold=10&begin_date=2020-05-01&end_date=2020-05-24
 Result: in JSON
 	{}
 __________________________________ 7 __________________________________________
@@ -121,7 +121,7 @@ Params:
     begin_date=<begin of search period>(yyyy-mm-dd)
     end_date=<end of search period>(yyyy-mm-dd)
 Sample:
-	/api/popular_clients&order_threshold=10&begin_date=2020-05-01&end_date=2020-05-24
+	/api/popular_clients?order_threshold=10&begin_date=2020-05-01&end_date=2020-05-24
 Result: in JSON
 	{}
 __________________________________ 8 __________________________________________
@@ -131,11 +131,12 @@ Desc:
 	Для покупця С знайти усi соцiальнi мережi, для яких вiн зробив хоча б N
 	замовлень за вказаний перiод (з дати F по дату T)
 Params:
+    client_id=<client id>(int)
     order_threshold=<min order num of author>(int)
     begin_date=<begin of search period>(yyyy-mm-dd)
     end_date=<end of search period>(yyyy-mm-dd)
 Sample:
-	/api/clients_popular_networks&order_threshold=10&begin_date=2020-05-01&end_date=2020-05-24
+	/api/clients_popular_networks?order_threshold=10&begin_date=2020-05-01&end_date=2020-05-24
 Result: in JSON
 	{}
 __________________________________ 9 __________________________________________
@@ -149,7 +150,7 @@ Params:
     begin_date=<begin of search period>(yyyy-mm-dd)
     end_date=<end of search period>(yyyy-mm-dd)
 Sample:
-	/api/author_used_accounts&author_id=1&begin_date=2020-05-01&end_date=2020-05-24
+	/api/author_used_accounts?author_id=1&begin_date=2020-05-01&end_date=2020-05-24
 Result: in JSON
 	{}
 __________________________________ 10 _________________________________________
@@ -161,7 +162,7 @@ Desc:
 Params:
     client_id=<client id>(int)
 Sample:
-	/api/clients_trusted_authors&client_id=1
+	/api/clients_trusted_authors?client_id=1
 Result: in JSON
 	{}
 __________________________________ 11 _________________________________________
@@ -176,7 +177,7 @@ Params:
     begin_date=<begin of search period>(yyyy-mm-dd)
     end_date=<end of search period>(yyyy-mm-dd)
 Sample:
-	/api/client_user_relations&client_id=1&author_id=1&begin_date=2020-05-01&end_date=2020-05-24
+	/api/client_user_relations?client_id=1&author_id=1&begin_date=2020-05-01&end_date=2020-05-24
 Result: in JSON
 	{}
 __________________________________ 12 _________________________________________
@@ -191,7 +192,7 @@ Params:
     begin_date=<begin of search period>(yyyy-mm-dd)
     end_date=<end of search period>(yyyy-mm-dd)
 Sample:
-	/api/end_point_name&author_id=1&begin_date=2020-05-01&end_date=2020-05-24
+	/api/end_point_name?author_id=1&begin_date=2020-05-01&end_date=2020-05-24
 Result: in JSON
 	{}
 __________________________________ 13 _________________________________________
@@ -206,7 +207,7 @@ Params:
     begin_date=<begin of search period>(yyyy-mm-dd)
     end_date=<end of search period>(yyyy-mm-dd)
 Sample:
-	/api/clients_half_discounts_by_style&client_id=1&begin_date=2020-05-01&end_date=2020-05-24
+	/api/clients_half_discounts_by_style?client_id=1&begin_date=2020-05-01&end_date=2020-05-24
 Result: in JSON
 	{}
 __________________________________ 14 _________________________________________
@@ -232,6 +233,6 @@ Params:
     begin_date=<begin of search period>(yyyy-mm-dd)
     end_date=<end of search period>(yyyy-mm-dd)
 Sample:
-	/api/authors_ordered_top_networks&author_id=1&begin_date=2020-05-01&end_date=2020-05-24
+	/api/authors_ordered_top_networks?author_id=1&begin_date=2020-05-01&end_date=2020-05-24
 Result: in JSON
 	{}
