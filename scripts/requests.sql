@@ -1,41 +1,22 @@
 -- Request #2
--- для покупця С знайти усiх авторiв, 
--- у яких вiн замовляв повiдомлення чи статтi за вказаний
--- перiод (з дати F по дату T);
-
-select principal_id, date, author_id from orders
-inner join (select * from author_agent
-inner join author on author_agent.author_id = author.id) A
-on orders.agent_id = A.group_id
-where principal_id = 1 and date > '2019-01-01' and date < '2020-06-06';
-
+select orders.principal_id, author.name, orders.date from author
+inner join author_agent on author.id = author_agent.author_id
+inner join agent on author_agent.group_id = agent.id
+inner join orders on agent.id = orders.agent_id
+where orders.principal_id = 1 and orders.date > '2019-01-01' and orders.date < '2020-06-06';
 -- Request #4
--- знайти усiх покупцiв, якi зробили хоча б
--- N замовлень за вказаний перiод 
--- (з дати F по дату T);
-
-select principal_id, count(id) as coun from orders 
+select principal_id, count(id) from orders 
 where date > '2019-01-01' and date < '2020-06-06'
 group by principal_id
 having count(id) > 0;
-
 -- Request #6
--- для автора А знайти усi облiковi записи 
--- у соцiальних мережах, до яких вiн мав доступ
--- протягом вказаного перiоду (з дати F по дату T);
-
--- select * from 
--- (select * from account
--- inner join orders
--- on account.principal_id = orders.principal_id) as A
--- inner join 
--- (select * from author_agent
---  inner join author 
---  on author_agent.author_id = author.id) as B
---  on A.agent_id;
-
+select author.name, account.id, account.social_network_id, orders.date from author
+inner join author_agent on author.id = author_agent.author_id
+inner join agent on author_agent.group_id = agent.id
+inner join orders on agent.id = orders.agent_id
+inner join principal on orders.principal_id = principal.id
+inner join account on principal.id = account.principal_id
+where orders.date > '2019-01-01' and orders.date < '2020-06-06'; 
 -- Request #8
--- знайти усi спiльнi подiї для автора A
--- та покупця С за вказаний перiод (з дати F по дату
--- T);
-
+-- Request #10
+-- Request #12
