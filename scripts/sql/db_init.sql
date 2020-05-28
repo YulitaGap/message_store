@@ -3,7 +3,10 @@
 CREATE TABLE author
 (
     id   serial PRIMARY KEY,
-    name varchar(50) NOT NULL
+    name varchar(50) NOT NULL,
+	login varchar(50) NOT NULL,
+	password varchar(50) NOT NULL,
+	price_per_1000 numeric NOT NULL
 );
 
 CREATE TABLE agent
@@ -27,7 +30,9 @@ CREATE TABLE style
 CREATE TABLE principal
 (
     id   serial      PRIMARY KEY,
-    name varchar(50) NOT NULL
+    name varchar(50) NOT NULL,
+	login varchar(50) NOT NULL,
+	password varchar(50) NOT NULL
 );
 
 CREATE TABLE social_network
@@ -40,7 +45,9 @@ CREATE TABLE account
 (
     id           serial  PRIMARY KEY,
     principal_id integer REFERENCES principal (id),
-	social_network_id integer REFERENCES social_network (id)
+    social_network_id integer REFERENCES social_network (id),
+    login varchar(50) NOT NULL,
+    password varchar(50) NOT NULL
 );
 
 
@@ -48,7 +55,7 @@ CREATE TABLE account
 CREATE TABLE discount
 (
     id       serial  NOT NULL PRIMARY KEY,
-    agent_id integer NOT NULL REFERENCES agent (id),
+    author_id integer NOT NULL REFERENCES author (id),
     style_id integer NOT NULL REFERENCES style (id),
     sale_to  date    NULL,
     discount numeric NULL
@@ -60,7 +67,8 @@ CREATE TABLE posts
     account_id integer NOT NULL REFERENCES account (id),
     text       text    NOT NULL,
     style_id   integer NOT NULL REFERENCES style (id),
-    date       date    NOT NULL
+    date       date    NOT NULL,
+    visible    boolean NOT NULL DEFAULT FALSE
 );
 
 CREATE TABLE orders
@@ -68,9 +76,9 @@ CREATE TABLE orders
     id           serial      NOT NULL PRIMARY KEY,
     principal_id integer     NOT NULL REFERENCES principal (id),
     agent_id     integer     NOT NULL REFERENCES agent (id),
-    discount_id  integer     NULL     REFERENCES discount (id),
+    volume       integer     NOT NULL,
     post_id      integer     NOT NULL REFERENCES posts (id),
-    price        money       NOT NULL,
+    price        numeric       NOT NULL,
     date         date        NOT NULL,
     status       varchar(50) NOT NULL
 );
