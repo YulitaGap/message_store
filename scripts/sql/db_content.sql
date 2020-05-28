@@ -234,11 +234,11 @@ INSERT INTO account(principal_id, social_network_id, login, password) VALUES (27
 INSERT INTO account(principal_id, social_network_id, login, password) VALUES (28, 4, '28', 'password');
 INSERT INTO account(principal_id, social_network_id, login, password) VALUES (29, 5, '29', 'password');
 -- discount
-INSERT INTO discount(author_id, style_id, sale_to, discount) VALUES (1, 30, '2020-11-02', 0.9);
-INSERT INTO discount(author_id, style_id, sale_to, discount) VALUES (2, 31, '2020-11-03', 0.9);
-INSERT INTO discount(author_id, style_id, sale_to, discount) VALUES (3, 32, '2020-09-11', 0.80);
-INSERT INTO discount(author_id, style_id, sale_to, discount) VALUES (4, 32, '2020-08-25', 0.7);
-INSERT INTO discount(author_id, style_id, sale_to, discount) VALUES (5, 34, '2020-09-11', 0.85);
+INSERT INTO discount(author_id, style_id, sale_to, discount) VALUES (30, 1, '2020-11-02', 0.9);
+INSERT INTO discount(author_id, style_id, sale_to, discount) VALUES (31, 2, '2020-11-03', 0.9);
+INSERT INTO discount(author_id, style_id, sale_to, discount) VALUES (32, 3, '2020-09-11', 0.80);
+INSERT INTO discount(author_id, style_id, sale_to, discount) VALUES (33, 3, '2020-08-25', 0.7);
+INSERT INTO discount(author_id, style_id, sale_to, discount) VALUES (34, 5, '2020-09-11', 0.85);
 -- posts
 INSERT INTO posts(account_id, text, style_id, date) VALUES (1, '', 1, '2020-05-26');
 INSERT INTO posts(account_id, text, style_id, date) VALUES (2, '', 2, '2020-05-27');
