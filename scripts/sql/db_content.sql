@@ -251,3 +251,9 @@ INSERT INTO orders(principal_id, agent_id, volume, post_id, price, date, status)
 INSERT INTO orders(principal_id, agent_id, volume, post_id, price, date, status) VALUES (3, 3, 120, 3, 95, '2020-05-26', 'opened');
 INSERT INTO orders(principal_id, agent_id, volume, post_id, price, date, status) VALUES (4, 4, 130, 4, 118, '2020-05-21', 'opened');
 INSERT INTO orders(principal_id, agent_id, volume, post_id, price, date, status) VALUES (5, 5, 1000, 5, 120, '2020-05-16', 'opened');
+-- access_history
+INSERT INTO access_history(agent_id, account_id, give_access, date) VALUES (1, 1, TRUE, '2020-05-26');
+INSERT INTO access_history(agent_id, account_id, give_access, date) VALUES (2, 2, TRUE, '2020-05-27');
+INSERT INTO access_history(agent_id, account_id, give_access, date) VALUES (3, 3, TRUE, '2020-05-26');
+INSERT INTO access_history(agent_id, account_id, give_access, date) VALUES (4, 4, TRUE, '2020-05-21');
+INSERT INTO access_history(agent_id, account_id, give_access, date) VALUES (5, 5, TRUE, '2020-05-16');
