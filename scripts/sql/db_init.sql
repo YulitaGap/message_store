@@ -55,7 +55,13 @@ CREATE TABLE account
     password varchar(50) NOT NULL
 );
 
-
+CREATE TABLE access_history
+(
+    agent_id integer NOT NULL REFERENCES agent (id),
+    account_id integer NOT NULL REFERENCES account (id),
+    give_access boolean NOT NULL,
+    date date
+);
 
 CREATE TABLE discount
 (
