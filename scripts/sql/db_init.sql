@@ -1,12 +1,19 @@
 -- CREATE DATABASE message_store_db;
 
-CREATE TABLE author
+CREATE TABLE authentication
 (
-    id   serial PRIMARY KEY,
-    name varchar(50) NOT NULL,
+	id serial PRIMARY KEY,
 	login varchar(50) NOT NULL,
 	password varchar(50) NOT NULL,
-	price_per_1000 numeric NOT NULL
+	author boolean NOT NULL
+);
+
+CREATE TABLE author
+(
+    id   integer PRIMARY KEY REFERENCES authentication(id),
+    name varchar(50) NOT NULL,
+	price_per_1000 numeric NOT NULL,
+	active boolean NOT NULL
 );
 
 CREATE TABLE agent
@@ -29,10 +36,8 @@ CREATE TABLE style
 
 CREATE TABLE principal
 (
-    id   serial      PRIMARY KEY,
-    name varchar(50) NOT NULL,
-	login varchar(50) NOT NULL,
-	password varchar(50) NOT NULL
+    id   integer PRIMARY KEY REFERENCES authentication(id),
+    name varchar(50) NOT NULL
 );
 
 CREATE TABLE social_network
@@ -50,7 +55,13 @@ CREATE TABLE account
     password varchar(50) NOT NULL
 );
 
-
+CREATE TABLE access_history
+(
+    agent_id integer NOT NULL REFERENCES agent (id),
+    account_id integer NOT NULL REFERENCES account (id),
+    give_access boolean NOT NULL,
+    date date
+);
 
 CREATE TABLE discount
 (
