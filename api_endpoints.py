@@ -1,5 +1,6 @@
 #!/usr/bin/python3
 from flask_restful import Resource, reqparse
+import sql_builder as sb
 
 """
 The REST API documentation is at 'docs/rest_api.txt'
@@ -443,6 +444,39 @@ class AuthorsOrderedTopNetworks(BaseApiEndpoint):
         args = AuthorsOrderedTopNetworks.PARSER.parse_args(strict=True)
         return args
         # return self.data_base_query(AuthorsOrderedTopNetworks.SQL_QUERY), \
+        #        _STATUS_FOUND
+
+
+class CreateOrder(BaseApiEndpoint):
+    # TODO: Check everything here and add to ENDPOINTS_LIST
+    """
+    Action:
+        create_order
+    Desc:
+        Перевіряє чи з даним набором авторів є агент і повертає його ід або нічого,
+        якщо нічого, то створює агента з таким набором авторів і повертає його ід.
+    """
+    ROUTE = "/create_order"
+    PARSER = reqparse.RequestParser()
+    PARSER.add_argument('account_id', type=int, help='id of the account')
+    PARSER.add_argument('principal_id', type=int, help='id of the principal')
+    PARSER.add_argument('author_id', type=list, help='ids of the author')
+    PARSER.add_argument('style_id', type=int, help='id of the style')
+    PARSER.add_argument('volume', type=int, help='number of symbols')
+
+    def get(self):
+        args = AuthorsOrderedTopNetworks.PARSER.parse_args(strict=True)
+        agent_id = self.data_base_query(sb.find_agent(args['author_id']))['id']
+        if len(agent_id.values()) == 0:
+            agent_id = self.data_base_query(sb.create_agent(args['author_id']))['id']
+        price = self.data_base_query(sb.get_price(args['author_id'], args['style_id']))['price_per_1000']
+        return self.data_base_query(sb.create_order(args['account_id'],
+                                                    args['principal_id'],
+                                                    agent_id,
+                                                    args['style_id'],
+                                                    price,
+                                                    args['volume']))
+        # , \
         #        _STATUS_FOUND
 
 

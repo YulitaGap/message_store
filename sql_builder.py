@@ -24,10 +24,11 @@ inner join author_agent on (agent.id = author_agent.group_id)
 where author_agent.author_id = {}
 group by agent.id)
 """.format(lst[i])
+    query += """limit 1"""
     return query
 
 
-# print(form_agent([30, 31, 32]))
+print(find_agent([30, 31, 32]))
 
 def create_agent(lst):
     """
