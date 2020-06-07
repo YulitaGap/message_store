@@ -17,10 +17,10 @@ def connect_to_db(func):
     def res_func(query):
         try:
             connection = psycopg2.connect(user="postgres",
-                                          password="test",
+                                          password="postgres",
                                           host="127.0.0.1",
                                           port="5432",
-                                          database="message_store_db")
+                                          database="message_store")
 
             # ################## OUTER FUNCTION  ###################
             return func(query, connection)
@@ -136,7 +136,7 @@ class PopularAuthors(BaseApiEndpoint):
     SQL_QUERY = lambda _self, params: \
         f"""
     SELECT foo.name
-    FROM (SELECT author.name,
+    FROM (SELECT author.name
           FROM author
                    INNER JOIN author_agent ON id = author_id
                    INNER JOIN agent ON author_agent.group_id = agent.id
@@ -144,8 +144,8 @@ class PopularAuthors(BaseApiEndpoint):
                    INNER JOIN principal ON orders.principal_id = principal.id
           GROUP BY author.name, orders.date, principal.id
           HAVING count(author.name) > 0
-             AND orders.date > date({params['begin_date']})
-             AND orders.date < date({params['end_date']})) as foo
+             AND orders.date > date('{params['begin_date']}')
+             AND orders.date < date('{params['end_date']}')) as foo
     GROUP BY foo.name
     HAVING count(foo.name) > {params['order_threshold']};
     """
@@ -426,25 +426,26 @@ class CreateOrder(BaseApiEndpoint):
     PARSER = reqparse.RequestParser()
     PARSER.add_argument('account_id', type=int, help='id of the account')
     PARSER.add_argument('principal_id', type=int, help='id of the principal')
-    PARSER.add_argument('author_id', type=list, help='ids of the author')
+    PARSER.add_argument('author_id', type=str, help='ids of the author')
     PARSER.add_argument('style_id', type=int, help='id of the style')
     PARSER.add_argument('volume', type=int, help='number of symbols')
 
     def get(self):
         args = self.PARSER.parse_args(strict=True)
+        args['author_id'] = [int(i) for i in str(args['author_id']).split(",")]
         agent_id = self.data_base_select_query(
-            sb.find_agent(args['author_id']))['id']
+            sb.find_agent(args['author_id']))
         if len(agent_id) == 0:
             agent_id = self.data_base_update_select_query(
-                sb.create_agent(args['author_id']))['id']
+                sb.create_agent(args['author_id']))
 
         price = self.data_base_select_query(
             sb.get_price(args['author_id'],
-                         args['style_id']))['price_per_1000']
+                         args['style_id']))
 
         return self.data_base_updating_query(
             sb.create_order(args['account_id'], args['principal_id'],
-                            agent_id[0], args['style_id'], price[0], args['volume'])), _STATUS_FOUND
+                            agent_id[0][0], args['style_id'], float(price[0][0]), args['volume'])), _STATUS_FOUND
 
 
 ENDPOINTS_LIST = [

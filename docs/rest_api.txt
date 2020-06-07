@@ -243,5 +243,6 @@ Action:
 Desc:
 Params:
 Sample:
+api/create_order?account_id=1&principal_id=1&author_id=30,31,32&style_id=2&volume=10000
 Result: in JSON
 	{}
