@@ -33,7 +33,8 @@ class ConstantClients(BaseApiEndpoint):
         для автора A знайти усiх покупцiв, якi замовляли у нього повiдомлення хоча б N разiв за
         вказаний перiод (з дати F по дату T);
     """
-    SQL_QUERY = f""""
+    SQL_QUERY = lambda author_id, limit, begin_date, end_date: \
+        f""""
     SELECT author.name, principal.name, count(orders.principal_id)
     FROM author
     INNER JOIN author_agent ON id = author_id
@@ -99,7 +100,8 @@ class PopularAuthors(BaseApiEndpoint):
         Знайти усiх авторiв, якi отримували замовлення вiд щонайменше N рiзних
         покупцiв за вказаний перiод (з дати F по дату T)
     """
-    SQL_QUERY = f""""
+    SQL_QUERY = lambda order_threshold, begin_date, end_date: \
+        f""""
     Select foo.name
     FROM
     (SELECT author.name, principal.id
@@ -171,7 +173,8 @@ class ClientActiveNetworks(BaseApiEndpoint):
         Для покупця С знайти усi соцiальнi мережi, для яких вiн зробив хоча б N
         замовлень за вказаний перiод (з дати F по дату T)
     """
-    SQL_QUERY = f""""
+    SQL_QUERY = lambda client_id, order_threshold, begin_date, end_date: \
+        f""""
     SELECT principal.name, social_network.name
     FROM principal
     INNER JOIN orders ON orders.principal_id = principal.id
@@ -328,7 +331,8 @@ class ClientsTrustedAuthors(BaseApiEndpoint):
         Для покупця С знайти усiх авторiв, яким вiн надав доступ до хоча б одного
         облiкового запису у соцiальнiй мережi, а потiм позбавив його цього доступу.
     """
-    SQL_QUERY = f""""
+    SQL_QUERY = lambda client_id: \
+        f""""
     SELECT author.name
     FROM principal
     INNER JOIN account ON principal.id = account.principal_id
@@ -393,7 +397,8 @@ class AuthorTeamWorksByNetwork(BaseApiEndpoint):
             скiльки разiв за вказаний перiод (з дати F по дату T) вiн писав її у групi
             з щонайменше N авторiв.
     """
-    SQL_QUERY = f""""
+    SQL_QUERY = lambda author_id, limit, begin_date, end_date: \
+        f""""
     SELECT (author.name)
     FROM
     (SELECT author_agent.group_id, count(author_agent.group_id)
@@ -467,7 +472,8 @@ class OrdersCountByMonths(BaseApiEndpoint):
     Desc:
         Знайти сумарну кiлькiсть замовлень по мiсяцях.
     """
-    SQL_QUERY = f""""
+    SQL_QUERY = lambda begin_date, end_date: \
+        f""""
     SELECT count(num)
     FROM
     (SELECT count(orders.id) as num
