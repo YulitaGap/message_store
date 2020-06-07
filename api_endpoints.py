@@ -60,6 +60,19 @@ class BaseApiEndpoint(Resource):
         finally:
             cursor.close()
 
+    # TODO Виідалити це і написати нормально (або змиритися)
+    @staticmethod
+    @connect_to_db
+    def data_base_update_select_query(query: str, connection=None) -> dict:
+        try:
+            cursor = connection.cursor()
+            cursor.execute(query)
+            result = cursor.fetchall()
+            connection.commit()
+            return result
+        finally:
+            cursor.close()
+
     def get(self):
         a = self.PARSER.parse_args(strict=True)
         return self.data_base_select_query(
@@ -422,7 +435,7 @@ class CreateOrder(BaseApiEndpoint):
         agent_id = self.data_base_select_query(
             sb.find_agent(args['author_id']))['id']
         if len(agent_id) == 0:
-            agent_id = self.data_base_updating_query(
+            agent_id = self.data_base_update_select_query(
                 sb.create_agent(args['author_id']))['id']
 
         price = self.data_base_select_query(
