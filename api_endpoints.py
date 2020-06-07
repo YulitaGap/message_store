@@ -1,6 +1,6 @@
 #!/usr/bin/python3
 import psycopg2
-from flask_restful import Resource, reqparse
+from flask_restful import Resource, reqparse, abort
 
 import sql_builder as sb
 
@@ -25,15 +25,19 @@ class BaseApiEndpoint(Resource):
             cursor = connection.cursor()
             cursor.execute(query)
             result = cursor.fetchall()
-            # connection.commit()
             return result
         except (Exception, psycopg2.DatabaseError) as error:
             print("Error while accessing PostgresSQL Data Base!", error)
+            abort(_STATUS_INVALID_PARAMETERS)
         finally:
             # closing database connection.
-            if (connection):
+            if connection:
                 cursor.close()
                 connection.close()
+
+    def get(self):
+        return self.data_base_query(
+            self.SQL_QUERY(self.PARSER.parse_args(strict=True))), _STATUS_FOUND
 
 
 class ConstantClients(BaseApiEndpoint):
@@ -41,8 +45,8 @@ class ConstantClients(BaseApiEndpoint):
     Action:
         contant_clients
     Desc:
-        для автора A знайти усiх покупцiв, якi замовляли у нього повiдомлення хоча б N разiв за
-        вказаний перiод (з дати F по дату T);
+        для автора A знайти усiх покупцiв, якi замовляли у нього повiдомлення
+        хоча б N разiв за вказаний перiод (з дати F по дату T);
     """
     SQL_QUERY = lambda params: \
         f"""
@@ -55,8 +59,8 @@ class ConstantClients(BaseApiEndpoint):
     GROUP BY author.id, author.name, principal.name, orders.date
     HAVING author.id = 4
        AND count(orders.principal_id) > {params['limit']} 
-       AND orders.date > {params['begin_date']}
-       AND orders.date < {params['end_date']};
+       AND orders.date > date({params['begin_date']})
+       AND orders.date < date({params['end_date']});
     """
     ROUTE = "/constant_clients"
     PARSER = reqparse.RequestParser()
@@ -64,17 +68,6 @@ class ConstantClients(BaseApiEndpoint):
     PARSER.add_argument('begin_date', type=str, help='begin of search period')
     PARSER.add_argument('end_date', type=str, help='end of search period')
     PARSER.add_argument('limit', type=int, help='upper limit')
-
-    def get(self):
-        """
-        Params:
-            client_id=<client id>(int)
-            begin_date=<begin of search period>(yyyy-mm-dd)
-            end_date=<end of search period>(yyyy-mm-dd)
-        """
-        args = ConstantClients.PARSER.parse_args(strict=True)
-        return self.data_base_select_query(ConstantClients.SQL_QUERY), \
-               _STATUS_FOUND
 
 
 class ClientUsedAuthors(BaseApiEndpoint):
@@ -92,18 +85,6 @@ class ClientUsedAuthors(BaseApiEndpoint):
     PARSER.add_argument('begin_date', type=str, help='begin of search period')
     PARSER.add_argument('end_date', type=str, help='end of search period')
 
-    def get(self):
-        """
-        Params:
-            client_id=<client id>(int)
-            begin_date=<begin of search period>(yyyy-mm-dd)
-            end_date=<end of search period>(yyyy-mm-dd)
-        """
-        args = ClientUsedAuthors.PARSER.parse_args(strict=True)
-        return args
-        # return self.data_base_query(ClientUsedAuthors.SQL_QUERY), \
-        #        _STATUS_FOUND
-
 
 class PopularAuthors(BaseApiEndpoint):
     """
@@ -116,7 +97,7 @@ class PopularAuthors(BaseApiEndpoint):
     SQL_QUERY = lambda params: \
         f"""
     SELECT foo.name
-    FROM (SELECT author.name, principal.id
+    FROM (SELECT author.name,
           FROM author
                    INNER JOIN author_agent ON id = author_id
                    INNER JOIN agent ON author_agent.group_id = agent.id
@@ -124,8 +105,8 @@ class PopularAuthors(BaseApiEndpoint):
                    INNER JOIN principal ON orders.principal_id = principal.id
           GROUP BY author.name, orders.date, principal.id
           HAVING count(author.name) > 0
-             AND orders.date > {params['begin_date']}
-             AND orders.date < {params['end_date']}) as foo
+             AND orders.date > date({params['begin_date']})
+             AND orders.date < date({params['end_date']})) as foo
     GROUP BY foo.name
     HAVING count(foo.name) > {params['order_threshold']};
     """
@@ -135,18 +116,6 @@ class PopularAuthors(BaseApiEndpoint):
                         help='min order num of author')
     PARSER.add_argument('begin_date', type=str, help='begin of search period')
     PARSER.add_argument('end_date', type=str, help='end of search period')
-
-    def get(self):
-        """
-        Params:
-            order_threshold=<min order num of author>(int)
-            begin_date=<begin of search period>(yyyy-mm-dd)
-            end_date=<end of search period>(yyyy-mm-dd)
-        """
-        args = PopularAuthors.PARSER.parse_args(strict=True)
-        return args
-        # return self.data_base_query(PopularAuthors.SQL_QUERY), \
-        #        _STATUS_FOUND
 
 
 class ActiveClients(BaseApiEndpoint):
@@ -164,18 +133,6 @@ class ActiveClients(BaseApiEndpoint):
                         help='min order num of author')
     PARSER.add_argument('begin_date', type=str, help='begin of search period')
     PARSER.add_argument('end_date', type=str, help='end of search period')
-
-    def get(self):
-        """
-        Params:
-            order_threshold=<min order num of author>(int)
-            begin_date=<begin of search period>(yyyy-mm-dd)
-            end_date=<end of search period>(yyyy-mm-dd)
-        """
-        args = ActiveClients.PARSER.parse_args(strict=True)
-        return args
-        # return self.data_base_query(ActiveClients.SQL_QUERY), \
-        #        _STATUS_FOUND
 
 
 class ClientActiveNetworks(BaseApiEndpoint):
@@ -197,8 +154,8 @@ class ClientActiveNetworks(BaseApiEndpoint):
     GROUP BY social_network.name, orders.principal_id, principal.id
     HAVING principal.id = {params['client_id']} 
        AND count(orders.principal_id) > {params['order_threshold']}
-       AND orders.date > {params['begin_date']}
-       AND orders.date < {params['end_date']};
+       AND orders.date > date({params['begin_date']})
+       AND orders.date < date({params['end_date']});
     """
     ROUTE = "/client_active_networks"
     PARSER = reqparse.RequestParser()
@@ -207,19 +164,6 @@ class ClientActiveNetworks(BaseApiEndpoint):
                         help='min order num of author')
     PARSER.add_argument('begin_date', type=str, help='begin of search period')
     PARSER.add_argument('end_date', type=str, help='end of search period')
-
-    def get(self):
-        """
-        Params:
-            client_id=<client id>(int)
-            order_threshold=<min order num of author>(int)
-            begin_date=<begin of search period>(yyyy-mm-dd)
-            end_date=<end of search period>(yyyy-mm-dd)
-        """
-        args = ClientActiveNetworks.PARSER.parse_args(strict=True)
-        return args
-        # return self.data_base_query(ClientActiveNetworks.SQL_QUERY), \
-        #        _STATUS_FOUND
 
 
 class RatedAuthorsDistinctClients(BaseApiEndpoint):
@@ -238,18 +182,6 @@ class RatedAuthorsDistinctClients(BaseApiEndpoint):
     PARSER.add_argument('begin_date', type=str, help='begin of search period')
     PARSER.add_argument('end_date', type=str, help='end of search period')
 
-    def get(self):
-        """
-        Params:
-            order_threshold=<min order num of author>(int)
-            begin_date=<begin of search period>(yyyy-mm-dd)
-            end_date=<end of search period>(yyyy-mm-dd)
-        """
-        args = RatedAuthorsDistinctClients.PARSER.parse_args(strict=True)
-        return args
-        # return self.data_base_query(RatedAuthorsDistinctClients.SQL_QUERY), \
-        #        _STATUS_FOUND
-
 
 class PopularClients(BaseApiEndpoint):
     """
@@ -266,18 +198,6 @@ class PopularClients(BaseApiEndpoint):
                         help='min order num of author')
     PARSER.add_argument('begin_date', type=str, help='begin of search period')
     PARSER.add_argument('end_date', type=str, help='end of search period')
-
-    def get(self):
-        """
-        Params:
-            order_threshold=<min order num of author>(int)
-            begin_date=<begin of search period>(yyyy-mm-dd)
-            end_date=<end of search period>(yyyy-mm-dd)
-        """
-        args = PopularClients.PARSER.parse_args(strict=True)
-        return args
-        # return self.data_base_query(PopularClients.SQL_QUERY), \
-        #        _STATUS_FOUND
 
 
 class ClientsPopularNetworks(BaseApiEndpoint):
@@ -297,27 +217,14 @@ class ClientsPopularNetworks(BaseApiEndpoint):
     PARSER.add_argument('begin_date', type=str, help='begin of search period')
     PARSER.add_argument('end_date', type=str, help='end of search period')
 
-    def get(self):
-        """
-        Params:
-            client_id=<client id>(int)
-            order_threshold=<min order num of author>(int)
-            begin_date=<begin of search period>(yyyy-mm-dd)
-            end_date=<end of search period>(yyyy-mm-dd)
-        """
-        args = ClientsPopularNetworks.PARSER.parse_args(strict=True)
-        return args
-        # return self.data_base_query(ClientsPopularNetworks.SQL_QUERY), \
-        #        _STATUS_FOUND
-
 
 class AuthorUsedAccounts(BaseApiEndpoint):
     """
     Action:
         author_used_accounts
     Desc:
-        Для автора А знайти усi облiковi записи у соцiальних мережах, до яких вiн
-        мав доступ протягом вказаного перiоду (з дати F по дату T)
+        Для автора А знайти усi облiковi записи у соцiальних мережах, до яких
+        вiн мав доступ протягом вказаного перiоду (з дати F по дату T)
     """
     SQL_QUERY = lambda params: ""
     ROUTE = "/author_used_accounts"
@@ -326,26 +233,15 @@ class AuthorUsedAccounts(BaseApiEndpoint):
     PARSER.add_argument('begin_date', type=str, help='begin of search period')
     PARSER.add_argument('end_date', type=str, help='end of search period')
 
-    def get(self):
-        """
-        Params:
-            author_id=<author id>(int)
-            begin_date=<begin of search period>(yyyy-mm-dd)
-            end_date=<end of search period>(yyyy-mm-dd)
-        """
-        args = AuthorUsedAccounts.PARSER.parse_args(strict=True)
-        return args
-        # return self.data_base_query(AuthorUsedAccounts.SQL_QUERY), \
-        #        _STATUS_FOUND
-
 
 class ClientsTrustedAuthors(BaseApiEndpoint):
     """
     Action:
         clients_trusted_authors
     Desc:
-        Для покупця С знайти усiх авторiв, яким вiн надав доступ до хоча б одного
-        облiкового запису у соцiальнiй мережi, а потiм позбавив його цього доступу.
+        Для покупця С знайти усiх авторiв, яким вiн надав доступ до хоча б
+        одного облiкового запису у соцiальнiй мережi, а потiм позбавив його
+        цього доступу.
     """
     SQL_QUERY = lambda params: f"""
     SELECT author.name
@@ -364,16 +260,6 @@ class ClientsTrustedAuthors(BaseApiEndpoint):
     PARSER = reqparse.RequestParser()
     PARSER.add_argument('client_id', type=int, help='id of the client')
 
-    def get(self):
-        """
-        Params:
-            client_id=<client id>(int)
-        """
-        args = ClientsTrustedAuthors.PARSER.parse_args(strict=True)
-        return args
-        # return self.data_base_query(ClientsTrustedAuthors.SQL_QUERY), \
-        #        _STATUS_FOUND
-
 
 class ClientUserRelations(BaseApiEndpoint):
     """
@@ -391,28 +277,15 @@ class ClientUserRelations(BaseApiEndpoint):
     PARSER.add_argument('begin_date', type=str, help='begin of search period')
     PARSER.add_argument('end_date', type=str, help='end of search period')
 
-    def get(self):
-        """
-        Params:
-            client_id=<client id>(int)
-            author_id=<author id>(int)
-            begin_date=<begin of search period>(yyyy-mm-dd)
-            end_date=<end of search period>(yyyy-mm-dd)
-        """
-        args = ClientUserRelations.PARSER.parse_args(strict=True)
-        return args
-        # return self.data_base_query(ClientUserRelations.SQL_QUERY), \
-        #        _STATUS_FOUND
-
 
 class AuthorTeamWorksByNetwork(BaseApiEndpoint):
     """
     Action:
             author_team_works_by_network
         Desc:
-            Для автора A та кожної соцiальної мережi, у якiй вiн писав статтю, знайти
-            скiльки разiв за вказаний перiод (з дати F по дату T) вiн писав її у групi
-            з щонайменше N авторiв.
+            Для автора A та кожної соцiальної мережi, у якiй вiн писав статтю,
+            знайти скiльки разiв за вказаний перiод (з дати F по дату T) вiн
+            писав її у групi з щонайменше N авторiв.
     """
     SQL_QUERY = lambda params: f"""
     SELECT (author.name)
@@ -428,9 +301,9 @@ class AuthorTeamWorksByNetwork(BaseApiEndpoint):
           GROUP BY social_network.id, author_agent.group_id, orders.date
           HAVING count(social_network.id) > {params['limit']}
              AND orders.date
-               > {params['begin_date']}
+               > date({params['begin_date']})
              AND orders.date
-               < {params['end_date']}) AS foo
+               < date({params['end_date']})) AS foo
              INNER JOIN agent ON agent.id = foo.group_id
              INNER JOIN author_agent ON agent.id = author_agent.group_id
              INNER JOIN author ON author.id = author_agent.author_id
@@ -443,27 +316,15 @@ class AuthorTeamWorksByNetwork(BaseApiEndpoint):
     PARSER.add_argument('end_date', type=str, help='end of search period')
     PARSER.add_argument('limit', type=str, help='limit of authors')
 
-    def get(self):
-        """
-        Params:
-            author_id=<author id>(int)
-            begin_date=<begin of search period>(yyyy-mm-dd)
-            end_date=<end of search period>(yyyy-mm-dd)
-        """
-        args = AuthorTeamWorksByNetwork.PARSER.parse_args(strict=True)
-        return args
-        # return self.data_base_query(AuthorTeamWorksByNetwork.SQL_QUERY), \
-        #        _STATUS_FOUND
-
 
 class ClientsHalfDiscountsByStyle(BaseApiEndpoint):
     """
     Action:
         clients_half_discounts_by_style
     Desc:
-        Для покупця С та кожного стилю, у якому вiн замовляв повiдомлення, знайти
-        скiльки замовлень за вказаний перiод (з дати F по дату T) отримали 50%
-        знижку.
+        Для покупця С та кожного стилю, у якому вiн замовляв повiдомлення,
+        знайти скiльки замовлень за вказаний перiод (з дати F по дату T)
+        отримали 50% знижку.
     """
     SQL_QUERY = lambda params: ""
     ROUTE = "/clients_half_discounts_by_style"
@@ -471,18 +332,6 @@ class ClientsHalfDiscountsByStyle(BaseApiEndpoint):
     PARSER.add_argument('client_id', type=int, help='id of the client')
     PARSER.add_argument('begin_date', type=str, help='begin of search period')
     PARSER.add_argument('end_date', type=str, help='end of search period')
-
-    def get(self):
-        """
-        Params:
-            client_id=<client id>(int)
-            begin_date=<begin of search period>(yyyy-mm-dd)
-            end_date=<end of search period>(yyyy-mm-dd)
-        """
-        args = ClientsHalfDiscountsByStyle.PARSER.parse_args(strict=True)
-        return args
-        # return self.data_base_query(ClientsHalfDiscountsByStyle.SQL_QUERY), \
-        #        _STATUS_FOUND
 
 
 class OrdersCountByMonths(BaseApiEndpoint):
@@ -497,8 +346,8 @@ class OrdersCountByMonths(BaseApiEndpoint):
     FROM (SELECT count(orders.id) as num
           FROM orders
           GROUP BY orders.id
-          HAVING orders.date > {params['begin_date']} 
-             AND orders.date <{params['end_date']}) AS foo
+          WHERE orders.date > date({params['begin_date']}) 
+             AND orders.date < date({params['end_date']})) AS foo
     GROUP BY num;
     """
     ROUTE = "/orders_count_by_months"
@@ -506,26 +355,15 @@ class OrdersCountByMonths(BaseApiEndpoint):
     PARSER.add_argument('begin_date', type=str, help='begin of search period')
     PARSER.add_argument('end_date', type=str, help='end of search period')
 
-    def get(self):
-        """
-         Params:
-            begin_date=<begin of months>(yyyy-mm-dd)
-            end_date=<end of months>(yyyy-mm-dd)
-        """
-        args = OrdersCountByMonths.PARSER.parse_args(strict=True)
-        return args
-        # return self.data_base_query(OrdersCountByMonths.SQL_QUERY), \
-        #        _STATUS_FOUND
-
 
 class AuthorsOrderedTopNetworks(BaseApiEndpoint):
     """
     Action:
         authors_ordered_top_networks
     Desc:
-        Вивести соцiальнi мережi у порядку спадання середньої кiлькостi повiдомлень
-        по усiх стилях, що були написанi автором A за вказаний перiод
-        (з дати F по дату T).
+        Вивести соцiальнi мережi у порядку спадання середньої кiлькостi
+        повiдомлень по усiх стилях, що були написанi автором A за вказаний
+        перiод (з дати F по дату T).
     """
     SQL_QUERY = lambda params: ""
     ROUTE = "/authors_ordered_top_networks"
@@ -534,18 +372,6 @@ class AuthorsOrderedTopNetworks(BaseApiEndpoint):
     PARSER.add_argument('begin_date', type=str, help='begin of search period')
     PARSER.add_argument('end_date', type=str, help='end of search period')
 
-    def get(self):
-        """
-        Params:
-            author_id=<author id>(int)
-            begin_date=<begin of search period>(yyyy-mm-dd)
-            end_date=<end of search period>(yyyy-mm-dd)
-        """
-        args = AuthorsOrderedTopNetworks.PARSER.parse_args(strict=True)
-        return args
-        # return self.data_base_query(AuthorsOrderedTopNetworks.SQL_QUERY), \
-        #        _STATUS_FOUND
-
 
 class CreateOrder(BaseApiEndpoint):
     # TODO: Check everything here and add to ENDPOINTS_LIST
@@ -553,8 +379,9 @@ class CreateOrder(BaseApiEndpoint):
     Action:
         create_order
     Desc:
-        Перевіряє чи з даним набором авторів є агент і повертає його ід або нічого,
-        якщо нічого, то створює агента з таким набором авторів і повертає його ід.
+        Перевіряє чи з даним набором авторів є агент і повертає його ід або
+        нічого, якщо нічого, то створює агента з таким набором авторів і
+        повертає його ід.
     """
     SQL_QUERY = lambda params: ""
     ROUTE = "/create_order"
