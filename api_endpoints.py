@@ -33,7 +33,7 @@ class ConstantClients(BaseApiEndpoint):
         для автора A знайти усiх покупцiв, якi замовляли у нього повiдомлення хоча б N разiв за
         вказаний перiод (з дати F по дату T);
     """
-    SQL_QUERY = """"
+    SQL_QUERY = f""""
     SELECT author.name, principal.name, count(orders.principal_id)
     FROM author
     INNER JOIN author_agent ON id = author_id
@@ -41,8 +41,8 @@ class ConstantClients(BaseApiEndpoint):
     INNER JOIN orders ON agent.id = orders.agent_id
     INNER JOIN principal ON orders.principal_id = principal.id
     GROUP BY author.id ,author.name, principal.name, orders.date
-    HAVING author.id = author_id AND count(orders.principal_id) > limit 
-    AND orders.date > begin_date AND  orders.date < end_date
+    HAVING author.id = {author_id} AND count(orders.principal_id) > {limit} 
+    AND orders.date > {begin_date} AND  orders.date < {end_date}
     """
     ROUTE = "/constant_clients"
     PARSER = reqparse.RequestParser()
@@ -99,7 +99,7 @@ class PopularAuthors(BaseApiEndpoint):
         Знайти усiх авторiв, якi отримували замовлення вiд щонайменше N рiзних
         покупцiв за вказаний перiод (з дати F по дату T)
     """
-    SQL_QUERY = """"
+    SQL_QUERY = f""""
     Select foo.name
     FROM
     (SELECT author.name, principal.id
@@ -109,10 +109,10 @@ class PopularAuthors(BaseApiEndpoint):
     INNER JOIN orders ON agent.id = orders.agent_id
     INNER JOIN principal ON orders.principal_id = principal.id
     GROUP BY author.name, orders.date, principal.id
-    HAVING orders.date > begin_date
-    AND  orders.date < end_date) as foo
+    HAVING orders.date > {begin_date}
+    AND  orders.date < {end_date}) as foo
     GROUP BY foo.name
-    HAVING count(foo.name) > order_threshold
+    HAVING count(foo.name) > {order_threshold}
     """
     ROUTE = "/popular_authors"
     PARSER = reqparse.RequestParser()
@@ -171,15 +171,15 @@ class ClientActiveNetworks(BaseApiEndpoint):
         Для покупця С знайти усi соцiальнi мережi, для яких вiн зробив хоча б N
         замовлень за вказаний перiод (з дати F по дату T)
     """
-    SQL_QUERY = """"
+    SQL_QUERY = f""""
     SELECT principal.name, social_network.name
     FROM principal
     INNER JOIN orders ON orders.principal_id = principal.id
     INNER JOIN account ON principal.id = account.principal_id
     INNER JOIN social_network ON social_network.id = account.social_network_id
     GROUP BY social_network.name, orders.principal_id, principal.id
-    HAVING principal.id = client_id AND count(orders.principal_id) > order_threshold
-    AND orders.date > begin_date AND  orders.date < end_date
+    HAVING principal.id = {client_id} AND count(orders.principal_id) > {order_threshold}
+    AND orders.date > {begin_date} AND  orders.date < {end_date}
     """
     ROUTE = "/client_active_networks"
     PARSER = reqparse.RequestParser()
@@ -328,7 +328,7 @@ class ClientsTrustedAuthors(BaseApiEndpoint):
         Для покупця С знайти усiх авторiв, яким вiн надав доступ до хоча б одного
         облiкового запису у соцiальнiй мережi, а потiм позбавив його цього доступу.
     """
-    SQL_QUERY = """"
+    SQL_QUERY = f""""
     SELECT author.name
     FROM principal
     INNER JOIN account ON principal.id = account.principal_id
@@ -337,7 +337,7 @@ class ClientsTrustedAuthors(BaseApiEndpoint):
     INNER JOIN author_agent ON agent.id = author_agent.group_id
     INNER JOIN author ON author.id = author_agent.author_id
     GROUP BY author.name, access_history.agent_id, principal.id
-    HAVING count(author.name) = 2 AND principal.id = client_id
+    HAVING count(author.name) = 2 AND principal.id = {client_id}
     """
     ROUTE = "/clients_trusted_authors"
     PARSER = reqparse.RequestParser()
@@ -393,7 +393,7 @@ class AuthorTeamWorksByNetwork(BaseApiEndpoint):
             скiльки разiв за вказаний перiод (з дати F по дату T) вiн писав її у групi
             з щонайменше N авторiв.
     """
-    SQL_QUERY = """"
+    SQL_QUERY = f""""
     SELECT (author.name)
     FROM
     (SELECT author_agent.group_id, count(author_agent.group_id)
@@ -405,11 +405,11 @@ class AuthorTeamWorksByNetwork(BaseApiEndpoint):
     INNER JOIN account ON account.principal_id = principal.id
     INNER JOIN social_network ON account.principal_id = social_network.id
     GROUP BY social_network.id, author_agent.group_id, orders.date
-    HAVING count(social_network.id) > limit AND orders.date > begin_date AND  orders.date < end_date ) AS foo
+    HAVING count(social_network.id) > {limit} AND orders.date > {begin_date} AND  orders.date < {end_date} ) AS foo
     INNER JOIN agent ON agent.id = foo.group_id
     INNER JOIN author_agent ON agent.id = author_agent.group_id
     INNER JOIN author ON author.id = author_agent.author_id
-    WHERE author.id = author_id 
+    WHERE author.id = {author_id} 
     """
     ROUTE = "/author_team_works_by_network"
     PARSER = reqparse.RequestParser()
@@ -467,13 +467,13 @@ class OrdersCountByMonths(BaseApiEndpoint):
     Desc:
         Знайти сумарну кiлькiсть замовлень по мiсяцях.
     """
-    SQL_QUERY = """"
+    SQL_QUERY = f""""
     SELECT count(num)
     FROM
     (SELECT count(orders.id) as num
     FROM orders
     GROUP BY  orders.id
-    HAVING orders.date > begin_date AND  orders.date <end_date) AS foo
+    HAVING orders.date > {begin_date} AND  orders.date <{end_date}) AS foo
     GROUP BY num;
     """
     ROUTE = "/orders_count_by_months"
