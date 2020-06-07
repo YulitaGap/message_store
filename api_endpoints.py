@@ -13,31 +13,57 @@ _STATUS_OK = 200
 _STATUS_INVALID_PARAMETERS = 400
 
 
-class BaseApiEndpoint(Resource):
-    @staticmethod
-    def data_base_select_query(query: str) -> dict:
+def connect_to_db(func):
+    def res_func(query):
         try:
             connection = psycopg2.connect(user="postgres",
                                           password="test",
                                           host="127.0.0.1",
                                           port="5432",
                                           database="message_store_db")
-            cursor = connection.cursor()
-            cursor.execute(query)
-            result = cursor.fetchall()
-            return result
+
+            # ################## OUTER FUNCTION  ###################
+            return func(query, connection)
+            # ######################################################
+
         except (Exception, psycopg2.DatabaseError) as error:
             print("Error while accessing PostgresSQL Data Base!", error)
             abort(_STATUS_INVALID_PARAMETERS)
         finally:
             # closing database connection.
             if connection:
-                cursor.close()
                 connection.close()
 
+    return res_func
+
+
+class BaseApiEndpoint(Resource):
+    @staticmethod
+    @connect_to_db
+    def data_base_select_query(query: str, connection=None) -> dict:
+        try:
+            cursor = connection.cursor()
+            cursor.execute(query)
+            result = cursor.fetchall()
+            return result
+        finally:
+            cursor.close()
+
+    @staticmethod
+    @connect_to_db
+    def data_base_updating_query(query: str, connection=None) -> dict:
+        try:
+            cursor = connection.cursor()
+            cursor.execute(query)
+            connection.commit()
+            return {}
+        finally:
+            cursor.close()
+
     def get(self):
-        return self.data_base_query(
-            self.SQL_QUERY(self.PARSER.parse_args(strict=True))), _STATUS_FOUND
+        a = self.PARSER.parse_args(strict=True)
+        return self.data_base_select_query(
+            self.SQL_QUERY(a)), _STATUS_FOUND
 
 
 class ConstantClients(BaseApiEndpoint):
@@ -48,7 +74,7 @@ class ConstantClients(BaseApiEndpoint):
         для автора A знайти усiх покупцiв, якi замовляли у нього повiдомлення
         хоча б N разiв за вказаний перiод (з дати F по дату T);
     """
-    SQL_QUERY = lambda params: \
+    SQL_QUERY = lambda _self, params: \
         f"""
     SELECT author.name, principal.name, count(orders.principal_id)
     FROM author
@@ -78,7 +104,7 @@ class ClientUsedAuthors(BaseApiEndpoint):
         Для покупця С знайти усiх авторiв, у яких вiн замовляв повiдомлення
         чи статтi за вказаний перiод (з дати F по дату T)
     """
-    SQL_QUERY = lambda params: ""
+    SQL_QUERY = lambda _self, params: ""
     ROUTE = "/client_used_authors"
     PARSER = reqparse.RequestParser()
     PARSER.add_argument('client_id', type=int, help='id of the client')
@@ -94,7 +120,7 @@ class PopularAuthors(BaseApiEndpoint):
         Знайти усiх авторiв, якi отримували замовлення вiд щонайменше N рiзних
         покупцiв за вказаний перiод (з дати F по дату T)
     """
-    SQL_QUERY = lambda params: \
+    SQL_QUERY = lambda _self, params: \
         f"""
     SELECT foo.name
     FROM (SELECT author.name,
@@ -126,7 +152,7 @@ class ActiveClients(BaseApiEndpoint):
         Знайти усiх покупцiв, якi зробили хоча б N замовлень за вказаний перiод
         (з дати F по дату T)
     """
-    SQL_QUERY = lambda params: ""
+    SQL_QUERY = lambda _self, params: ""
     ROUTE = "/active_clients"
     PARSER = reqparse.RequestParser()
     PARSER.add_argument('order_threshold', type=int,
@@ -143,7 +169,7 @@ class ClientActiveNetworks(BaseApiEndpoint):
         Для покупця С знайти усi соцiальнi мережi, для яких вiн зробив хоча б N
         замовлень за вказаний перiод (з дати F по дату T)
     """
-    SQL_QUERY = lambda params: \
+    SQL_QUERY = lambda _self, params: \
         f"""
     SELECT principal.name, social_network.name
     FROM principal
@@ -174,7 +200,7 @@ class RatedAuthorsDistinctClients(BaseApiEndpoint):
         Знайти усiх авторiв, якi отримували замовлення вiд щонайменше N рiзних
         покупцiв за вказаний перiод (з дати F по дату T)
     """
-    SQL_QUERY = lambda params: ""
+    SQL_QUERY = lambda _self, params: ""
     ROUTE = "/rated_authors_distinct_clients"
     PARSER = reqparse.RequestParser()
     PARSER.add_argument('order_threshold', type=int,
@@ -191,7 +217,7 @@ class PopularClients(BaseApiEndpoint):
         Знайти усiх покупцiв, якi зробили хоча б N замовлень за вказаний перiод
         (з дати F по дату T)
     """
-    SQL_QUERY = lambda params: ""
+    SQL_QUERY = lambda _self, params: ""
     ROUTE = "/popular_clients"
     PARSER = reqparse.RequestParser()
     PARSER.add_argument('order_threshold', type=int,
@@ -208,7 +234,7 @@ class ClientsPopularNetworks(BaseApiEndpoint):
         Для покупця С знайти усi соцiальнi мережi, для яких вiн зробив хоча б N
         замовлень за вказаний перiод (з дати F по дату T)
     """
-    SQL_QUERY = lambda params: ""
+    SQL_QUERY = lambda _self, params: ""
     ROUTE = "/clients_popular_networks"
     PARSER = reqparse.RequestParser()
     PARSER.add_argument('client_id', type=int, help='id of the client')
@@ -226,7 +252,7 @@ class AuthorUsedAccounts(BaseApiEndpoint):
         Для автора А знайти усi облiковi записи у соцiальних мережах, до яких
         вiн мав доступ протягом вказаного перiоду (з дати F по дату T)
     """
-    SQL_QUERY = lambda params: ""
+    SQL_QUERY = lambda _self, params: ""
     ROUTE = "/author_used_accounts"
     PARSER = reqparse.RequestParser()
     PARSER.add_argument('author_id', type=int, help='id of the author')
@@ -243,7 +269,7 @@ class ClientsTrustedAuthors(BaseApiEndpoint):
         одного облiкового запису у соцiальнiй мережi, а потiм позбавив його
         цього доступу.
     """
-    SQL_QUERY = lambda params: f"""
+    SQL_QUERY = lambda _self, params: f"""
     SELECT author.name
     FROM principal
              INNER JOIN account ON principal.id = account.principal_id
@@ -269,7 +295,7 @@ class ClientUserRelations(BaseApiEndpoint):
         Знайти усi спiльнi подiї для автора A та покупця С за вказаний перiод
         (з дати F по дату T)
     """
-    SQL_QUERY = lambda params: ""
+    SQL_QUERY = lambda _self, params: ""
     ROUTE = "/client_user_relations"
     PARSER = reqparse.RequestParser()
     PARSER.add_argument('client_id', type=int, help='id of the client')
@@ -287,7 +313,7 @@ class AuthorTeamWorksByNetwork(BaseApiEndpoint):
             знайти скiльки разiв за вказаний перiод (з дати F по дату T) вiн
             писав її у групi з щонайменше N авторiв.
     """
-    SQL_QUERY = lambda params: f"""
+    SQL_QUERY = lambda _self, params: f"""
     SELECT (author.name)
     FROM (SELECT author_agent.group_id, count(author_agent.group_id)
           FROM author
@@ -326,7 +352,7 @@ class ClientsHalfDiscountsByStyle(BaseApiEndpoint):
         знайти скiльки замовлень за вказаний перiод (з дати F по дату T)
         отримали 50% знижку.
     """
-    SQL_QUERY = lambda params: ""
+    SQL_QUERY = lambda _self, params: ""
     ROUTE = "/clients_half_discounts_by_style"
     PARSER = reqparse.RequestParser()
     PARSER.add_argument('client_id', type=int, help='id of the client')
@@ -341,7 +367,7 @@ class OrdersCountByMonths(BaseApiEndpoint):
     Desc:
         Знайти сумарну кiлькiсть замовлень по мiсяцях.
     """
-    SQL_QUERY = lambda params: f"""
+    SQL_QUERY = lambda _self, params: f"""
     SELECT count(num)
     FROM (SELECT count(orders.id) as num
           FROM orders
@@ -365,7 +391,7 @@ class AuthorsOrderedTopNetworks(BaseApiEndpoint):
         повiдомлень по усiх стилях, що були написанi автором A за вказаний
         перiод (з дати F по дату T).
     """
-    SQL_QUERY = lambda params: ""
+    SQL_QUERY = lambda _self, params: ""
     ROUTE = "/authors_ordered_top_networks"
     PARSER = reqparse.RequestParser()
     PARSER.add_argument('author_id', type=int, help='id of the author')
@@ -383,7 +409,7 @@ class CreateOrder(BaseApiEndpoint):
         нічого, якщо нічого, то створює агента з таким набором авторів і
         повертає його ід.
     """
-    SQL_QUERY = lambda params: ""
+    SQL_QUERY = lambda _self, params: ""
     ROUTE = "/create_order"
     PARSER = reqparse.RequestParser()
     PARSER.add_argument('account_id', type=int, help='id of the account')
@@ -394,12 +420,11 @@ class CreateOrder(BaseApiEndpoint):
 
     def get(self):
         args = AuthorsOrderedTopNetworks.PARSER.parse_args(strict=True)
-        agent_id = \
-            self.data_base_select_query(sb.find_agent(args['author_id']))['id']
+        agent_id = self.data_base_select_query(
+            sb.find_agent(args['author_id']))['id']
         if len(agent_id.values()) == 0:
-            agent_id = \
-                self.data_base_select_query(
-                    sb.create_agent(args['author_id']))['id']
+            agent_id = self.data_base_select_query(
+                sb.create_agent(args['author_id']))['id']
 
         price = self.data_base_select_query(
             sb.get_price(args['author_id'],
