@@ -400,7 +400,6 @@ class AuthorsOrderedTopNetworks(BaseApiEndpoint):
 
 
 class CreateOrder(BaseApiEndpoint):
-    # TODO: Check everything here and add to ENDPOINTS_LIST
     """
     Action:
         create_order
@@ -419,22 +418,20 @@ class CreateOrder(BaseApiEndpoint):
     PARSER.add_argument('volume', type=int, help='number of symbols')
 
     def get(self):
-        args = AuthorsOrderedTopNetworks.PARSER.parse_args(strict=True)
+        args = self.PARSER.parse_args(strict=True)
         agent_id = self.data_base_select_query(
             sb.find_agent(args['author_id']))['id']
-        if len(agent_id.values()) == 0:
-            agent_id = self.data_base_select_query(
+        if len(agent_id) == 0:
+            agent_id = self.data_base_updating_query(
                 sb.create_agent(args['author_id']))['id']
 
         price = self.data_base_select_query(
             sb.get_price(args['author_id'],
                          args['style_id']))['price_per_1000']
 
-        return self.data_base_select_query(
+        return self.data_base_updating_query(
             sb.create_order(args['account_id'], args['principal_id'],
-                            agent_id, args['style_id'], price, args['volume']))
-        # , \
-        #        _STATUS_FOUND
+                            agent_id[0], args['style_id'], price[0], args['volume'])), _STATUS_FOUND
 
 
 ENDPOINTS_LIST = [
@@ -451,5 +448,6 @@ ENDPOINTS_LIST = [
     AuthorTeamWorksByNetwork,
     ClientsHalfDiscountsByStyle,
     OrdersCountByMonths,
-    AuthorsOrderedTopNetworks
+    AuthorsOrderedTopNetworks,
+    CreateOrder
 ]

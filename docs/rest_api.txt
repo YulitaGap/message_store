@@ -236,3 +236,12 @@ Sample:
 	/api/authors_ordered_top_networks?author_id=1&begin_date=2020-05-01&end_date=2020-05-24
 Result: in JSON
 	{}
+__________________________________ 16 _________________________________________
+TODO Documentation Create Order
+Action:
+	create_order
+Desc:
+Params:
+Sample:
+Result: in JSON
+	{}
