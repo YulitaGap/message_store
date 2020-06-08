@@ -90,17 +90,17 @@ class ConstantClients(BaseApiEndpoint):
     """
     SQL_QUERY = lambda _self, params: \
         f"""
-    SELECT author.name, principal.name, count(orders.principal_id)
+    SELECT DISTINCT principal.name
     FROM author
              INNER JOIN author_agent ON id = author_id
              INNER JOIN agent ON author_agent.group_id = agent.id
              INNER JOIN orders ON agent.id = orders.agent_id
              INNER JOIN principal ON orders.principal_id = principal.id
     GROUP BY author.id, author.name, principal.name, orders.date
-    HAVING author.id = 4
-       AND count(orders.principal_id) > {params['limit']} 
-       AND orders.date > date('{params['begin_date']}')
-       AND orders.date < date('{params['end_date']}');
+    HAVING author.id = {params['author_id']}
+       AND count(orders.principal_id) >= {params['limit']} 
+       AND orders.date >= date('{params['begin_date']}')
+       AND orders.date <= date('{params['end_date']}');
     """
     ROUTE = "/constant_clients"
     PARSER = reqparse.RequestParser()
@@ -124,7 +124,8 @@ class ClientUsedAuthors(BaseApiEndpoint):
     inner join author_agent on author.id = author_agent.author_id
     inner join agent on author_agent.group_id = agent.id
     inner join orders on agent.id = orders.agent_id
-    where orders.principal_id = {params['client_id']} and orders.date > {params['begin_date']} and orders.date < {params['end_date']};
+    where orders.principal_id = {params['client_id']} and orders.date > {params['begin_date']} and orders.date < {
+    params['end_date']};
     """
     ROUTE = "/client_used_authors"
     PARSER = reqparse.RequestParser()
@@ -419,7 +420,6 @@ class OrdersCountByMonths(BaseApiEndpoint):
     """
     ROUTE = "/orders_count_by_months"
     PARSER = reqparse.RequestParser()
-   
 
 
 class AuthorsOrderedTopNetworks(BaseApiEndpoint):
