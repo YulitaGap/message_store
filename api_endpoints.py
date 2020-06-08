@@ -440,7 +440,7 @@ class OrdersCountByMonths(BaseApiEndpoint):
     ROUTE = "/orders_count_by_months"
     PARSER = reqparse.RequestParser()
     PARSER.add_argument('begin_date', type=str, help='begin of search period')
-    PARSER.add_argument('end_date', tydecendingpe=str, help='end of search period')
+    PARSER.add_argument('end_date', type=str, help='end of search period')
 
 
 class AuthorsOrderedTopNetworks(BaseApiEndpoint):
