@@ -139,7 +139,7 @@ Sample:
 	/api/clients_popular_networks?order_threshold=10&begin_date=2020-05-01&end_date=2020-05-24
 Result: in JSON
 	{}
-__________________________________ 9 __________________________________________
+__________________________________ 9 __________________________________________Done
 Action:
 	author_used_accounts
 Desc:
@@ -150,7 +150,7 @@ Params:
     begin_date=<begin of search period>(yyyy-mm-dd)
     end_date=<end of search period>(yyyy-mm-dd)
 Sample:
-	/api/author_used_accounts?author_id=1&begin_date=2020-05-01&end_date=2020-05-24
+	/api/author_used_accounts?author_id=31&begin_date=2019-05-01&end_date=2021-05-24
 Result: in JSON
 	{}
 __________________________________ 10 _________________________________________

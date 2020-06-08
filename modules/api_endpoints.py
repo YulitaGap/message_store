@@ -239,13 +239,13 @@ class AuthorUsedAccounts(BaseApiEndpoint):
         вiн мав доступ протягом вказаного перiоду (з дати F по дату T)
     """
     SQL_QUERY = lambda _self, params: f"""
-    select author.name, account.id, account.social_network_id, orders.date from author
-    inner join author_agent on author.id = author_agent.author_id
-    inner join agent on author_agent.group_id = agent.id
-    inner join orders on agent.id = orders.agent_id
-    inner join principal on orders.principal_id = principal.id
-    inner join account on principal.id = account.principal_id
-    where author_id = {params['author_id']} orders.date between date('{params['begin_date']}') and date('{params['end_date']}') ;
+    select author.name, access_history.account_id, access_history.give_access,
+    text(access_history.date) as date from access_history
+    inner join author_agent on access_history.agent_id = author_agent.group_id
+    inner join author on (author.id = author_agent.author_id)
+    where author.id = {params['author_id']}
+    and access_history.date >= date('{params['begin_date']}')
+    and access_history.date <= date('{params['end_date']}') 
     """
     ROUTE = "/author_used_accounts"
     PARSER = reqparse.RequestParser()
