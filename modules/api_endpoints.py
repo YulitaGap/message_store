@@ -118,15 +118,19 @@ class ClientUsedAuthors(BaseApiEndpoint):
     Desc:
         Для покупця С знайти усiх авторiв, у яких вiн замовляв повiдомлення
         чи статтi за вказаний перiод (з дати F по дату T)
+        
     """
-    SQL_QUERY = lambda _self, params: f"""
-    select orders.principal_id, author.name, orders.date from author
+    SQL_QUERY = lambda _self, params: \
+        f"""
+    select author.name, text(orders.date) from author
     inner join author_agent on author.id = author_agent.author_id
     inner join agent on author_agent.group_id = agent.id
     inner join orders on agent.id = orders.agent_id
-    where orders.principal_id = {params['client_id']} and orders.date > {params['begin_date']} and orders.date < {
-    params['end_date']};
+    where orders.principal_id = {params['client_id']}
+    and orders.date >= date('{params['begin_date']}')
+    and orders.date <= date('{params['end_date']}');
     """
+    print(SQL_QUERY)
     ROUTE = "/client_used_authors"
     PARSER = reqparse.RequestParser()
     PARSER.add_argument('client_id', type=int, help='id of the client')
@@ -488,6 +492,8 @@ class CreateOrder(BaseApiEndpoint):
         return self.data_base_updating_query(
             sb.create_order(args['account_id'], args['principal_id'],
                             agent_id[0][0], args['style_id'], float(price[0][0]), args['volume'])), _STATUS_FOUND
+
+
 class AddAccount(BaseApiEndpoint):
     """
     Action:
@@ -623,6 +629,7 @@ class UpdateUserPost(BaseApiEndpoint):
         args = self.PARSER.parse_args(strict=True)
         return self.data_base_updating_query(self.SQL_QUERY(args)), \
                _STATUS_FOUND
+
 
 ENDPOINTS_LIST = [
     ConstantClients,
