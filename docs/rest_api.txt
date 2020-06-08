@@ -246,3 +246,66 @@ Sample:
 api/create_order?account_id=1&principal_id=1&author_id=30,31,32&style_id=2&volume=10000
 Result: in JSON
 	{}
+__________________________________ 17 _________________________________________
+
+Action:
+	add_account
+Desc:
+Params:
+Sample:
+Result: in JSON
+	{}
+__________________________________ 17 _________________________________________
+
+Action:
+	view_authors
+Desc:
+Params:
+Sample:
+Result: in JSON
+	{}
+__________________________________ 18 _________________________________________
+
+Action:
+	view_styles
+Desc:
+Params:
+Sample:
+Result: in JSON
+	{}
+__________________________________ 19 _________________________________________
+
+Action:
+	view_user_order
+Desc:
+Params:
+Sample:
+Result: in JSON
+	{}
+__________________________________ 20 _________________________________________
+
+Action:
+	update_user_order
+Desc:
+Params:
+Sample:
+Result: in JSON
+	{}
+__________________________________ 21 _________________________________________
+
+Action:
+	view_user_post
+Desc:
+Params:
+Sample:
+Result: in JSON
+	{}
+__________________________________ 22 _________________________________________
+
+Action:
+	update_user_post
+Desc:
+Params:
+Sample:
+Result: in JSON
+	{}
