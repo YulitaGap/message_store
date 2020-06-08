@@ -281,7 +281,7 @@ class AuthorUsedAccounts(BaseApiEndpoint):
     inner join orders on agent.id = orders.agent_id
     inner join principal on orders.principal_id = principal.id
     inner join account on principal.id = account.principal_id
-    where author_id = {params['author_id']} orders.date between {params['begin_date'] and {params['end_date']} ;
+    where author_id = {params['author_id']} orders.date between {params['begin_date']} and {params['end_date']} ;
     """
     ROUTE = "/author_used_accounts"
     PARSER = reqparse.RequestParser()
