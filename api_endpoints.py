@@ -418,6 +418,7 @@ class OrdersCountByMonths(BaseApiEndpoint):
     GROUP BY foo.month;
     """
     ROUTE = "/orders_count_by_months"
+    PARSER = reqparse.RequestParser()
    
 
 
