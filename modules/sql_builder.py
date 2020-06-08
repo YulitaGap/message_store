@@ -121,6 +121,7 @@ INSERT INTO orders(principal_id, agent_id, volume, post_id, price, date, status)
 """.format(principal_id, agent_id, volume, price)
     return query
 
+
 # print(create_order(1, 1, 1, 1, 400, 1000))
 
 def create_account(principal_id, social_network_id, login, password):
@@ -133,7 +134,7 @@ def create_account(principal_id, social_network_id, login, password):
     :return: creates account
     """
     query = """
-    INSERT INTO account(principle_id, social_network_id, login, password) 
-    VALUES ({},{},{},{});
+    INSERT INTO account(principal_id, social_network_id, login, password) 
+    VALUES ({},{},'{}','{}');
     """.format(principal_id, social_network_id, login, password)
     return query

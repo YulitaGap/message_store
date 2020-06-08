@@ -506,7 +506,7 @@ class AddAccount(BaseApiEndpoint):
     """
     ROUTE = "/add_account"
     PARSER = reqparse.RequestParser()
-    PARSER.add_argument('principle_id', type=int, help='id of the client')
+    PARSER.add_argument('principal_id', type=int, help='id of the client')
     PARSER.add_argument('social_network_id', type=int, help='id of the social network')
     PARSER.add_argument('login', type=str, help='client login')
     PARSER.add_argument('password', type=str, help='client password')
@@ -525,7 +525,7 @@ class ViewAuthors(BaseApiEndpoint):
         Покупець переглядає перелік доступних авторів.
     """
     SQL_QUERY = """
-    select id, name, price_per_1000 from author
+    select id, name, text(price_per_1000) from author
     where active is TRUE;
     """
     ROUTE = "/view_authors"
@@ -559,7 +559,10 @@ class ViewUserOrders(BaseApiEndpoint):
     """
     SQL_QUERY = lambda _self, params: \
         f"""
-        select * from orders
+        select orders.id, orders.agent_id,
+        text(orders.price), text(orders.date),
+        orders.volume, orders.post_id, orders.status
+        from orders
         where principal_id = {params['client_id']} and status != 'closed';
         """
     ROUTE = "/view_user_orders"
@@ -580,11 +583,12 @@ class UpdateUserOrder(BaseApiEndpoint):
     """
     SQL_QUERY = lambda _self, params: \
         f"""
-        update orders set status = 'closed' where id = {params['order_id']} ;
+        update orders set status = '{params['status']}' where id = {params['order_id']} ;
         """
     ROUTE = "/update_user_order"
     PARSER = reqparse.RequestParser()
     PARSER.add_argument('order_id', type=int, help='id of the order')
+    PARSER.add_argument('status', type=str, help='new status')
 
     def get(self):
         args = self.PARSER.parse_args(strict=True)
@@ -600,12 +604,13 @@ class ViewUserPost(BaseApiEndpoint):
     """
     SQL_QUERY = lambda _self, params: \
         f"""
-        select * from post
-        where id = {params['post_id']} and status != 'closed';
+        select orders.id, posts.text, posts.style_id from posts
+        inner join orders on posts.id = orders.post_id
+        where orders.principal_id = {params['principal_id']} and orders.status != 'closed'
         """
     PARSER = reqparse.RequestParser()
     ROUTE = "/view_user_post"
-    PARSER.add_argument('post_id', type=int, help='id of the post')
+    PARSER.add_argument('principal_id', type=int, help='id of the principal')
 
     def get(self):
         args = self.PARSER.parse_args(strict=True)
