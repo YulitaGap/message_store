@@ -81,7 +81,7 @@ Sample:
 	/api/active_clients?order_threshold=1&begin_date=2019-05-01&end_date=2021-05-24
 Result: in JSON
 	{}
-__________________________________ 5 __________________________________________
+__________________________________ 5 __________________________________________Done
 Action:
 	client_active_networks
 Desc:
@@ -93,7 +93,7 @@ Params:
     begin_date=<begin of search period>(yyyy-mm-dd)
     end_date=<end of search period>(yyyy-mm-dd)
 Sample:
-	/api/client_active_networks?client_id=1&order_threshold=10&begin_date=2020-05-01&end_date=2020-05-24
+	/api/client_active_networks?client_id=2&order_threshold=1&begin_date=2019-05-01&end_date=2021-05-24
 Result: in JSON
 	{}
 __________________________________ 6 __________________________________________

@@ -214,11 +214,11 @@ class ClientActiveNetworks(BaseApiEndpoint):
              INNER JOIN account ON principal.id = account.principal_id
              INNER JOIN social_network
                         ON social_network.id = account.social_network_id
-    WHERE orders.date > date('{params['begin_date']}')
-       AND orders.date < date('{params['end_date']}')
+    WHERE orders.date >= date('{params['begin_date']}')
+       AND orders.date <= date('{params['end_date']}')
     GROUP BY social_network.name, orders.principal_id, principal.id
     HAVING principal.id = {params['client_id']} 
-       AND count(orders.principal_id) > {params['order_threshold']};
+       AND count(orders.principal_id) >= {params['order_threshold']};
     """
     ROUTE = "/client_active_networks"
     PARSER = reqparse.RequestParser()
@@ -245,7 +245,7 @@ class AuthorUsedAccounts(BaseApiEndpoint):
     inner join orders on agent.id = orders.agent_id
     inner join principal on orders.principal_id = principal.id
     inner join account on principal.id = account.principal_id
-    where author_id = {params['author_id']} orders.date between {params['begin_date']} and {params['end_date']} ;
+    where author_id = {params['author_id']} orders.date between date('{params['begin_date']}') and date('{params['end_date']}') ;
     """
     ROUTE = "/author_used_accounts"
     PARSER = reqparse.RequestParser()
@@ -375,7 +375,7 @@ class ClientsHalfDiscountsByStyle(BaseApiEndpoint):
     inner join style on posts.style_id = style.id
     inner join discount on style.id = discount.style_id
     where principal_id = {params['client_id']} and discount = 0.5
-    and orders.date between {params['begin_date']} and {params['end_date']}
+    and orders.date between date('{params['begin_date']}') and date('{params['end_date']}')
     group by style.name, orders.principal_id;
     """
     ROUTE = "/clients_half_discounts_by_style"
