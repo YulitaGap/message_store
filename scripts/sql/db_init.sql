@@ -72,6 +72,17 @@ CREATE TABLE discount
     discount numeric NULL
 );
 
+CREATE TABLE orders
+(
+    id           serial      NOT NULL PRIMARY KEY,
+    principal_id integer     NOT NULL REFERENCES principal (id),
+    agent_id     integer     NOT NULL REFERENCES agent (id),
+    volume       integer     NOT NULL,
+    price        numeric     NOT NULL,
+    date         date        NOT NULL,
+    status       varchar(50) NOT NULL
+);
+
 CREATE TABLE posts
 (
     id         serial  PRIMARY KEY,
@@ -79,17 +90,6 @@ CREATE TABLE posts
     text       text    NOT NULL,
     style_id   integer NOT NULL REFERENCES style (id),
     date       date    NOT NULL,
-    visible    boolean NOT NULL DEFAULT FALSE
-);
-
-CREATE TABLE orders
-(
-    id           serial      NOT NULL PRIMARY KEY,
-    principal_id integer     NOT NULL REFERENCES principal (id),
-    agent_id     integer     NOT NULL REFERENCES agent (id),
-    volume       integer     NOT NULL,
-    post_id      integer     NOT NULL REFERENCES posts (id),
-    price        numeric       NOT NULL,
-    date         date        NOT NULL,
-    status       varchar(50) NOT NULL
+    visible    boolean NOT NULL DEFAULT FALSE,
+	order_id  integer NOT NULL REFERENCES orders (id)
 );
