@@ -52,7 +52,7 @@ Sample:
 Result: in JSON
 	{}
 
-__________________________________ 3 __________________________________________
+__________________________________ 3 __________________________________________Done
 Action:
 	popular_authors
 Desc:
@@ -63,7 +63,7 @@ Params:
     begin_date=<begin of search period>(yyyy-mm-dd)
     end_date=<end of search period>(yyyy-mm-dd)
 Sample:
-	/api/popular_authors?order_threshold=10&begin_date=2020-05-01&end_date=2020-05-24
+	/api/popular_authors?order_threshold=1&begin_date=2010-05-01&end_date=2022-05-24
 Result: in JSON
 	{}
 
