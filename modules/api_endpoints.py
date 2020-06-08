@@ -362,7 +362,7 @@ class ClientsHalfDiscountsByStyle(BaseApiEndpoint):
     """
     SQL_QUERY = lambda _self, params: f"""
     select orders.principal_id as client, style.name as style, count(orders.id) from orders
-    inner join posts on orders.id = posts.order_id
+    inner join posts on orders.post_id = posts.id
     inner join style on posts.style_id = style.id
     inner join discount on style.id = discount.style_id
     where principal_id = {params['client_id']} and discount = 0.5
@@ -437,7 +437,7 @@ class AuthorsOrderedTopNetworks(BaseApiEndpoint):
     (select social_network.name as s, posts.style_id as b, count(orders.id) as countr from social_network
     inner join account on social_network.id = account.social_network_id
     inner join posts on account.id = posts.account_id
-    inner join orders on posts.order_id = orders.id
+    inner join orders on posts.id = orders.post_id
     inner join agent on orders.agent_id = agent.id
     inner join author_agent on agent.id = author_agent.group_id
     inner join author on author_agent.author_id = author.id
