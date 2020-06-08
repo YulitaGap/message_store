@@ -639,6 +639,29 @@ class UpdateUserPost(BaseApiEndpoint):
                _STATUS_FOUND
 
 
+class GiveAccess(BaseApiEndpoint):
+    """
+    Action:
+        give_access
+    Desc:
+        Дати або забрати доступ
+    """
+    SQL_QUERY = lambda _self, params: \
+        f""" INSERT INTO access_history(agent_id, account_id, give_access, date)
+VALUES ({params['agent_id']}, {params['account_id']}, {params['give']}, CURRENT_DATE)
+        """
+    PARSER = reqparse.RequestParser()
+    ROUTE = "/give_access"
+    PARSER.add_argument('agent_id', type=int, help='id of the post')
+    PARSER.add_argument('account_id', type=int, help='id of the post')
+    PARSER.add_argument('give', type=str, help='id of the post')
+
+    def get(self):
+        args = self.PARSER.parse_args(strict=True)
+        return self.data_base_updating_query(self.SQL_QUERY(args)), \
+               _STATUS_FOUND
+
+
 ENDPOINTS_LIST = [
     ConstantClients,
     ClientUsedAuthors,
@@ -658,5 +681,6 @@ ENDPOINTS_LIST = [
     ViewUserOrders,
     UpdateUserOrder,
     ViewUserPost,
-    UpdateUserPost
+    UpdateUserPost,
+    GiveAccess
 ]

@@ -316,3 +316,13 @@ Sample:
 /api/update_user_post?post_id=1
 Result: in JSON
 	{}
+__________________________________ 23 _________________________________________Done
+
+Action:
+	give_access
+Desc:
+Params:
+Sample:
+/api/give_access?agent_id=1&account_id=1&give=true
+Result: in JSON
+	{}
