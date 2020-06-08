@@ -431,13 +431,6 @@ VALUES (30, 1, '2020-11-02', 0.9),
        (32, 3, '2020-09-11', 0.80),
        (33, 3, '2020-08-25', 0.7),
        (34, 5, '2020-09-11', 0.85);
--- orders
-INSERT INTO orders(principal_id, agent_id, volume, price, date, status)
-VALUES (1, 1, 100, 100, '2020-05-26', 'opened'),
-       (2, 2, 110, 47, '2020-05-27', 'opened'),
-       (3, 3, 120, 95, '2020-05-26', 'opened'),
-       (4, 4, 130, 118, '2020-05-21', 'opened'),
-       (5, 5, 1000, 120, '2020-05-16', 'opened');
 -- posts
 INSERT INTO posts(account_id, text, style_id, date)
 VALUES (1, '', 1, '2020-05-26'),
@@ -445,6 +438,14 @@ VALUES (1, '', 1, '2020-05-26'),
        (3, '', 3, '2020-05-26'),
        (4, '', 4, '2020-05-21'),
        (5, '', 5, '2020-05-16');
+-- orders
+INSERT INTO orders(principal_id, agent_id, volume, post_id, price, date,
+                   status)
+VALUES (1, 1, 100, 1, 100, '2020-05-26', 'opened'),
+       (2, 2, 110, 2, 47, '2020-05-27', 'opened'),
+       (3, 3, 120, 3, 95, '2020-05-26', 'opened'),
+       (4, 4, 130, 4, 118, '2020-05-21', 'opened'),
+       (5, 5, 1000, 5, 120, '2020-05-16', 'opened');
 -- access_history
 INSERT INTO access_history(agent_id, account_id, give_access, date)
 VALUES (1, 1, TRUE, '2020-05-26'),
