@@ -28,7 +28,7 @@ group by agent.id)
     return query
 
 
-print(find_agent([30, 31, 32]))
+# print(find_agent([30, 31, 32]))
 
 def create_agent(lst):
     """
