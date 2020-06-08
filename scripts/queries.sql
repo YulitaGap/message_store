@@ -32,9 +32,11 @@ FROM principal
          INNER JOIN account ON principal.id = account.principal_id
          INNER JOIN social_network
                     ON social_network.id = account.social_network_id
-GROUP BY social_network.name, orders.principal_id, principal.id
+GROUP BY social_network.name, orders.principal_id, principal.id, orders.date
 HAVING principal.id = 3
-   AND count(orders.principal_id) > 0;
+   AND count(orders.principal_id) > 0
+   AND orders.date > '2020-05-20'
+   AND orders.date < '2020-06-05') as foo;
 --9
 Select (author.name)
 From (Select author_agent.group_id, count(author_agent.group_id)
@@ -86,7 +88,7 @@ FROM
     'January'
     END) AS month
     FROM orders) AS foo
- GROUP BY foo.month;
+GROUP BY foo.month;
 --7
 SELECT author.name
 FROM principal
