@@ -418,7 +418,7 @@ class OrdersCountByMonths(BaseApiEndpoint):
     GROUP BY foo.month;
     """
     ROUTE = "/orders_count_by_months"
-    PARSER = reqparse.RequestParser()
+   
 
 
 class AuthorsOrderedTopNetworks(BaseApiEndpoint):
@@ -494,9 +494,6 @@ ENDPOINTS_LIST = [
     PopularAuthors,
     ActiveClients,
     ClientActiveNetworks,
-    # RatedAuthorsDistinctClients,
-    # PopularClients,
-    # ClientsPopularNetworks,
     AuthorUsedAccounts,
     ClientsTrustedAuthors,
     AuthorTeamWorksByNetwork,
