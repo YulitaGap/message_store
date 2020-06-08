@@ -81,6 +81,7 @@ class BaseApiEndpoint(Resource):
 
 class ConstantClients(BaseApiEndpoint):
     """
+    Request #1
     Action:
         contant_clients
     Desc:
@@ -111,6 +112,7 @@ class ConstantClients(BaseApiEndpoint):
 
 class ClientUsedAuthors(BaseApiEndpoint):
     """
+    Request #2
     Action:
         client_used_authors
     Desc:
@@ -127,6 +129,7 @@ class ClientUsedAuthors(BaseApiEndpoint):
 
 class PopularAuthors(BaseApiEndpoint):
     """
+    Request #3
     Action:
         popular_authors
     Desc:
@@ -159,6 +162,7 @@ class PopularAuthors(BaseApiEndpoint):
 
 class ActiveClients(BaseApiEndpoint):
     """
+    Request #4
     Action:
         active_clients
     Desc:
@@ -176,6 +180,7 @@ class ActiveClients(BaseApiEndpoint):
 
 class ClientActiveNetworks(BaseApiEndpoint):
     """
+    Request #5
     Action:
         client_active_networks
     Desc:
@@ -207,6 +212,7 @@ class ClientActiveNetworks(BaseApiEndpoint):
 
 class RatedAuthorsDistinctClients(BaseApiEndpoint):
     """
+    Request #3
     Action:
         rated_authors_distinct_clients
     Desc:
@@ -224,6 +230,7 @@ class RatedAuthorsDistinctClients(BaseApiEndpoint):
 
 class PopularClients(BaseApiEndpoint):
     """
+    Request #4
     Action:
         popular_clients
     Desc:
@@ -241,6 +248,7 @@ class PopularClients(BaseApiEndpoint):
 
 class ClientsPopularNetworks(BaseApiEndpoint):
     """
+    Request #5
     Action:
         clients_popular_networks
     Desc:
@@ -259,13 +267,22 @@ class ClientsPopularNetworks(BaseApiEndpoint):
 
 class AuthorUsedAccounts(BaseApiEndpoint):
     """
+    Request #6
     Action:
         author_used_accounts
     Desc:
         Для автора А знайти усi облiковi записи у соцiальних мережах, до яких
         вiн мав доступ протягом вказаного перiоду (з дати F по дату T)
     """
-    SQL_QUERY = lambda _self, params: ""
+    SQL_QUERY = lambda _self, params: f"""
+    select author.name, account.id, account.social_network_id, orders.date from author
+    inner join author_agent on author.id = author_agent.author_id
+    inner join agent on author_agent.group_id = agent.id
+    inner join orders on agent.id = orders.agent_id
+    inner join principal on orders.principal_id = principal.id
+    inner join account on principal.id = account.principal_id
+    where author_id = {params['author_id']} orders.date between {params['begin_date'] and {params['end_date']} ;
+    """
     ROUTE = "/author_used_accounts"
     PARSER = reqparse.RequestParser()
     PARSER.add_argument('author_id', type=int, help='id of the author')
@@ -275,6 +292,7 @@ class AuthorUsedAccounts(BaseApiEndpoint):
 
 class ClientsTrustedAuthors(BaseApiEndpoint):
     """
+    Request #7
     Action:
         clients_trusted_authors
     Desc:
@@ -302,13 +320,32 @@ class ClientsTrustedAuthors(BaseApiEndpoint):
 
 class ClientUserRelations(BaseApiEndpoint):
     """
+    Request #8
     Action:
         client_user_relations
     Desc:
         Знайти усi спiльнi подiї для автора A та покупця С за вказаний перiод
         (з дати F по дату T)
     """
-    SQL_QUERY = lambda _self, params: ""
+    SQL_QUERY = lambda _self, params: f"""
+    select author.id, author.name, orders.date as order_date, 
+        case when access_history.give_access = TRUE then access_history.date else null end as allowed_access,
+        case when access_history.give_access = FALSE then access_history.date else null end as denied_access,
+        discount.sale_to
+    from orders
+    inner join posts on orders.id = posts.id
+    inner join style on posts.style_id = style.id
+    inner join discount on style.id = discount.style_id
+    inner join agent on orders.principal_id = agent.id
+    inner join author_agent on agent.id = author_agent.group_id
+    inner join author on author_agent.author_id = author.id
+    inner join access_history on agent.id = access_history.agent_id
+    where author.id = {params['author_id']} and orders.principal_id = {params['client_id']} and 
+    ((access_history.date between {params['begin_date']} and {params['end_date']}) or 
+     (orders.date between {params['begin_date']} and {params['end_date']}) or 
+     (discount.sale_to between {params['begin_date']} and {params['end_date']}) 
+     or (allowed_access between {params['begin_date']} and {params['end_date']}));
+    """
     ROUTE = "/client_user_relations"
     PARSER = reqparse.RequestParser()
     PARSER.add_argument('client_id', type=int, help='id of the client')
@@ -319,6 +356,7 @@ class ClientUserRelations(BaseApiEndpoint):
 
 class AuthorTeamWorksByNetwork(BaseApiEndpoint):
     """
+    Request #9
     Action:
             author_team_works_by_network
         Desc:
@@ -358,6 +396,7 @@ class AuthorTeamWorksByNetwork(BaseApiEndpoint):
 
 class ClientsHalfDiscountsByStyle(BaseApiEndpoint):
     """
+    Request #10
     Action:
         clients_half_discounts_by_style
     Desc:
@@ -365,7 +404,15 @@ class ClientsHalfDiscountsByStyle(BaseApiEndpoint):
         знайти скiльки замовлень за вказаний перiод (з дати F по дату T)
         отримали 50% знижку.
     """
-    SQL_QUERY = lambda _self, params: ""
+    SQL_QUERY = lambda _self, params: f"""
+    select orders.principal_id as client, style.name as style, count(orders.id) from orders
+    inner join posts on orders.post_id = posts.id
+    inner join style on posts.style_id = style.id
+    inner join discount on style.id = discount.style_id
+    where principal_id = {params['client_id']} and discount = 0.5
+    and orders.date between {params['begin_date']} and {params['end_date']}
+    group by style.name, orders.principal_id;
+    """
     ROUTE = "/clients_half_discounts_by_style"
     PARSER = reqparse.RequestParser()
     PARSER.add_argument('client_id', type=int, help='id of the client')
@@ -375,6 +422,7 @@ class ClientsHalfDiscountsByStyle(BaseApiEndpoint):
 
 class OrdersCountByMonths(BaseApiEndpoint):
     """
+    Request #11
     Action:
         orders_count_by_months
     Desc:
@@ -392,11 +440,12 @@ class OrdersCountByMonths(BaseApiEndpoint):
     ROUTE = "/orders_count_by_months"
     PARSER = reqparse.RequestParser()
     PARSER.add_argument('begin_date', type=str, help='begin of search period')
-    PARSER.add_argument('end_date', type=str, help='end of search period')
+    PARSER.add_argument('end_date', tydecendingpe=str, help='end of search period')
 
 
 class AuthorsOrderedTopNetworks(BaseApiEndpoint):
     """
+    Request #12
     Action:
         authors_ordered_top_networks
     Desc:
@@ -404,7 +453,20 @@ class AuthorsOrderedTopNetworks(BaseApiEndpoint):
         повiдомлень по усiх стилях, що були написанi автором A за вказаний
         перiод (з дати F по дату T).
     """
-    SQL_QUERY = lambda _self, params: ""
+    SQL_QUERY = lambda _self, params: f"""
+    select a.s as network, a.b as style_id, round(cast(avg(a.countr) as numeric(12,2)), 2) as freq from
+    (select social_network.name as s, posts.style_id as b, count(orders.id) as countr from social_network
+    inner join account on social_network.id = account.social_network_id
+    inner join posts on account.id = posts.account_id
+    inner join orders on posts.order_id = orders.id
+    inner join agent on orders.agent_id = agent.id
+    inner join author_agent on agent.id = author_agent.group_id
+    inner join author on author_agent.author_id = author.id
+    where author.id = {params['author_id']} and posts.date between {params['begin_date']} and {params['end_date']}
+    group by posts.style_id, s
+    order by countr desc) a
+    group by a.s, a.b;
+    """
     ROUTE = "/authors_ordered_top_networks"
     PARSER = reqparse.RequestParser()
     PARSER.add_argument('author_id', type=int, help='id of the author')
