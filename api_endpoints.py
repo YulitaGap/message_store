@@ -119,7 +119,13 @@ class ClientUsedAuthors(BaseApiEndpoint):
         Для покупця С знайти усiх авторiв, у яких вiн замовляв повiдомлення
         чи статтi за вказаний перiод (з дати F по дату T)
     """
-    SQL_QUERY = lambda _self, params: ""
+    SQL_QUERY = lambda _self, params: f"""
+    select orders.principal_id, author.name, orders.date from author
+    inner join author_agent on author.id = author_agent.author_id
+    inner join agent on author_agent.group_id = agent.id
+    inner join orders on agent.id = orders.agent_id
+    where orders.principal_id =  and orders.date > '2019-01-01' and orders.date < '2020-06-06';
+    """
     ROUTE = "/client_used_authors"
     PARSER = reqparse.RequestParser()
     PARSER.add_argument('client_id', type=int, help='id of the client')
@@ -169,7 +175,12 @@ class ActiveClients(BaseApiEndpoint):
         Знайти усiх покупцiв, якi зробили хоча б N замовлень за вказаний перiод
         (з дати F по дату T)
     """
-    SQL_QUERY = lambda _self, params: ""
+    SQL_QUERY = lambda _self, params: f"""
+    select principal_id, count(id) from orders 
+    where date between {params['begin_date']} and {params['end_date']}
+    group by principal_id
+    having count(id) > {params['order_threshold']};
+    """
     ROUTE = "/active_clients"
     PARSER = reqparse.RequestParser()
     PARSER.add_argument('order_threshold', type=int,
@@ -202,61 +213,6 @@ class ClientActiveNetworks(BaseApiEndpoint):
        AND orders.date < date({params['end_date']});
     """
     ROUTE = "/client_active_networks"
-    PARSER = reqparse.RequestParser()
-    PARSER.add_argument('client_id', type=int, help='id of the client')
-    PARSER.add_argument('order_threshold', type=int,
-                        help='min order num of author')
-    PARSER.add_argument('begin_date', type=str, help='begin of search period')
-    PARSER.add_argument('end_date', type=str, help='end of search period')
-
-
-class RatedAuthorsDistinctClients(BaseApiEndpoint):
-    """
-    Request #3
-    Action:
-        rated_authors_distinct_clients
-    Desc:
-        Знайти усiх авторiв, якi отримували замовлення вiд щонайменше N рiзних
-        покупцiв за вказаний перiод (з дати F по дату T)
-    """
-    SQL_QUERY = lambda _self, params: ""
-    ROUTE = "/rated_authors_distinct_clients"
-    PARSER = reqparse.RequestParser()
-    PARSER.add_argument('order_threshold', type=int,
-                        help='min order num of author')
-    PARSER.add_argument('begin_date', type=str, help='begin of search period')
-    PARSER.add_argument('end_date', type=str, help='end of search period')
-
-
-class PopularClients(BaseApiEndpoint):
-    """
-    Request #4
-    Action:
-        popular_clients
-    Desc:
-        Знайти усiх покупцiв, якi зробили хоча б N замовлень за вказаний перiод
-        (з дати F по дату T)
-    """
-    SQL_QUERY = lambda _self, params: ""
-    ROUTE = "/popular_clients"
-    PARSER = reqparse.RequestParser()
-    PARSER.add_argument('order_threshold', type=int,
-                        help='min order num of author')
-    PARSER.add_argument('begin_date', type=str, help='begin of search period')
-    PARSER.add_argument('end_date', type=str, help='end of search period')
-
-
-class ClientsPopularNetworks(BaseApiEndpoint):
-    """
-    Request #5
-    Action:
-        clients_popular_networks
-    Desc:
-        Для покупця С знайти усi соцiальнi мережi, для яких вiн зробив хоча б N
-        замовлень за вказаний перiод (з дати F по дату T)
-    """
-    SQL_QUERY = lambda _self, params: ""
-    ROUTE = "/clients_popular_networks"
     PARSER = reqparse.RequestParser()
     PARSER.add_argument('client_id', type=int, help='id of the client')
     PARSER.add_argument('order_threshold', type=int,
