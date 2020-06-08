@@ -56,13 +56,37 @@ From (Select author_agent.group_id, count(author_agent.group_id)
 WHERE author.name = 'Nelia';
 
 --11
-Select count(num)
-From (SELECT count(orders.id) as num
-      FROM orders
-      Group By orders.id
-      HAVING orders.date > '2020-05-20'
-         AND orders.date < '2020-06-05') AS foo
-GROUP BY num;
+SELECT count(month), foo.month
+FROM
+    (SELECT
+    (CASE 
+    WHEN EXTRACT(MONTH FROM orders.date) = 5 THEN 
+    'May'
+    WHEN EXTRACT(MONTH FROM orders.date) = 6 THEN
+    'June'
+    WHEN EXTRACT(MONTH FROM orders.date) = 7 THEN
+    'July'
+    WHEN EXTRACT(MONTH FROM orders.date) = 8 THEN
+    'August'
+    WHEN EXTRACT(MONTH FROM orders.date) = 9 THEN
+    'September'
+    WHEN EXTRACT(MONTH FROM orders.date) = 10 THEN
+    'October'
+    WHEN EXTRACT(MONTH FROM orders.date) = 11 THEN
+    'November'
+    WHEN EXTRACT(MONTH FROM orders.date) = 12 THEN
+    'December'
+    WHEN EXTRACT(MONTH FROM orders.date) = 4 THEN
+    'April'
+    WHEN EXTRACT(MONTH FROM orders.date) = 3 THEN
+    'March'
+    WHEN EXTRACT(MONTH FROM orders.date) = 2 THEN
+    'February'
+    ELSE
+    'January'
+    END) AS month
+    FROM orders) AS foo
+ GROUP BY foo.month;
 --7
 SELECT author.name
 FROM principal
