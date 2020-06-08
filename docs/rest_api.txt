@@ -165,7 +165,7 @@ Sample:
 	/api/clients_trusted_authors?client_id=1
 Result: in JSON
 	{}
-__________________________________ 11 _________________________________________
+__________________________________ 11 _________________________________________Done
 Action:
 	client_user_relations
 Desc:
@@ -177,7 +177,7 @@ Params:
     begin_date=<begin of search period>(yyyy-mm-dd)
     end_date=<end of search period>(yyyy-mm-dd)
 Sample:
-	/api/client_user_relations?client_id=1&author_id=1&begin_date=2020-05-01&end_date=2020-05-24
+	/api/client_user_relations?client_id=1&author_id=30&begin_date=2019-05-01&end_date=2021-05-24
 Result: in JSON
 	{}
 __________________________________ 12 _________________________________________

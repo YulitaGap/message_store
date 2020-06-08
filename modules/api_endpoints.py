@@ -291,23 +291,20 @@ class ClientUserRelations(BaseApiEndpoint):
         (з дати F по дату T)
     """
     SQL_QUERY = lambda _self, params: f"""
-    select author.id, author.name, orders.date as order_date, 
-        case when access_history.give_access = TRUE then access_history.date else null end as allowed_access,
-        case when access_history.give_access = FALSE then access_history.date else null end as denied_access,
-        discount.sale_to
-    from orders
-    inner join posts on orders.id = posts.id
-    inner join style on posts.style_id = style.id
-    inner join discount on style.id = discount.style_id
-    inner join agent on orders.principal_id = agent.id
-    inner join author_agent on agent.id = author_agent.group_id
-    inner join author on author_agent.author_id = author.id
-    inner join access_history on agent.id = access_history.agent_id
-    where author.id = {params['author_id']} and orders.principal_id = {params['client_id']} and 
-    ((access_history.date between {params['begin_date']} and {params['end_date']}) or 
-     (orders.date between {params['begin_date']} and {params['end_date']}) or 
-     (discount.sale_to between {params['begin_date']} and {params['end_date']}) 
-     or (allowed_access between {params['begin_date']} and {params['end_date']}));
+    select case when give_access = true then 'Give access' else 'Reject access' end as event, 
+    text(date) as date from access_history
+    inner join author_agent on (author_agent.group_id = access_history.agent_id)
+    inner join account on (access_history.account_id = account.id)
+    where author_agent.author_id = {params['author_id']} and account.principal_id = {params['client_id']}
+    and access_history.date >= date('{params['begin_date']}')
+    and access_history.date <= date('{params['end_date']}') 
+    union
+    select concat('Ordered message, id: ', text(orders.id)) as event, text(orders.date) as date from orders
+    inner join author_agent on (author_agent.group_id = orders.agent_id)
+    where author_agent.author_id = 30 and orders.principal_id = 1
+    and orders.date >= date('{params['begin_date']}')
+    and orders.date <= date('{params['end_date']}') 
+    order by date
     """
     ROUTE = "/client_user_relations"
     PARSER = reqparse.RequestParser()
@@ -669,6 +666,7 @@ ENDPOINTS_LIST = [
     ClientActiveNetworks,
     AuthorUsedAccounts,
     ClientsTrustedAuthors,
+    ClientUserRelations,
     AuthorTeamWorksByNetwork,
     ClientsHalfDiscountsByStyle,
     OrdersCountByMonths,
