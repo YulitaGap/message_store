@@ -658,6 +658,26 @@ VALUES ({params['agent_id']}, {params['account_id']}, {params['give']}, CURRENT_
                _STATUS_FOUND
 
 
+class CheckAccess(BaseApiEndpoint):
+    """
+    Request #1
+    Action:
+        check_access
+    Desc:
+        Перевірити чи є доступ в певного агента до певного акаунту
+    """
+    SQL_QUERY = lambda _self, params: \
+        f"""
+    select coalesce((select give_access from access_history
+    where agent_id = {params['agent_id']} and account_id = {params['account_id']}
+    limit 1), false)
+    """
+    ROUTE = "/check_access"
+    PARSER = reqparse.RequestParser()
+    PARSER.add_argument('agent_id', type=int, help='id of the agent')
+    PARSER.add_argument('account_id', type=int, help='id of the account')
+
+
 ENDPOINTS_LIST = [
     ConstantClients,
     ClientUsedAuthors,
@@ -679,5 +699,6 @@ ENDPOINTS_LIST = [
     UpdateUserOrder,
     ViewUserPost,
     UpdateUserPost,
-    GiveAccess
+    GiveAccess,
+    CheckAccess
 ]
