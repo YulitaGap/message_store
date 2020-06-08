@@ -406,7 +406,7 @@ class ClientsHalfDiscountsByStyle(BaseApiEndpoint):
     """
     SQL_QUERY = lambda _self, params: f"""
     select orders.principal_id as client, style.name as style, count(orders.id) from orders
-    inner join posts on orders.post_id = posts.id
+    inner join posts on orders.id = posts.order_id
     inner join style on posts.style_id = style.id
     inner join discount on style.id = discount.style_id
     where principal_id = {params['client_id']} and discount = 0.5
