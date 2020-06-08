@@ -210,7 +210,7 @@ Sample:
 	/api/clients_half_discounts_by_style?client_id=1&begin_date=2020-05-01&end_date=2020-05-24
 Result: in JSON
 	{}
-__________________________________ 14 _________________________________________
+__________________________________ 14 _________________________________________Done
 Action:
 	orders_count_by_months
 Desc:
@@ -236,8 +236,8 @@ Sample:
 	/api/authors_ordered_top_networks?author_id=1&begin_date=2020-05-01&end_date=2020-05-24
 Result: in JSON
 	{}
-__________________________________ 16 _________________________________________
-TODO Documentation Create Order
+__________________________________ 16 _________________________________________Done
+
 Action:
 	create_order
 Desc:
