@@ -1,0 +1,68 @@
+{% extends 'html_base.html' %}
+
+{# header or includes - can not be overwriten at the same time #}
+{% block header %}
+    {#   Meta info inludes and other... #}
+{% endblock %}
+
+{% block styles_include %}
+    {#    Style includes in header... #}
+{% endblock %}
+
+{% block code_include %}
+    {#    JS includes in header... #}
+{% endblock %}
+
+{% block body %}
+
+    <div class="box">
+        <form id="form_box">
+
+            <div id="inputs">
+                <label for="username"><input autocomplete="off" class="prompt"
+                                             id="username" name="login"
+                                             placeholder="Username"
+                                             type="text"/></label>
+                <label for="password"><input autocomplete="off" class="prompt"
+                                             id="password" name="pasw"
+                                             placeholder="Password"
+                                             type="password"/></label>
+            </div>
+
+            <div id="buttons">
+                <button class="button" id="log_in">Log In</button>
+                <button class="button" id="sign_up">Sign Up</button>
+            </div>
+        </form>
+    </div>
+
+    <div class="big">
+        <h1>My Cup</h1>
+    </div>
+
+    <script type="text/javascript">
+        const form = document.getElementById('form_box');
+        const username = document.getElementById('username');
+        const pasw = document.getElementById('password');
+
+        const login = document.getElementById('log_in');
+        login.onclick = function (button) {
+            form.action = '/auten?login=' + username.value() + '&pasw=' + pasw.value();
+            form.method = "post";
+            form.submit();
+        };
+
+        const signup = document.getElementById('sign_up');
+        signup.onclick = function (button) {
+            form.action = '/register';
+            form.method = "get";
+            form.submit();
+        };
+    </script>
+    {% if fail %}
+        <script>
+            alert("Bead Credentials!");
+        </script>
+    {% endif %}
+
+{% endblock %}

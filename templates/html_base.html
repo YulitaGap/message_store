@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    {% block header %}
+        <meta charset="UTF-8">
+        <meta name="viewport" content="initial-scale=1.0">
+        <title>M Store</title>
+
+        {% block styles_include %}
+            <link rel="stylesheet" type="text/css"
+                  href="/static/css/styles.css">
+        {% endblock %}
+        {% block code_include %} {% endblock %}
+        <link rel="shortcut icon" href="/static/favicon.ico">
+    {% endblock %}
+</head>
+<body>
+{% block body %}
+    {#    Main Content HERE!    #}
+{% endblock %}
+</body>
+</html>

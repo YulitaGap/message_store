@@ -1,11 +1,16 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>M Store</title>
-    <link rel="stylesheet" href="/static/css/styles.css">
-</head>
-<body>
-<h1>The Best Message Sore Ever :)</h1>
-</body>
-</html>
+{% extends 'html_base.html' %}
+
+{% block body %}
+    <h1>The Best Message Sore Ever :)</h1>
+    <div id="login">
+        <form method="get" action='/register' class="box" id="left">
+            <button class="press button" id="sign_up">Sign Up</button>
+        </form>
+
+        <form method="post" action='/login' class="box" id="right">
+            <button class="press button" id="log_in">Login</button>
+        </form>
+    </div>
+{% endblock %}
+
+

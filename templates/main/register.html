@@ -1,0 +1,93 @@
+{% extends 'html_base.html' %}
+
+{# header or includes - can not be overwriten at the same time #}
+{% block header %}
+    {#   Meta info inludes and other... #}
+{% endblock %}
+
+{% block styles_include %}
+    {#    Style includes in header... #}
+{% endblock %}
+
+{% block code_include %}
+    {#    JS includes in header... #}
+{% endblock %}
+
+{% block body %}
+    <div class="container">
+        <h1 class="container__head2">Enter the data to register</h1>
+        <form id='register_form' method="post" class="container__form"
+              action='/register'>
+            <label>
+                <input autocomplete="off" class="container__input" name="name"
+                       placeholder="Full Name" type="text"/>
+            </label>
+            <label>
+                <input autocomplete="off" class="container__input" name="email"
+                       placeholder="E-mail" type="text"/>
+            </label>
+            <label>
+                <input autocomplete="off" class="container__input" name="phone"
+                       placeholder="Mobile phone" type="text"/>
+            </label>
+            <label>
+                <input autocomplete="off" class="container__input"
+                       name="company"
+                       placeholder="Company" type="text"/>
+            </label>
+            <label for='username'>
+                <input autocomplete="off" id='username'
+                       class="container__input"
+                       name="login" placeholder="Username" type="text"/>
+            </label>
+            <label for='password'>
+                <input autocomplete="off" id='password'
+                       class="container__input"
+                       name="pasw" placeholder="Password" type="text"/>
+            </label>
+            <button class="container__button" type="submit">Sign Up</button>
+        </form>
+    </div>
+
+    <script type="text/javascript">
+        const form = document.getElementById('register_form');
+        const username = document.getElementById('username');
+        const password = document.getElementById('password');
+        let check = false;
+
+        form.onsubmit = () => {
+            if (!username.value) {
+                return false;
+            }
+
+            let http = new XMLHttpRequest();
+            let params = 'username=' + username.value;
+            console.log(params);
+            http.open('POST', '/check_username?' + params, true);
+
+            //Send the proper header information along with the request
+            http.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+
+            http.onreadystatechange = function () { //Call a function when the state changes.
+                if (http.readyState == 4 && http.status == 200) {
+                    if (http.responseText == '0') {
+                        username.classList.add('container__input-error');
+                    } else {
+                        username.classList.remove('container__input-error');
+
+                        if (password.value.length < 6) {
+                            password.classList.add('container__input-error');
+                        } else {
+                            check = true;
+                            form.submit();
+                        }
+                    }
+                }
+            };
+            http.send();
+
+            return check;
+        };
+        // username
+    </script>
+{% endblock %}

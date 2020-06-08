@@ -2,7 +2,7 @@
 import psycopg2
 from flask_restful import Resource, reqparse, abort
 
-import sql_builder as sb
+from modules import sql_builder as sb
 
 """
 The REST API documentation is at 'docs/rest_api.txt'
