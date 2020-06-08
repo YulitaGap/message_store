@@ -122,3 +122,18 @@ INSERT INTO orders(principal_id, agent_id, volume, post_id, price, date, status)
     return query
 
 # print(create_order(1, 1, 1, 1, 400, 1000))
+
+def create_account(principal_id, social_network_id, login, password):
+    """
+    Takes all inputs, adds user account in social network.
+    :param principal_id: principal_id
+    :param social_network_id: social_network_id
+    :param login : login
+    :param password : password
+    :return: creates account
+    """
+    query = """
+    INSERT INTO account(principle_id, social_network_id, login, password) 
+    VALUES ({},{},{},{});
+    """.format(principal_id, social_network_id, login, password)
+    return query
