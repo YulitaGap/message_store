@@ -195,7 +195,7 @@ class ClientActiveNetworks(BaseApiEndpoint):
              INNER JOIN account ON principal.id = account.principal_id
              INNER JOIN social_network
                         ON social_network.id = account.social_network_id
-    GROUP BY social_network.name, orders.principal_id, principal.id
+    GROUP BY social_network.name, orders.principal_id, principal.id, orders.date
     HAVING principal.id = {params['client_id']} 
        AND count(orders.principal_id) > {params['order_threshold']}
        AND orders.date > date({params['begin_date']})
@@ -429,18 +429,40 @@ class OrdersCountByMonths(BaseApiEndpoint):
         Знайти сумарну кiлькiсть замовлень по мiсяцях.
     """
     SQL_QUERY = lambda _self, params: f"""
-    SELECT count(num)
-    FROM (SELECT count(orders.id) as num
-          FROM orders
-          GROUP BY orders.id
-          WHERE orders.date > date({params['begin_date']}) 
-             AND orders.date < date({params['end_date']})) AS foo
-    GROUP BY num;
+    SELECT count(month), foo.month
+    FROM
+    (SELECT
+    (CASE 
+    WHEN EXTRACT(MONTH FROM orders.date) = 5 THEN 
+    'May'
+    WHEN EXTRACT(MONTH FROM orders.date) = 6 THEN
+    'June'
+    WHEN EXTRACT(MONTH FROM orders.date) = 7 THEN
+    'July'
+    WHEN EXTRACT(MONTH FROM orders.date) = 8 THEN
+    'August'
+    WHEN EXTRACT(MONTH FROM orders.date) = 9 THEN
+    'September'
+    WHEN EXTRACT(MONTH FROM orders.date) = 10 THEN
+    'October'
+    WHEN EXTRACT(MONTH FROM orders.date) = 11 THEN
+    'November'
+    WHEN EXTRACT(MONTH FROM orders.date) = 12 THEN
+    'December'
+    WHEN EXTRACT(MONTH FROM orders.date) = 4 THEN
+    'April'
+    WHEN EXTRACT(MONTH FROM orders.date) = 3 THEN
+    'March'
+    WHEN EXTRACT(MONTH FROM orders.date) = 2 THEN
+    'February'
+    ELSE
+    'January'
+    END) AS month
+    FROM orders) AS foo
+    GROUP BY foo.month;
     """
     ROUTE = "/orders_count_by_months"
-    PARSER = reqparse.RequestParser()
-    PARSER.add_argument('begin_date', type=str, help='begin of search period')
-    PARSER.add_argument('end_date', tydecendingpe=str, help='end of search period')
+   
 
 
 class AuthorsOrderedTopNetworks(BaseApiEndpoint):
