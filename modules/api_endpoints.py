@@ -155,12 +155,12 @@ class PopularAuthors(BaseApiEndpoint):
                    INNER JOIN agent ON author_agent.group_id = agent.id
                    INNER JOIN orders ON agent.id = orders.agent_id
                    INNER JOIN principal ON orders.principal_id = principal.id
-          WHERE orders.date > date('{params['begin_date']}')
-              AND orders.date < date('{params['end_date']}')
+          WHERE orders.date >= date('{params['begin_date']}')
+              AND orders.date <= date('{params['end_date']}')
           GROUP BY author.name, principal.id
-          HAVING count(author.name) > 0) as foo
+          HAVING count(author.name) >= 0) as foo
     GROUP BY foo.name
-    HAVING count(foo.name) > {params['order_threshold']};
+    HAVING count(foo.name) >= {params['order_threshold']};
     """
     ROUTE = "/popular_authors"
     PARSER = reqparse.RequestParser()
