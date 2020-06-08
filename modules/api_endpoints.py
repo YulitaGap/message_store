@@ -96,11 +96,11 @@ class ConstantClients(BaseApiEndpoint):
              INNER JOIN agent ON author_agent.group_id = agent.id
              INNER JOIN orders ON agent.id = orders.agent_id
              INNER JOIN principal ON orders.principal_id = principal.id
-    GROUP BY author.id, author.name, principal.name, orders.date
-    HAVING author.id = {params['author_id']}
-       AND count(orders.principal_id) >= {params['limit']} 
-       AND orders.date >= date('{params['begin_date']}')
-       AND orders.date <= date('{params['end_date']}');
+    WHERE author.id = {params['author_id']}
+    AND orders.date >= date('{params['begin_date']}')
+    AND orders.date <= date('{params['end_date']}')
+    GROUP BY author.name, principal.name
+    HAVING count(orders.principal_id) >= {params['limit']} ;
     """
     ROUTE = "/constant_clients"
     PARSER = reqparse.RequestParser()
@@ -152,10 +152,10 @@ class PopularAuthors(BaseApiEndpoint):
                    INNER JOIN agent ON author_agent.group_id = agent.id
                    INNER JOIN orders ON agent.id = orders.agent_id
                    INNER JOIN principal ON orders.principal_id = principal.id
-          GROUP BY author.name, orders.date, principal.id
-          HAVING count(author.name) > 0
-             AND orders.date > date('{params['begin_date']}')
-             AND orders.date < date('{params['end_date']}')) as foo
+          WHERE orders.date > date('{params['begin_date']}')
+              AND orders.date < date('{params['end_date']}')
+          GROUP BY author.name, principal.id
+          HAVING count(author.name) > 0) as foo
     GROUP BY foo.name
     HAVING count(foo.name) > {params['order_threshold']};
     """
@@ -207,11 +207,11 @@ class ClientActiveNetworks(BaseApiEndpoint):
              INNER JOIN account ON principal.id = account.principal_id
              INNER JOIN social_network
                         ON social_network.id = account.social_network_id
-    GROUP BY social_network.name, orders.principal_id, principal.id, orders.date
+    WHERE orders.date > date('{params['begin_date']}')
+       AND orders.date < date('{params['end_date']}')
+    GROUP BY social_network.name, orders.principal_id, principal.id
     HAVING principal.id = {params['client_id']} 
-       AND count(orders.principal_id) > {params['order_threshold']}
-       AND orders.date > date('{params['begin_date']}')
-       AND orders.date < date('{params['end_date']}');
+       AND count(orders.principal_id) > {params['order_threshold']};
     """
     ROUTE = "/client_active_networks"
     PARSER = reqparse.RequestParser()
@@ -266,9 +266,9 @@ class ClientsTrustedAuthors(BaseApiEndpoint):
              INNER JOIN agent ON agent.id = access_history.agent_id
              INNER JOIN author_agent ON agent.id = author_agent.group_id
              INNER JOIN author ON author.id = author_agent.author_id
+    WHERE principal.id = {params['client_id']}
     GROUP BY author.name, access_history.agent_id, principal.id
-    HAVING count(author.name) = 2
-       AND principal.id = {params['client_id']};
+    HAVING count(author.name) = 2;
     """
     ROUTE = "/clients_trusted_authors"
     PARSER = reqparse.RequestParser()
@@ -322,7 +322,7 @@ class AuthorTeamWorksByNetwork(BaseApiEndpoint):
             писав її у групi з щонайменше N авторiв.
     """
     SQL_QUERY = lambda _self, params: f"""
-    SELECT (author.name)
+    SELECT count(author.name)
     FROM (SELECT author_agent.group_id, count(author_agent.group_id)
           FROM author
                    INNER JOIN author_agent ON id = author_id
@@ -332,16 +332,17 @@ class AuthorTeamWorksByNetwork(BaseApiEndpoint):
                    INNER JOIN account ON account.principal_id = principal.id
                    INNER JOIN social_network
                               ON account.principal_id = social_network.id
-          GROUP BY social_network.id, author_agent.group_id, orders.date
-          HAVING count(social_network.id) > {params['limit']}
-             AND orders.date
+          WHERE orders.date
                > date('{params['begin_date']}')
              AND orders.date
-               < date('{params['end_date']}')) AS foo
+               < date('{params['end_date']}')
+          GROUP BY social_network.id, author_agent.group_id
+          HAVING count(social_network.id) > {params['limit']}) AS foo
              INNER JOIN agent ON agent.id = foo.group_id
              INNER JOIN author_agent ON agent.id = author_agent.group_id
              INNER JOIN author ON author.id = author_agent.author_id
-    WHERE author.id = {params['author_id']};
+    WHERE author.id = {params['author_id']}
+    GROUP BY author.name;
     """
     ROUTE = "/author_team_works_by_network"
     PARSER = reqparse.RequestParser()
