@@ -487,7 +487,141 @@ class CreateOrder(BaseApiEndpoint):
         return self.data_base_updating_query(
             sb.create_order(args['account_id'], args['principal_id'],
                             agent_id[0][0], args['style_id'], float(price[0][0]), args['volume'])), _STATUS_FOUND
+class AddAccount(BaseApiEndpoint):
+    """
+    Action:
+        add_account
+    Desc:
+        Покупець додає аккаунт у соц.мережі.
+    """
+    ROUTE = "/add_account"
+    PARSER = reqparse.RequestParser()
+    PARSER.add_argument('principle_id', type=int, help='id of the client')
+    PARSER.add_argument('social_network_id', type=int, help='id of the social network')
+    PARSER.add_argument('login', type=str, help='client login')
+    PARSER.add_argument('password', type=str, help='client password')
 
+    def get(self):
+        args = self.PARSER.parse_args(strict=True)
+        self.data_base_updating_query(sb.create_account(args['principal_id'], args['social_network_id'], args['login'],
+                                                        args['password']))
+
+
+class ViewAuthors(BaseApiEndpoint):
+    """
+    Action:
+        view_authors
+    Desc:
+        Покупець переглядає перелік доступних авторів.
+    """
+    SQL_QUERY = """
+    select id, name, price_per_1000 from author
+    where active is TRUE;
+    """
+    ROUTE = "/view_authors"
+
+    def get(self):
+        return self.data_base_select_query(self.SQL_QUERY)
+
+
+class ViewStyles(BaseApiEndpoint):
+    """
+    Action:
+        view_styles
+    Desc:
+        Покупець переглядає перелік стилів для замовлення.
+    """
+    SQL_QUERY = """
+    select * from style
+    """
+    ROUTE = "/view_styles"
+
+    def get(self):
+        return self.data_base_select_query(self.SQL_QUERY), _STATUS_FOUND
+
+
+class ViewUserOrders(BaseApiEndpoint):
+    """
+    Action:
+        view_user_orders
+    Desc:
+        Покупець переглядає перелік своїх відкритих замовлень.
+    """
+    SQL_QUERY = lambda _self, params: \
+        f"""
+        select * from orders
+        where principal_id = {params['client_id']} and status != 'closed';
+        """
+    ROUTE = "/view_user_orders"
+    PARSER = reqparse.RequestParser()
+    PARSER.add_argument('client_id', type=int, help='id of the client')
+
+    def get(self):
+        args = self.PARSER.parse_args(strict=True)
+        return self.data_base_select_query(self.SQL_QUERY(args)), _STATUS_FOUND
+
+
+class UpdateUserOrder(BaseApiEndpoint):
+    """
+    Action:
+        update_user_order
+    Desc:
+        Покупець змінює статус замовлення.
+    """
+    SQL_QUERY = lambda _self, params: \
+        f"""
+        update orders set status = 'closed' where id = {params['order_id']} ;
+        """
+    ROUTE = "/update_user_order"
+    PARSER = reqparse.RequestParser()
+    PARSER.add_argument('order_id', type=int, help='id of the order')
+
+    def get(self):
+        args = self.PARSER.parse_args(strict=True)
+        return self.data_base_updating_query(self.SQL_QUERY(args)), _STATUS_FOUND
+
+
+class ViewUserPost(BaseApiEndpoint):
+    """
+    Action:
+        view_user_post
+    Desc:
+        Покупець переглядає наповнення та стан поста.
+    """
+    SQL_QUERY = lambda _self, params: \
+        f"""
+        select * from post
+        where id = {params['post_id']} and status != 'closed';
+        """
+    PARSER = reqparse.RequestParser()
+    ROUTE = "/view_user_post"
+    PARSER.add_argument('post_id', type=int, help='id of the post')
+
+    def get(self):
+        args = self.PARSER.parse_args(strict=True)
+        return self.data_base_select_query(self.SQL_QUERY(args)), \
+               _STATUS_FOUND
+
+
+class UpdateUserPost(BaseApiEndpoint):
+    """
+    Action:
+        update_user_post
+    Desc:
+        Покупець змінює стан поста.
+    """
+    SQL_QUERY = lambda _self, params: \
+        f"""
+        UPDATE posts SET visible = TRUE WHERE id = {params['post_id']}
+        """
+    PARSER = reqparse.RequestParser()
+    ROUTE = "/update_user_post"
+    PARSER.add_argument('post_id', type=int, help='id of the post')
+
+    def get(self):
+        args = self.PARSER.parse_args(strict=True)
+        return self.data_base_updating_query(self.SQL_QUERY(args)), \
+               _STATUS_FOUND
 
 ENDPOINTS_LIST = [
     ConstantClients,
@@ -501,5 +635,12 @@ ENDPOINTS_LIST = [
     ClientsHalfDiscountsByStyle,
     OrdersCountByMonths,
     AuthorsOrderedTopNetworks,
-    CreateOrder
+    CreateOrder,
+    AddAccount,
+    ViewAuthors,
+    ViewStyles,
+    ViewUserOrders,
+    UpdateUserOrder,
+    ViewUserPost,
+    UpdateUserPost
 ]
