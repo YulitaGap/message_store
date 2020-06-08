@@ -153,7 +153,7 @@ Sample:
 	/api/author_used_accounts?author_id=31&begin_date=2019-05-01&end_date=2021-05-24
 Result: in JSON
 	{}
-__________________________________ 10 _________________________________________
+__________________________________ 10 _________________________________________Done
 Action:
 	clients_trusted_authors
 Desc:

@@ -265,17 +265,16 @@ class ClientsTrustedAuthors(BaseApiEndpoint):
         цього доступу.
     """
     SQL_QUERY = lambda _self, params: f"""
-    SELECT author.name
-    FROM principal
-             INNER JOIN account ON principal.id = account.principal_id
-             INNER JOIN access_history ON 
-                                         access_history.account_id = account.id
-             INNER JOIN agent ON agent.id = access_history.agent_id
-             INNER JOIN author_agent ON agent.id = author_agent.group_id
-             INNER JOIN author ON author.id = author_agent.author_id
-    WHERE principal.id = {params['client_id']}
-    GROUP BY author.name, access_history.agent_id, principal.id
-    HAVING count(author.name) = 2;
+    select author.name from 
+    (select distinct account_id, agent_id from access_history
+    where give_access = true
+    intersect
+    select distinct account_id, agent_id from access_history
+    where give_access = false) as s
+    inner join author_agent on (author_agent.group_id = s.agent_id)
+    inner join author on (author.id = author_agent.author_id)
+    inner join account on (account.id = s.account_id)
+    where account.principal_id = {params['client_id']};
     """
     ROUTE = "/clients_trusted_authors"
     PARSER = reqparse.RequestParser()
