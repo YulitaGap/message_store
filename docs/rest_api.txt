@@ -67,7 +67,7 @@ Sample:
 Result: in JSON
 	{}
 
-__________________________________ 4 __________________________________________
+__________________________________ 4 __________________________________________Done
 Action:
 	active_clients
 Desc:
@@ -78,7 +78,7 @@ Params:
     begin_date=<begin of search period>(yyyy-mm-dd)
     end_date=<end of search period>(yyyy-mm-dd)
 Sample:
-	/api/active_clients?order_threshold=10&begin_date=2020-05-01&end_date=2020-05-24
+	/api/active_clients?order_threshold=1&begin_date=2019-05-01&end_date=2021-05-24
 Result: in JSON
 	{}
 __________________________________ 5 __________________________________________

@@ -130,7 +130,6 @@ class ClientUsedAuthors(BaseApiEndpoint):
     and orders.date >= date('{params['begin_date']}')
     and orders.date <= date('{params['end_date']}');
     """
-    print(SQL_QUERY)
     ROUTE = "/client_used_authors"
     PARSER = reqparse.RequestParser()
     PARSER.add_argument('client_id', type=int, help='id of the client')
@@ -181,10 +180,14 @@ class ActiveClients(BaseApiEndpoint):
         (з дати F по дату T)
     """
     SQL_QUERY = lambda _self, params: f"""
+    select principal.name, s.count from principal
+    inner join
+    (
     select principal_id, count(id) from orders 
-    where date between {params['begin_date']} and {params['end_date']}
+    where date between date('{params['begin_date']}') and date('{params['end_date']}')
     group by principal_id
-    having count(id) > {params['order_threshold']};
+    having count(id) >= {params['order_threshold']}) as s
+    on principal.id = s.principal_id
     """
     ROUTE = "/active_clients"
     PARSER = reqparse.RequestParser()
