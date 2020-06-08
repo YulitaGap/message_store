@@ -124,7 +124,7 @@ class ClientUsedAuthors(BaseApiEndpoint):
     inner join author_agent on author.id = author_agent.author_id
     inner join agent on author_agent.group_id = agent.id
     inner join orders on agent.id = orders.agent_id
-    where orders.principal_id =  and orders.date > '2019-01-01' and orders.date < '2020-06-06';
+    where orders.principal_id = {params['client_id']} and orders.date > {params['begin_date']} and orders.date < {params['end_date']};
     """
     ROUTE = "/client_used_authors"
     PARSER = reqparse.RequestParser()
