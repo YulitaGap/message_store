@@ -366,13 +366,17 @@ class ClientsHalfDiscountsByStyle(BaseApiEndpoint):
         отримали 50% знижку.
     """
     SQL_QUERY = lambda _self, params: f"""
-    select orders.principal_id as client, style.name as style, count(orders.id) from orders
-    inner join posts on orders.post_id = posts.id
-    inner join style on posts.style_id = style.id
-    inner join discount on style.id = discount.style_id
-    where principal_id = {params['client_id']} and discount = 0.5
-    and orders.date between date('{params['begin_date']}') and date('{params['end_date']}')
-    group by style.name, orders.principal_id;
+    select style.name, count(discount.discount) FILTER (WHERE discount.discount = 0.9)  
+    from orders
+    inner join posts on posts.id = orders.post_id
+    inner join style on style.id = posts.style_id
+    inner join author_agent on orders.agent_id = author_agent.group_id
+    inner join discount on discount.author_id = author_agent.author_id
+    where orders.principal_id = {params['client_id']}
+    and sale_to >= orders.date
+    and sale_to >= date('{params['begin_date']}')
+    and sale_to <= date('{params['end_date']}')
+    group by style.name
     """
     ROUTE = "/clients_half_discounts_by_style"
     PARSER = reqparse.RequestParser()
@@ -491,6 +495,8 @@ class CreateOrder(BaseApiEndpoint):
             sb.create_order(args['account_id'], args['principal_id'],
                             agent_id[0][0], args['style_id'], float(price[0][0]), args['volume'])), _STATUS_FOUND
 
+
+# ------- Endpoints for user -------
 
 class AddAccount(BaseApiEndpoint):
     """
@@ -794,6 +800,7 @@ class StartGeneralAuthorDiscount(BaseApiEndpoint):
     SQL_QUERY = lambda self_, params: \
         f"""
     """
+    ROUTE = "/start_general_author_discount"
 
 
 class SetPriceAuthor(BaseApiEndpoint):
@@ -826,6 +833,7 @@ class GetAuthorStatistics(BaseApiEndpoint):
     SQL_QUERY = lambda self_, params: \
         f"""
     """
+    ROUTE = "/get_author_statistics"
 
 
 ENDPOINTS_LIST = [
