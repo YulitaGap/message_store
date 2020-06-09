@@ -70,12 +70,20 @@ def statistics_get():
     return render_template("user_side/user_statistics.html")
 
 
+@app.route('/view_user_catalogue', methods=['POST', 'GET'])
+def user_catalogue_get():
+    """
+    render the page to view user catalogue
+    """
+    return render_template("user_side/user_catalogue.html")
+
 @app.route('/view_catalogue', methods=['POST', 'GET'])
 def catalogue_get():
     """
     render the page to view catalogue
     """
-    return render_template("user_side/user_catalogue.html")
+    return render_template("main/view_template.html",
+                           query_index=request.args['index'])
 
 
 # Author navigation routes
