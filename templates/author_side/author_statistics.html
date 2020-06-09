@@ -5,18 +5,21 @@
         <label for="q_mode">Statistics type</label>
         <select name="stats" id="q_mode" onfocus="this.selectedIndex = -1;">
             <option value="0">--</option>
-            <option value="1">Volvo</option>
-            <option value="2">Saab</option>
-            <option value="3">Opel</option>
-            <option value="4">Audi</option>
+            <option value="1">all clients that ordered at least N times for period</option>
+            <option value="2">all authors that had at least N orders from different clients for period</option>
+            <option value="3">all soc.network accounts with access received for period</option>
+            <option value="4">all common events for author and client for period</option>
+            <option value="5">amount of posts written by author in group of at least N authors for each social network for period</option>
+            <option value="6"> amount of orders by months</option>
+            <option value="7">all social media sorted in descending order of amount posts written for period </option>
         </select>
         <form id="form_box">
 
-            <div id="author_d" hidden>
-                <label for="author"></label>
+            <div id="client_d" hidden>
+                <label for="client"></label>
                 <input autocomplete="off" class="prompt"
-                       id="author"
-                       placeholder="Author"
+                       id="client"
+                       placeholder="Client"
                        type="text"/>
             </div>
 
@@ -34,52 +37,93 @@
                        min="2018-01-01" max="2018-12-31"/>
             </div>
 
+            <div id="number_d" hidden>
+                <label for="number"></label>
+                <input autocomplete="off" class="prompt"
+                       id="number"
+                       placeholder="Number"
+                       type="number"/>
+            </div>
+
             <button class="button" id="button" hidden>GET</button>
         </form>
     </div>
     <script>
         const cookie = getCookie();
         let mode_selector = document.getElementById("q_mode");
-        const fields_ids = ["author", "start", "end"]
+        const fields_ids = ["client", "start", "end", "number"]
         const modes = [
-            { /*         query number one #0        */
-                author: false,
+            { /*         query number #0        */
+                client: false,
                 start: false,
                 end: false,
-            }, { /*       query number one #1        */
-                author: true,
+                number: false
+            }, { /*       query number #1        */
+                client: false,
                 start: true,
                 end: true,
+                number: true,
                 // important order as in 'fields' array
-                query: (author, start, end) => {
-                    return `/api/end_point?user=${cookie.id}&`;
+                query: (start, end,number) => {
+                    return `/api/constant_clients?author_id=${cookie}&limit=${number}&begin_date=${start}&end_date=${end}`;
                 }
-            }, { /*       query number one #2        */
-                author: true,
-                start: false,
-                end: false,
-                // important order as in 'fields' array
-                query: (author) => {
-                    return `/api/end_point?user=${cookie.id}&`;
-                }
-            }, { /*       query number one #3        */
-                author: true,
-                start: true,
-                end: false,
-                // important order as in 'fields' array
-                query: (author, start) => {
-                    return `/api/end_point?user=${cookie.id}&`;
-                }
-            }, { /*       query number one #4        */
-                author: false,
+            }, { /*       query number #2        */
+                client: false,
                 start: true,
                 end: true,
+                number: true,
+                // important order as in 'fields' array
+                query: (start, end, number) => {
+                    return `/api/popular_authors?order_threshold=${number}&begin_date=${start}&end_date=${end}`;
+                }
+            }, { /*       query number  #3        */
+                client:false,
+                start: true,
+                end: true,
+                number: false,
                 // important order as in 'fields' array
                 query: (start, end) => {
-                    return `/api/end_point?user=${cookie.id}&`;
+                    return `/api/author_used_accounts?author_id=${cookie.id}&begin_date=${start}&end_date=${end}`;
                 }
-            },
-        ]
+            }, { /*       query number  #4        */
+                client: true,
+                start: true,
+                end: true,
+                number: false,
+                // important order as in 'fields' array
+                query: (client,start, end) => {
+                    return `/api/client_user_relations?client_id=${client}&author_id=${cookie.id}&begin_date=${start}&end_date=${end}`;
+                }
+            },{ /*       query number  #5        */
+                client: false,
+                start: true,
+                end: true,
+                number: true,
+                // important order as in 'fields' array
+                query: (start, end, number) => {
+                    return `/api/author_team_works_by_network?author_id=${cookie.id}&begin_date=${start}&end_date=${end}4&limit=${number}`;
+                }
+            },{ /*       query number  #6        */
+                client: false,
+                start: false,
+                end: false,
+                number: false,
+                // important order as in 'fields' array
+                query: () => {
+                    return `/api/orders_count_by_months`;
+                }
+            },{ /*       query number  #7        */
+                client: false,
+                start: true,
+                end: true,
+                number: false,
+                // important order as in 'fields' array
+                query: (start, end) => {
+                    return `/api/authors_ordered_top_networks?author_id=${cookie.id}&begin_date=${start}&end_date=${end}`;
+                }
+            }
+
+        ];
 
         mode_selector.onchange = selector_visibility_handle;
         document.getElementById('form_box').addEventListener('submit', submit_handle);
