@@ -53,7 +53,7 @@
 
             let tmp_cookie = getCookie();
             let request = new XMLHttpRequest();
-            request.open('GET', `/api/add_social_network_account?principal_id=${tmp_cookie.id}2&social_network_id=${social_network_id}2&login=${login_val}1&password=${paswd_val}password`, true)
+            request.open('GET', `/api/add_social_network_account?principal_id=${tmp_cookie.id}&social_network_id=${social_network_id}&login=${login_val}&password=${paswd_val}`, true)
             request.onload = function () {
                 let data = JSON.parse(this.response)
                 console.log(data);
