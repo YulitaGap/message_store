@@ -771,7 +771,7 @@ class UpdateAuthorPost(BaseApiEndpoint):
     set text = {params['text']} 
     where id = {params['post_id']}; 
     """
-    ROUTE = "/update_post"
+    ROUTE = "/update_author_post"
     PARSER = reqparse.RequestParser()
     PARSER.add_argument("post_id", type=int, help="id of the post")
     PARSER.add_argument("text", type=str, help="new version of text")
@@ -789,14 +789,14 @@ class StartAuthorDiscount(BaseApiEndpoint):
     SQL_QUERY = lambda self_, params: \
         f"""
     insert into discount (author_id, style_id, sale_to, discount)
-    values {params['author_id']}, {params['style_id']}, date({params['sale_to']}), {params['discount']}
+    values ({params['author_id']}, {params['style_id']}, date({params['sale_to']}), {params['discount']})
     """
     ROUTE = "/start_style_discount"
     PARSER = reqparse.RequestParser()
     PARSER.add_argument("author_id", type=int, help="id of the author")
     PARSER.add_argument("style_id", type=int, help="id of the style")
     PARSER.add_argument("sale_to", type=str, help="date when the discount ends")
-    PARSER.add_argument("discount", type=int, help="the amount of discount")
+    PARSER.add_argument("discount", type=float, help="the amount of discount")
 
     def get(self):
         args = self.PARSER.parse_args(strict=True)

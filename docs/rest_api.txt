@@ -366,3 +366,23 @@ Sample:
 /api/view_author_posts?author_id=31
 Result: in JSON
 	{}
+__________________________________ 28 _________________________________________
+
+Action:
+	update_author_post
+Desc:
+Params:
+Sample:
+/api/update_author_post?author_id=30&post_id=1
+Result: in JSON
+	{}
+__________________________________ 29 _________________________________________Done
+
+Action:
+	start_style_discount
+Desc:
+Params:
+Sample:
+/api/start_style_discount?author_id=30&style_id=1&sale_to='2021-01-01'&discount=0.5
+Result: in JSON
+	{}
