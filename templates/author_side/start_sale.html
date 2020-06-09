@@ -1,45 +1,53 @@
 {% extends 'author_side/author_header_template.html' %}
 
 {# header or includes - can not be overwriten at the same time #}
-{% block header %}
-    {#   Meta info inludes and other... #}
-    {% include 'author_side/author_header_template.html' %}
-{% endblock %}
+{#{% block header %}#}
+{#   Meta info inludes and other... #}
+{#{% endblock %}#}
+{##}
+{#{% block styles_include %}#}
+{#    Style includes in header... #}
+{#{% endblock %}#}
+{##}
+{#{% block code_include %}#}
+{#    JS includes in header... #}
+{#{% endblock %}#}
 
-{% block styles_include %}
-    {#    Style includes in header... #}
-{% endblock %}
-
-{% block code_include %}
-    {#    JS includes in header... #}
-{% endblock %}
-
-{% block body %}
+{% block content %}
     <div class="header-bar">
-    SOME TEXT
+        SOME TEXT
     </div>
     <div class="box">
         <form id="form_box">
-            <label for="text"><input autocomplete="off" class="prompt"
-                                         id="text" name="text"
-                                         placeholder="Text of Post"
-                                         type="text"/></label>
-            <label for="date"><input autocomplete="off" class="prompt"
-                                         id="date" name="date"
-                                         placeholder="Date"
-                                         type="text"/></label>
-            <label for="style"><input autocomplete="off" class="prompt"
-                                         id="style" name="style"
-                                         placeholder="Style"
-                                         type="text"/></label>
-            <label for="account"><input autocomplete="off" class="prompt"
-                                         id="account" name="account"
-                                         placeholder="Account"
-                                         type="text"/></label>
+
+            <label for="text">text</label>
+            <input autocomplete="off" class="prompt"
+                   id="text" name="text"
+                   placeholder="Text of Post"
+                   type="text"/>
+
+            <label for="date">date</label>
+            <input autocomplete="off" class="prompt"
+                   id="date" name="date"
+                   placeholder="Date"
+                   type="text"/>
+
+            <label for="style">style</label>
+            <input autocomplete="off" class="prompt"
+                   id="style" name="style"
+                   placeholder="Style"
+                   type="text"/>
+
+            <label for="account">account</label>
+            <input autocomplete="off" class="prompt"
+                   id="account" name="account"
+                   placeholder="Account"
+                   type="text"/>
+
             <button class="button" id="sale">SALE</button>
         </form>
     </div>
     <div class="lower-info">
-    SOME TEXT
+        SOME TEXT
     </div>
 {% endblock %}

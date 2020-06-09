@@ -15,4 +15,42 @@
 
 {% block body %}
     <h1>Data Base Response Table</h1>
+    <div id="table">
+        {#    Your content Here  #}
+    </div>
+    <script>
+        //////////////// COOKIE ROUT //////////////////////////
+        const cookie = getCookie();
+        const query = cookie.query_index["{{ resp_index }}"];
+        delete cookie.query_index["{{ resp_index }}"];
+        setCookie(cookie);
+        ///////////////////////////////////////////////////////
+
+        ///////////////// API REQUEST /////////////////////////
+        let request = new XMLHttpRequest()
+        request.open('GET', query, true)
+        request.onload = function () {
+            let data = JSON.parse(this.response)
+            if (request.status >= 200 && request.status < 400 && data.length !== 0) {
+                //////////////////// GENERATE TABLE ////////////////////////
+                let table = document.createElement('table');
+                data.map((row) => {
+                    let n_row = document.createElement('tr');
+                    row.map((col) => {
+                        let n_col = document.createElement('td');
+                        n_col.innerHTML = col;
+                        n_row.appendChild(n_col);
+                    })
+                    table.appendChild(n_row);
+                });
+                document.getElementById("table").appendChild(table);
+                //////////////////// GENERATE TABLE END ////////////////////
+                return true;
+            }
+            alert("INVALID or EMPTY QUERY!");
+            return false;
+        }
+        request.send();
+        ///////////////// API REQUEST END /////////////////////
+    </script>
 {% endblock %}

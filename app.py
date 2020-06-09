@@ -1,4 +1,4 @@
-from flask import Flask, render_template, redirect, url_for, request
+from flask import Flask, render_template, request
 from flask_restful import Api
 
 from modules.api_endpoints import *
@@ -37,43 +37,46 @@ def fail():
     """ Render Fail template """
     return render_template("main/fail.html")
 
+
 @app.route('/add_account', methods=['GET'])
 def add_acc_get():
-        """
-        render the page to add account
-        """
-        return render_template("user_side/add_account.html")
+    """
+    render the page to add account
+    """
+    return render_template("user_side/add_account.html")
+
 
 @app.route('/user_main', methods=['GET'])
 def main_get():
-        """
-        render the main user page
-        """
-        return render_template("user_side/user_main.html")
+    """
+    render the main user page
+    """
+    return render_template("user_side/user_main.html")
 
 
 @app.route('/create_order', methods=['GET'])
 def create_order_get():
-        """
-        render the page to create order
-        """
-        return render_template("user_side/create_order.html")
+    """
+    render the page to create order
+    """
+    return render_template("user_side/create_order.html")
 
 
 @app.route('/view_statistics', methods=['GET'])
 def statistics_get():
-        """
-        render the page to view statistics
-        """
-        return render_template("user_side/user_statistics.html")
+    """
+    render the page to view statistics
+    """
+    return render_template("user_side/user_statistics.html")
 
 
-@app.route('/view_catalogue', methods=['GET'])
+@app.route('/view_catalogue', methods=['POST'])
 def catalogue_get():
-        """
-        render the page to view catalogue
-        """
-        return render_template("main/view_template.html")
+    """
+    render the page to view catalogue
+    """
+    return render_template("main/view_template.html",
+                           query_index=request.args['index'])
 
 # Author navigation routes
 

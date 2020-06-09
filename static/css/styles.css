@@ -10,3 +10,11 @@ h1 {
     justify-content: center;
     align-items: center;
 }
+
+table {
+    border-collapse: collapse;
+}
+
+table, tr, td {
+    border: 1px solid black;
+}

@@ -3,7 +3,6 @@
 {# header or includes - can not be overwriten at the same time #}
 {#{% block header %}#}
 {#   Meta info inludes and other... #}
-    {% include 'user_side/user_header_template.html' %}
 {#{% endblock %}#}
 {##}
 {#{% block styles_include %}#}
@@ -13,26 +12,24 @@
 {#{% block code_include %}#}
 {#    JS includes in header... #}
 {#{% endblock %}#}
-#- [x] create_order(account_id, principal_id, [author_id], due_date, style_id, volume)
-{% block body %}
-    {% block content %}
-        {#        Your main content here... #}
-        <div class="box">
+
+{% block content %}
+    <div class="box">
         <form id="form_box">
 
-            <label for="account id"></label>
+            <label for="ac_id"></label>
             <input autocomplete="off" class="prompt"
                    id="ac_id" name="account id"
                    placeholder="Account id"
                    type="text"/>
 
-            <label for="author ids"></label>
+            <label for="author_ids"></label>
             <input autocomplete="off" class="prompt"
-                   id="Author_ids" name="author_ids"
+                   id="author_ids" name="author_ids"
                    placeholder="Author ids"
                    type="text"/>
 
-            <label for="due_date"></label>
+            <label for="date"></label>
             <input autocomplete="off" class="prompt"
                    id="date" name="date"
                    placeholder="Due date"
@@ -51,21 +48,19 @@
                    type="number"/>
 
 
-
-
             <button class="button" id="create">Create</button>
         </form>
     </div>
-        <script>
+    <script>
         function create_order_handle(event) {
             event.preventDefault();
             const ac_id = document.getElementById("ac_id").value;
-            const author_id = document.getElementById("Author_ids").value;
+            const author_id = document.getElementById("author_ids").value;
             const date = document.getElementById("date").value;
             const style = document.getElementById("style_id").value;
             const volume = document.getElementById("volume").value;
 
-            if (ac_id.length === 0 || author_id.length === 0|| date.length === 0 || style.length === 0 || volume.length === 0) {
+            if (ac_id.length === 0 || author_id.length === 0 || date.length === 0 || style.length === 0 || volume.length === 0) {
                 alert("Order parameters should not be empty!");
                 return false;
             }
@@ -74,20 +69,13 @@
             let request = new XMLHttpRequest();
             request.open('GET', `/api/create_order?account_id=${ac_id}&principal_id=${tmp_cookie.id}&author_id=${author_id}&style_id=${style}&volume=${volume}`, true)
             request.onload = function () {
-                let data = JSON.parse(this.response)
-                console.log(data);
-                alert("INVALID CREDENTIALS!");
-                return false;
+                window.location.replace("/create_order");
+                return true;
             }
             request.send()
         }
 
         document.getElementById('form_box').addEventListener('submit', create_order_handle);
-        document.getElementById('create').onclick = () => {
-            window.location.replace("/create_order");
-        };
-
     </script>
-    {% endblock %}
 {% endblock %}
 

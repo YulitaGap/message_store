@@ -3,7 +3,6 @@
 {# header or includes - can not be overwriten at the same time #}
 {#{% block header %}#}
 {#   Meta info inludes and other... #}
-    {% include 'user_side/user_header_template.html' %}
 {#{% endblock %}#}
 {##}
 {#{% block styles_include %}#}
@@ -14,23 +13,23 @@
 {#    JS includes in header... #}
 {#{% endblock %}#}
 
-{% block body %}
-    {% block content %}
-        {#        Your main content here... #}
-        <div class="box">
+{% block content %}
+    <div class="box">
         <form id="form_box">
 
-            <label for="login"></label>
+            <label for="login">login</label>
             <input autocomplete="off" class="prompt"
                    id="login" name="login"
                    placeholder="Login"
                    type="text"/>
-            <label for="password"></label>
+
+            <label for="password">password</label>
             <input autocomplete="off" class="prompt"
                    id="password" name="pasw"
                    placeholder="Password"
                    type="password"/>
-            <label for="social network id"></label>
+
+            <label for="sn_id">social network id</label>
             <input autocomplete="off" class="prompt"
                    id="sn_id" name="social network id"
                    placeholder="social network id"
@@ -39,35 +38,27 @@
             <button class="button" id="add">Add</button>
         </form>
     </div>
-        <script>
+    <script>
         function add_account_handle(event) {
             event.preventDefault();
             const login_val = document.getElementById("login").value;
             const paswd_val = document.getElementById("password").value;
             const social_network_id = document.getElementById("sn_id").value;
 
-            if (login_val.length === 0 || paswd_val.length === 0|| social_network_id.length === 0) {
+            if (login_val.length === 0 || paswd_val.length === 0 || social_network_id.length === 0) {
                 alert("Login and Password should not be empty!");
                 return false;
             }
 
-            let tmp_cookie = getCookie();
             let request = new XMLHttpRequest();
-            request.open('GET', `/api/add_social_network_account?principal_id=${tmp_cookie.id}&social_network_id=${social_network_id}&login=${login_val}&password=${paswd_val}`, true)
+            request.open('GET', `/api/add_social_network_account?principal_id=${getCookie().id}&social_network_id=${social_network_id}&login=${login_val}&password=${paswd_val}`, true)
             request.onload = function () {
-                let data = JSON.parse(this.response)
-                console.log(data);
-                alert("INVALID CREDENTIALS!");
-                return false;
+                window.location.replace("/add_account");
+                return true;
             }
             request.send()
         }
 
         document.getElementById('form_box').addEventListener('submit', add_account_handle);
-        document.getElementById('add').onclick = () => {
-            window.location.replace("/add_account");
-        };
-
     </script>
-    {% endblock %}
 {% endblock %}

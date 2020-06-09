@@ -1,33 +1,32 @@
 {% extends 'author_side/author_header_template.html' %}
 
 {# header or includes - can not be overwriten at the same time #}
-{% block header %}
-    {#   Meta info inludes and other... #}
-    {% include 'author_side/author_header_template.html' %}
-{% endblock %}
+{#{% block header %}#}
+{#   Meta info inludes and other... #}
+{#{% endblock %}#}
+{##}
+{#{% block styles_include %}#}
+{#    Style includes in header... #}
+{#{% endblock %}#}
+{##}
+{#{% block code_include %}#}
+{#    JS includes in header... #}
+{#{% endblock %}#}
 
-{% block styles_include %}
-    {#    Style includes in header... #}
-{% endblock %}
-
-{% block code_include %}
-    {#    JS includes in header... #}
-{% endblock %}
-
-{% block body %}
+{% block content %}
     <div class="header-bar">
-    SOME TEXT
+        SOME TEXT
     </div>
     <div class="box">
         <form id="form_box">
             <label for="post"><input autocomplete="off" class="prompt"
-                                         id="post" name="post"
-                                         placeholder="Post"
-                                         type="text"/></label>
+                                     id="post" name="post"
+                                     placeholder="Post"
+                                     type="text"/></label>
             <button class="button" id="search">SEARCH</button>
         </form>
     </div>
     <div class="lower-info">
-    SOME TEXT
+        SOME TEXT
     </div>
 {% endblock %}

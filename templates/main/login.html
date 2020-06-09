@@ -47,7 +47,6 @@
             request.open('GET', `/api/auth?login=${login_val}&paswd=${paswd_val}`, true)
             request.onload = function () {
                 let data = JSON.parse(this.response)
-                console.log(data);
                 if (request.status >= 200 && request.status < 400 && data.length !== 0) {
                     // SET AUTH COOKIE //
                     let tmp_cookie = getCookie();
