@@ -336,11 +336,11 @@ class AuthorTeamWorksByNetwork(BaseApiEndpoint):
                    INNER JOIN social_network
                               ON account.principal_id = social_network.id
           WHERE orders.date
-               > date('{params['begin_date']}')
+               >= date('{params['begin_date']}')
              AND orders.date
-               < date('{params['end_date']}')
+               <= date('{params['end_date']}')
           GROUP BY social_network.id, author_agent.group_id
-          HAVING count(social_network.id) > {params['limit']}) AS foo
+          HAVING count(social_network.id) >= {params['limit']}) AS foo
              INNER JOIN agent ON agent.id = foo.group_id
              INNER JOIN author_agent ON agent.id = author_agent.group_id
              INNER JOIN author ON author.id = author_agent.author_id
