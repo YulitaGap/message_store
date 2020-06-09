@@ -1,27 +1,29 @@
 {% extends 'html_base.html' %}
 
 {% block body %}
-    <h1>Enter the data to register</h1>
-    <form id='register_form'>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+    <div id="main">
+         <h1 id='main_head'>Register</h1>
+    <form class="form-style-2" id='register_form'>
         <label for="name">name</label>
-        <input autocomplete="off"
+        <input class="input-field" autocomplete="off"
                id="name" placeholder="Full Name" type="text"/>
 
         <label for='username'>login</label>
-        <input autocomplete="off" id='username'
+        <input class="input-field" autocomplete="off" id='username'
                placeholder="Username" type="text"/>
 
         <label for='password'>password</label>
-        <input autocomplete="off" id='password'
+        <input class="input-field" autocomplete="off" id='password'
                placeholder="Password" type="text"/>
 
         <label for="is_author">is_author</label>
-        <input id="is_author" type="checkbox" value="terms"
+        <input class="input-field" id="is_author" type="checkbox" value="terms"
                class="checkbox">
 
-        <button type="submit">Sign Up</button>
+        <button class="login_button" id="sign_up" type="submit">Sign Up</button>
     </form>
-
+    </div>
     <script type="text/javascript">
         function register_handle(event) {
             event.preventDefault();
