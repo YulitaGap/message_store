@@ -173,3 +173,32 @@ def add_account(name, login, password, author):
             """
 
     return query
+
+
+def general_discount(author_id, sale_to, discount):
+    """
+    Discount for all the styles
+    :param author_id:
+    :param sale_to:
+    :param discount:
+    :return:
+    """
+    query = \
+        f"""
+       insert into discount(author_id, style_id, sale_to, discount)
+       values
+       ({author_id}, 1, cast({sale_to} as date), {discount}),
+       ({author_id}, 2, cast({sale_to} as date), {discount}),
+       ({author_id}, 3, cast({sale_to} as date), {discount}),
+       ({author_id}, 4, cast({sale_to} as date), {discount}),
+       ({author_id}, 5, cast({sale_to} as date), {discount}),
+       ({author_id}, 6, cast({sale_to} as date), {discount}),
+       ({author_id}, 7, cast({sale_to} as date), {discount}),
+       ({author_id}, 8, cast({sale_to} as date), {discount}),
+       ({author_id}, 9, cast({sale_to} as date), {discount}),    
+       ({author_id}, 10, cast({sale_to} as date), {discount}),
+       ({author_id}, 11, cast({sale_to} as date), {discount}),
+       ({author_id}, 12, cast({sale_to} as date), {discount}),
+       ({author_id}, 13, cast({sale_to} as date), {discount});
+       """
+    return query

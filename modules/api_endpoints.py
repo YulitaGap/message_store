@@ -20,7 +20,7 @@ def connect_to_db(func):
                                           password="postgres",
                                           host="127.0.0.1",
                                           port="5432",
-                                          database="message_store")
+                                          database="AENDPOINTTESTS")
 
             # ################## OUTER FUNCTION  ###################
             return func(query, connection)
@@ -830,6 +830,15 @@ class StartGeneralAuthorDiscount(BaseApiEndpoint):
         f"""
     """
     ROUTE = "/start_general_author_discount"
+    PARSER = reqparse.RequestParser()
+    PARSER.add_argument("author_id", type=int, help="id of the author")
+    PARSER.add_argument("sale_to", type=str, help="date when the discount ends")
+    PARSER.add_argument("discount", type=float, help="the discount value in %")
+
+    def get(self):
+        args = self.PARSER.parse_args(strict=True)
+        self.data_base_updating_query(
+            sb.general_discount(args['author_id'], args['sale_to'], args['discount']))
 
 
 class SetPriceAuthor(BaseApiEndpoint):
@@ -861,8 +870,11 @@ class GetAuthorStatistics(BaseApiEndpoint):
     """
     SQL_QUERY = lambda self_, params: \
         f"""
+    
     """
     ROUTE = "/get_author_statistics"
+
+
 # ######################### SITE LOGIC ########################################
 
 
