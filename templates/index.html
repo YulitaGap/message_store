@@ -2,15 +2,13 @@
 
 {% block body %}
     <h1>The Best Message Sore Ever :)</h1>
-    <div id="login">
-        <form method="get" action='/register' class="box" id="left">
-            <button class="press button" id="sign_up">Sign Up</button>
-        </form>
+    <form method="get" action='/register' class="box" id="left">
+        <button class="press button" id="sign_up">Sign Up</button>
+    </form>
 
-        <form method="post" action='/login' class="box" id="right">
-            <button class="press button" id="log_in">Login</button>
-        </form>
-    </div>
+    <form method="post" action='/login' class="box" id="right">
+        <button class="press button" id="log_in">Login</button>
+    </form>
 {% endblock %}
 
 

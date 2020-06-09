@@ -1,30 +1,22 @@
 {% extends 'user_side/user_header_template.html' %}
 
 {% block content %}
-    <div class="box">
-        <form id="form_box">
+    <form id="form_box">
 
-            <label for="login">login</label>
-            <input autocomplete="off" class="prompt"
-                   id="login" name="login"
-                   placeholder="Login"
-                   type="text"/>
+        <label for="login">login</label>
+        <input autocomplete="off" id="login" name="login"
+               placeholder="Login" type="text"/>
 
-            <label for="password">password</label>
-            <input autocomplete="off" class="prompt"
-                   id="password" name="pasw"
-                   placeholder="Password"
-                   type="password"/>
+        <label for="password">password</label>
+        <input autocomplete="off" id="password" name="pasw"
+               placeholder="Password" type="password"/>
 
-            <label for="sn_id">social network id</label>
-            <input autocomplete="off" class="prompt"
-                   id="sn_id" name="social network id"
-                   placeholder="social network id"
-                   type="text"/>
+        <label for="sn_id">social network id</label>
+        <input autocomplete="off" id="sn_id" name="social network id"
+               placeholder="social network id" type="text"/>
 
-            <button class="button" id="add">Add</button>
-        </form>
-    </div>
+        <button id="add">Add</button>
+    </form>
     <script>
         function add_account_handle(event) {
             event.preventDefault();

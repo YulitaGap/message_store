@@ -1,19 +1,13 @@
 {% extends 'author_side/author_header_template.html' %}
 
 {% block content %}
-    <div class="header-bar">
-        SOME TEXT
-    </div>
     <div class="box">
         <form id="form_box">
-            <label for="post"><input autocomplete="off" class="prompt"
-                                     id="post" name="post"
-                                     placeholder="Post"
-                                     type="text"/></label>
+            <label for="post">post</label>
+            <input autocomplete="off" id="post"
+                   name="post" placeholder="Post"
+                   type="text"/>
             <button class="button" id="search">SEARCH</button>
         </form>
-    </div>
-    <div class="lower-info">
-        SOME TEXT
     </div>
 {% endblock %}

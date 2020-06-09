@@ -1,43 +1,31 @@
 {% extends 'user_side/user_header_template.html' %}
 
 {% block content %}
-    <div class="box">
-        <form id="form_box">
+    <form id="form_box">
 
-            <label for="ac_id"></label>
-            <input autocomplete="off" class="prompt"
-                   id="ac_id" name="account id"
-                   placeholder="Account id"
-                   type="text"/>
+        <label for="ac_id"></label>
+        <input autocomplete="off" id="ac_id" name="account id"
+               placeholder="Account id" type="text"/>
 
-            <label for="author_ids"></label>
-            <input autocomplete="off" class="prompt"
-                   id="author_ids" name="author_ids"
-                   placeholder="Author ids"
-                   type="text"/>
+        <label for="author_ids"></label>
+        <input autocomplete="off" id="author_ids" name="author_ids"
+               placeholder="Author ids" type="text"/>
 
-            <label for="date"></label>
-            <input autocomplete="off" class="prompt"
-                   id="date" name="date"
-                   placeholder="Due date"
-                   type="date"/>
+        <label for="date"></label>
+        <input autocomplete="off" id="date" name="date"
+               placeholder="Due date" type="date"/>
 
-            <label for="style_id"></label>
-            <input autocomplete="off" class="prompt"
-                   id="style_id" name="style"
-                   placeholder="Style id"
-                   type="text"/>
+        <label for="style_id"></label>
+        <input autocomplete="off" id="style_id" name="style"
+               placeholder="Style id" type="text"/>
 
-            <label for="volume"></label>
-            <input autocomplete="off" class="prompt"
-                   id="volume" name="volume"
-                   placeholder="Volume"
-                   type="number"/>
+        <label for="volume"></label>
+        <input autocomplete="off" id="volume" name="volume"
+               placeholder="Volume" type="number"/>
 
 
-            <button class="button" id="create">Create</button>
-        </form>
-    </div>
+        <button id="create">Create</button>
+    </form>
     <script>
         function create_order_handle(event) {
             event.preventDefault();

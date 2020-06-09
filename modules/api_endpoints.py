@@ -3,6 +3,7 @@ import psycopg2
 from flask_restful import Resource, reqparse, abort
 
 from modules import sql_builder as sb
+from modules.db_credentials import db_auth
 
 """
 The REST API documentation is at 'docs/rest_api.txt'
@@ -16,11 +17,11 @@ _STATUS_INVALID_PARAMETERS = 400
 def connect_to_db(func):
     def res_func(query):
         try:
-            connection = psycopg2.connect(user="postgres",
-                                          password="test",
-                                          host="127.0.0.1",
-                                          port="5432",
-                                          database="message_store_db")
+            connection = psycopg2.connect(user=db_auth.user,
+                                          password=db_auth.paswd,
+                                          host=db_auth.ip,
+                                          port=db_auth.port,
+                                          database=db_auth.db_name)
 
             # ################## OUTER FUNCTION  ###################
             return func(query, connection)
@@ -267,15 +268,17 @@ class ClientsTrustedAuthors(BaseApiEndpoint):
         цього доступу.
     """
     SQL_QUERY = lambda _self, params: f"""
-    select author.name from 
-    (select distinct account_id, agent_id from access_history
-    where give_access = true
-    intersect
-    select distinct account_id, agent_id from access_history
-    where give_access = false) as s
-    inner join author_agent on (author_agent.group_id = s.agent_id)
-    inner join author on (author.id = author_agent.author_id)
-    inner join account on (account.id = s.account_id)
+    select author.name
+    from (select distinct account_id, agent_id
+          from access_history
+          where give_access = true
+          intersect
+          select distinct account_id, agent_id
+          from access_history
+          where give_access = false) as s
+             inner join author_agent on (author_agent.group_id = s.agent_id)
+             inner join author on (author.id = author_agent.author_id)
+             inner join account on (account.id = s.account_id)
     where account.principal_id = {params['client_id']};
     """
     ROUTE = "/clients_trusted_authors"
@@ -812,7 +815,8 @@ class StartAuthorDiscount(BaseApiEndpoint):
     PARSER = reqparse.RequestParser()
     PARSER.add_argument("author_id", type=int, help="id of the author")
     PARSER.add_argument("style_id", type=int, help="id of the style")
-    PARSER.add_argument("sale_to", type=str, help="date when the discount ends")
+    PARSER.add_argument("sale_to", type=str,
+                        help="date when the discount ends")
     PARSER.add_argument("discount", type=float, help="the amount of discount")
 
     def get(self):
@@ -832,13 +836,15 @@ class StartGeneralAuthorDiscount(BaseApiEndpoint):
     ROUTE = "/start_general_author_discount"
     PARSER = reqparse.RequestParser()
     PARSER.add_argument("author_id", type=int, help="id of the author")
-    PARSER.add_argument("sale_to", type=str, help="date when the discount ends")
+    PARSER.add_argument("sale_to", type=str,
+                        help="date when the discount ends")
     PARSER.add_argument("discount", type=float, help="the discount value in %")
 
     def get(self):
         args = self.PARSER.parse_args(strict=True)
         self.data_base_updating_query(
-            sb.general_discount(args['author_id'], args['sale_to'], args['discount']))
+            sb.general_discount(args['author_id'], args['sale_to'],
+                                args['discount']))
 
 
 class SetPriceAuthor(BaseApiEndpoint):
@@ -854,7 +860,8 @@ class SetPriceAuthor(BaseApiEndpoint):
     """
     ROUTE = "/set_price_author"
     PARSER = reqparse.RequestParser()
-    PARSER.add_argument("new_price", type=int, help="new price per 1000 symbols")
+    PARSER.add_argument("new_price", type=int,
+                        help="new price per 1000 symbols")
     PARSER.add_argument("author_id", type=int, help="id of the author")
 
     def get(self):

@@ -1,28 +1,18 @@
 {% extends 'author_side/author_header_template.html' %}
 
 {% block content %}
-    <div class="header-bar">
-        SOME TEXT
-    </div>
     <div class="box">
         <form id="form_box">
 
-            <label for="date"></label>
-            <input autocomplete="off" class="prompt"
-                   id="date" name="date"
-                   placeholder="Date"
-                   type="date"/>
+            <label for="date">date</label>
+            <input autocomplete="off" id="date" name="date"
+                   placeholder="Date" type="date"/>
 
-            <label for="style"></label>
-            <input autocomplete="off" class="prompt"
-                   id="style" name="style"
-                   placeholder="Style id"
-                   type="text"/>
+            <label for="style">style</label>
+            <input autocomplete="off" id="style" name="style"
+                   placeholder="Style id" type="text"/>
 
             <button class="button" id="sale">SALE</button>
         </form>
-    </div>
-    <div class="lower-info">
-        SOME TEXT
     </div>
 {% endblock %}
