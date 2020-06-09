@@ -77,6 +77,14 @@ def user_catalogue_get():
     """
     return render_template("user_side/user_catalogue.html")
 
+@app.route('/view_author_catalogue', methods=['POST', 'GET'])
+def author_catalogue_get():
+    """
+    render the page to view catalogue
+    """
+    return render_template("author_side/author_catalogue.html")
+
+
 @app.route('/view_catalogue', methods=['POST', 'GET'])
 def catalogue_get():
     """
