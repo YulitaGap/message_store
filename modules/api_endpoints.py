@@ -916,6 +916,11 @@ class PrincipalInfo(BaseApiEndpoint):
     """
     SQL_QUERY = lambda self_, params: \
         f"""
+    select authentication.login as user_login, principal.name, NULL as social_network,
+    NULL  as account_id, NULL as account_login from principal
+    inner join authentication on authentication.id = principal.id
+    where principal.id = {params['principal_id']}
+    union
     select authentication.login as user_login, principal.name,
     social_network.name as social_network, account.id as account_id,
     account.login as account_login from principal
@@ -923,6 +928,7 @@ class PrincipalInfo(BaseApiEndpoint):
     inner join account on account.principal_id = principal.id
     inner join social_network on social_network.id = account.social_network_id
     where principal.id = {params['principal_id']}
+    order by account_id desc
     """
     ROUTE = "/principal_info"
     PARSER = reqparse.RequestParser()
