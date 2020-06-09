@@ -111,13 +111,7 @@ def author_statistics_get():
     """
     return render_template("author_side/author_statistics.html")
 
-@app.route('/log_out', methods=['GET'])
-def log_out():
-    """
-    render the page to log out
-    """
-    return render_template("./index.html")
-    
+
 # ############################ END OF EXAMPLE #############################
 if __name__ == '__main__':
     app.run(host="0.0.0.0", debug=True)

@@ -55,9 +55,9 @@
                     setCookie(tmp_cookie);
                     /////////////////////
                     if (data[0][1]) {
-                        window.location.replace(`/author?id=${data[0][0]}`);
+                        window.location.replace("/author_main");
                     } else {
-                        window.location.replace(`/user?id=${data[0][0]}`);
+                        window.location.replace("/user_main");
                     }
                     return true;
                 }
