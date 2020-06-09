@@ -153,7 +153,7 @@ def add_account(name, login, password, author):
         query = f"""
             insert into authentication(login, password, author)
             values ('{login}', '{password}', true);
-            
+
             INSERT INTO author(id, name, price_per_1000, active)
             VALUES ((select id from authentication
             where login = '{login}'

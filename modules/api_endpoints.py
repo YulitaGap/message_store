@@ -17,10 +17,10 @@ def connect_to_db(func):
     def res_func(query):
         try:
             connection = psycopg2.connect(user="postgres",
-                                          password="test",
+                                          password="postgres",
                                           host="127.0.0.1",
                                           port="5432",
-                                          database="message_store_db")
+                                          database="message_store")
 
             # ################## OUTER FUNCTION  ###################
             return func(query, connection)
@@ -760,20 +760,20 @@ class ViewAuthorPosts(BaseApiEndpoint):
     """
     SQL_QUERY = lambda _self, params: \
         f""" 
-    select posts.text, posts.date, posts.account_id from posts
+    select posts.text, text(posts.date), posts.account_id from posts
     inner join orders on posts.id = orders.post_id
     inner join agent on orders.agent_id = agent.id
     inner join author_agent on agent.id = author_agent.group_id
     inner join author on author_agent.author_id = author.id
     where author.id = {params['author_id']}
     """
-    ROUTE = "/all_posts"
+    ROUTE = "/view_author_posts"
     PARSER = reqparse.RequestParser()
     PARSER.add_argument("author_id", type=int, help="id of the author")
 
     def get(self):
         args = self.PARSER.parse_args(strict=True)
-        return self.data_base_selecting_query(self.SQL_QUERY(args)), _STATUS_FOUND
+        return self.data_base_select_query(self.SQL_QUERY(args)), _STATUS_FOUND
 
 
 class UpdateAuthorPost(BaseApiEndpoint):
@@ -788,7 +788,7 @@ class UpdateAuthorPost(BaseApiEndpoint):
     set text = {params['text']} 
     where id = {params['post_id']}; 
     """
-    ROUTE = "/update_post"
+    ROUTE = "/update_author_post"
     PARSER = reqparse.RequestParser()
     PARSER.add_argument("post_id", type=int, help="id of the post")
     PARSER.add_argument("text", type=str, help="new version of text")
@@ -806,14 +806,14 @@ class StartAuthorDiscount(BaseApiEndpoint):
     SQL_QUERY = lambda self_, params: \
         f"""
     insert into discount (author_id, style_id, sale_to, discount)
-    values {params['author_id']}, {params['style_id']}, date({params['sale_to']}), {params['discount']}
+    values ({params['author_id']}, {params['style_id']}, date({params['sale_to']}), {params['discount']})
     """
     ROUTE = "/start_style_discount"
     PARSER = reqparse.RequestParser()
     PARSER.add_argument("author_id", type=int, help="id of the author")
     PARSER.add_argument("style_id", type=int, help="id of the style")
     PARSER.add_argument("sale_to", type=str, help="date when the discount ends")
-    PARSER.add_argument("discount", type=int, help="the amount of discount")
+    PARSER.add_argument("discount", type=float, help="the amount of discount")
 
     def get(self):
         args = self.PARSER.parse_args(strict=True)
@@ -843,7 +843,7 @@ class SetPriceAuthor(BaseApiEndpoint):
     set price_per_1000 = {params['new_price']}
     where id = {params['author_id']};
     """
-    ROUTE = "/set_price"
+    ROUTE = "/set_price_author"
     PARSER = reqparse.RequestParser()
     PARSER.add_argument("new_price", type=int, help="new price per 1000 symbols")
     PARSER.add_argument("author_id", type=int, help="id of the author")
