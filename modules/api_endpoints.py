@@ -366,7 +366,7 @@ class ClientsHalfDiscountsByStyle(BaseApiEndpoint):
         отримали 50% знижку.
     """
     SQL_QUERY = lambda _self, params: f"""
-    select style.name, count(discount.discount) FILTER (WHERE discount.discount = 0.9)  
+    select style.name, count(discount.discount) FILTER (WHERE discount.discount = 0.5)  
     from orders
     inner join posts on posts.id = orders.post_id
     inner join style on style.id = posts.style_id
