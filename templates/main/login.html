@@ -16,24 +16,26 @@
 {% block body %}
     <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
     <div class="box">
-    <div id="main">
-         <h1 id='main_head'>Log in</h1>
+        <div id="main">
+            <h1 id='main_head'>Log in</h1>
 
-        <form class="form-style-2" id="form_box">
+            <form class="form-style-2" id="form_box">
 
-            <label for="username">Enter username:</label>
-            <input class="input-field" autocomplete="off" id="username" name="login"
-                   placeholder="Username" type="text"/>
+                <label for="username">Enter username:</label>
+                <input class="input-field" autocomplete="off" id="username"
+                       name="login"
+                       placeholder="Username" type="text"/>
 
-            <label for="password">Enter password:</label>
-            <input class="input-field" autocomplete="off" id="password" name="pasw"
-                   placeholder="Password" type="password"/>
+                <label for="password">Enter password:</label>
+                <input class="input-field" autocomplete="off" id="password"
+                       name="pasw"
+                       placeholder="Password" type="password"/>
 
 
-        </form>
-        <button class="login_button" id="log_in">Log In</button>
-        <button class="login_button" id="sign_up">Sign Up</button>
-    </div>
+                <button class="login_button" id="log_in">Log In</button>
+            </form>
+            <button class="login_button" id="sign_up">Sign Up</button>
+        </div>
     </div>
     <script>
         function login_handle(event) {
@@ -50,6 +52,7 @@
             request.open('GET', `/api/auth?login=${login_val}&paswd=${paswd_val}`, true)
             request.onload = function () {
                 let data = JSON.parse(this.response)
+                alert(data)
                 if (request.status >= 200 && request.status < 400 && data.length !== 0) {
                     // SET AUTH COOKIE //
                     let tmp_cookie = getCookie();
