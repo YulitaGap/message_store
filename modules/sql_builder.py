@@ -10,25 +10,25 @@ def find_agent(lst):
     :param lst: list of author_id
     :return: agent_id
     """
-    query = """
-(select agent.id from agent
-inner join author_agent on (agent.id = author_agent.group_id)
-where author_agent.author_id = {}
-group by agent.id)
-""".format(lst[0])
+    query = f"""
+        (select agent.id
+         from agent
+                  inner join author_agent on (agent.id = author_agent.group_id)
+         where author_agent.author_id = {lst[0]}
+         group by agent.id)
+        """
     for i in range(1, len(lst)):
-        query += """intersect"""
-        query += """
-(select agent.id from agent
-inner join author_agent on (agent.id = author_agent.group_id)
-where author_agent.author_id = {}
-group by agent.id)
-""".format(lst[i])
-    query += """limit 1"""
+        query += f"""
+            intersect
+            (select agent.id
+             from agent
+                  inner join author_agent on (agent.id = author_agent.group_id)
+             where author_agent.author_id = {lst[i]}
+             group by agent.id)
+            """
+    query += "limit 1"
     return query
 
-
-# print(find_agent([30, 31, 32]))
 
 def create_agent(lst):
     """
@@ -37,22 +37,22 @@ def create_agent(lst):
     :return: agent_id
     """
     name = str(time.time())
-    query = """
-INSERT INTO agent(name) VALUES ('{}');
-""".format(name)
+    query = f"INSERT INTO agent(name) VALUES ('{name}');"
     for i in lst:
-        query += """
-WITH idi AS (
-SELECT id FROM agent
-WHERE name = '{}'
-)
-""".format(name)
-        query += """INSERT INTO author_agent(group_id,author_id) VALUES ((select * from idi),{});
-""".format(i)
-    query += """
-SELECT id FROM agent
-WHERE name = '{}'
-""".format(name)
+        query += f"""
+            WITH idi AS (
+                SELECT id
+                FROM agent
+                WHERE name = '{name}'
+            )
+
+            INSERT INTO author_agent(group_id, author_id)
+            VALUES ((select * from idi), {i});
+        """
+    query += f"""
+        SELECT id FROM agent
+        WHERE name = '{name}'
+    """
     return query
 
 
@@ -66,40 +66,36 @@ def get_price(lst, style_id):
     :param style_id: style_id
     :return: price_per_1000
     """
-    query = """
-select sum(price_per_1000)/{} as price_per_1000 from
-(""".format(len(lst))
-    subquery = """
-(select
-CASE
-    WHEN discount.sale_to >= CURRENT_DATE and discount.style_id = {} THEN author.price_per_1000 * discount.discount
-    ELSE author.price_per_1000
-END
-from author
-left join discount on (author.id = discount.author_id)
-where author.id = {})
-""".format(style_id, lst[0])
+    query = f"select sum(price_per_1000)/{len(lst)} as price_per_1000 from ("
+    subquery = f"""
+        (select CASE
+                    WHEN discount.sale_to >= CURRENT_DATE 
+                            and discount.style_id = {style_id}
+                        THEN author.price_per_1000 * discount.discount
+                    ELSE author.price_per_1000
+                    END
+         from author
+                  left join discount on (author.id = discount.author_id)
+         where author.id = {lst[0]})
+    """
     for i in range(1, len(lst)):
-        subquery += """union all"""
-        subquery += """
-(select
-CASE
-    WHEN discount.sale_to >= CURRENT_DATE and discount.style_id = {} THEN author.price_per_1000 * discount.discount
-    ELSE author.price_per_1000
-END
-from author
-left join discount on (author.id = discount.author_id)
-where author.id = {})
-""".format(style_id, lst[i])
-    query += subquery
-    query += """)as s"""
-    return query
+        subquery += f"""
+            union all
+            (select CASE
+                        WHEN discount.sale_to >= CURRENT_DATE 
+                                and discount.style_id = {style_id}
+                            THEN author.price_per_1000 * discount.discount
+                        ELSE author.price_per_1000
+                        END
+             from author
+                      left join discount on (author.id = discount.author_id)
+             where author.id = {lst[i]})
+        """
+    return query + subquery + ") as s"
 
 
-# print(get_price([30, 31, 32], 1))
-
-
-def create_order(account_id, principal_id, agent_id, style_id, average_price, volume):
+def create_order(account_id, principal_id, agent_id, style_id, average_price,
+                 volume):
     """
     Take all inputs, creates empty post and order
     :param account_id: account_id
@@ -111,15 +107,17 @@ def create_order(account_id, principal_id, agent_id, style_id, average_price, vo
     :return: creates post and order
     """
     price = volume / 1000 * average_price
-    query = """
-INSERT INTO posts(account_id, text, style_id, date) VALUES ({}, '', {}, CURRENT_DATE);
-WITH idi AS (
-SELECT max(id) from posts)
-""".format(account_id, style_id)
-    query += """
-INSERT INTO orders(principal_id, agent_id, volume, post_id, price, date, status) VALUES ({}, {}, {}, (select * from idi), {}, CURRENT_DATE, 'opened');
-""".format(principal_id, agent_id, volume, price)
-    return query
+    return f"""
+        INSERT INTO posts(account_id, text, style_id, date)
+        VALUES ({account_id}, '', {style_id}, CURRENT_DATE);
+        WITH idi AS (
+            SELECT max(id)
+            from posts)
+        INSERT INTO orders(principal_id, agent_id, volume, post_id, price,
+                           date, status)
+        VALUES ({principal_id}, {agent_id}, {volume}, 
+                (select * from idi), {price}, CURRENT_DATE, 'opened');
+    """
 
 
 # print(create_order(1, 1, 1, 1, 400, 1000))
@@ -133,11 +131,10 @@ def create_account(principal_id, social_network_id, login, password):
     :param password : password
     :return: creates account
     """
-    query = """
-    INSERT INTO account(principal_id, social_network_id, login, password) 
-    VALUES ({},{},'{}','{}');
-    """.format(principal_id, social_network_id, login, password)
-    return query
+    return f"""
+        INSERT INTO account(principal_id, social_network_id, login, password)
+        VALUES ({principal_id}, {social_network_id}, '{login}', '{password}');
+    """
 
 
 def add_account(name, login, password, author):
@@ -150,29 +147,29 @@ def add_account(name, login, password, author):
     :return:
     """
     if author == 1:
-        query = f"""
+        return f"""
             insert into authentication(login, password, author)
             values ('{login}', '{password}', true);
-
+            
             INSERT INTO author(id, name, price_per_1000, active)
-            VALUES ((select id from authentication
-            where login = '{login}'
-            and password = '{password}' 
-            and author = true),  '{name}', 500, FALSE);
-            """
+            VALUES ((select id
+                     from authentication
+                     where login = '{login}'
+                       and password = '{password}'
+                       and author = true), '{name}', 500, FALSE);
+        """
     else:
-        query = f"""
+        return f"""
             insert into authentication(login, password, author)
             values ('{login}', '{password}', false);
-
+            
             INSERT INTO principal(id, name)
-            VALUES ((select id from authentication
-            where login = '{login}'
-            and password = '{password}' 
-            and author = false),  '{name}');
-            """
-
-    return query
+            VALUES ((select id
+                     from authentication
+                     where login = '{login}'
+                       and password = '{password}'
+                       and author = false), '{name}');
+        """
 
 
 def general_discount(author_id, sale_to, discount):
@@ -183,22 +180,19 @@ def general_discount(author_id, sale_to, discount):
     :param discount:
     :return:
     """
-    query = \
-        f"""
-       insert into discount(author_id, style_id, sale_to, discount)
-       values
-       ({author_id}, 1, cast({sale_to} as date), {discount}),
-       ({author_id}, 2, cast({sale_to} as date), {discount}),
-       ({author_id}, 3, cast({sale_to} as date), {discount}),
-       ({author_id}, 4, cast({sale_to} as date), {discount}),
-       ({author_id}, 5, cast({sale_to} as date), {discount}),
-       ({author_id}, 6, cast({sale_to} as date), {discount}),
-       ({author_id}, 7, cast({sale_to} as date), {discount}),
-       ({author_id}, 8, cast({sale_to} as date), {discount}),
-       ({author_id}, 9, cast({sale_to} as date), {discount}),    
-       ({author_id}, 10, cast({sale_to} as date), {discount}),
-       ({author_id}, 11, cast({sale_to} as date), {discount}),
-       ({author_id}, 12, cast({sale_to} as date), {discount}),
-       ({author_id}, 13, cast({sale_to} as date), {discount});
+    return f"""
+        insert into discount(author_id, style_id, sale_to, discount)
+        values ({author_id}, 1, cast({sale_to} as date), {discount}),
+               ({author_id}, 2, cast({sale_to} as date), {discount}),
+               ({author_id}, 3, cast({sale_to} as date), {discount}),
+               ({author_id}, 4, cast({sale_to} as date), {discount}),
+               ({author_id}, 5, cast({sale_to} as date), {discount}),
+               ({author_id}, 6, cast({sale_to} as date), {discount}),
+               ({author_id}, 7, cast({sale_to} as date), {discount}),
+               ({author_id}, 8, cast({sale_to} as date), {discount}),
+               ({author_id}, 9, cast({sale_to} as date), {discount}),
+               ({author_id}, 10, cast({sale_to} as date), {discount}),
+               ({author_id}, 11, cast({sale_to} as date), {discount}),
+               ({author_id}, 12, cast({sale_to} as date), {discount}),
+               ({author_id}, 13, cast({sale_to} as date), {discount});
        """
-    return query
