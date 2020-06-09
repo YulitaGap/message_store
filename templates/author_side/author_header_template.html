@@ -15,7 +15,13 @@
 
 {% block body %}
     {% block nav_bar %}
-        {#        TODO: implement author nav bar #}
+        <div class="nav_bar">
+          <a class="active" href="/author_main">Home</a>
+          <a href="/update_price">Update price</a>
+          <a href="/start_sale">Start sale</a>
+          <a href="/view_catalogue"> Catalogue </a>
+          <a href="/view_author_statistics">Statistics</a>
+        </div>
     {% endblock %}
     {% block content %}
         {#        Your main content here... #}
