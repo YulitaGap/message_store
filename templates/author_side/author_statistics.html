@@ -59,7 +59,7 @@
                 number: true,
                 // important order as in 'fields' array
                 query: (start, end,number) => {
-                    return `/api/constant_clients?author_id=${cookie}&limit=${number}&begin_date=${start}&end_date=${end}`;
+                    return `/api/constant_clients?author_id=${cookie.id}&limit=${number}&begin_date=${start}&end_date=${end}`;
                 }
             }, { /*       query number #2        */
                 client: false,
@@ -95,7 +95,7 @@
                 number: true,
                 // important order as in 'fields' array
                 query: (start, end, number) => {
-                    return `/api/author_team_works_by_network?author_id=${cookie.id}&begin_date=${start}&end_date=${end}4&limit=${number}`;
+                    return `/api/author_team_works_by_network?author_id=${cookie.id}&begin_date=${start}&end_date=${end}&limit=${number}`;
                 }
             },{ /*       query number  #6        */
                 client: false,
