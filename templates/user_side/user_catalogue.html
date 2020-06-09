@@ -5,19 +5,26 @@
         <label for="q_mode">Select option to view: </label>
         <select name="stats" id="q_mode" onfocus="this.selectedIndex = -1;">
             <option value="0">--</option>
-            <option value="1"> styles</option>
-            <option value="2"> authors</option>
+            <option value="1"> styles  </option>
+            <option value="2"> authors </option>
+            <option value="3"> my orders </option>
         </select>
         <form id="form_box">
+
+
+
             <button class="button" id="button" hidden>GET</button>
         </form>
     </div>
     <script>
         const cookie = getCookie();
         let mode_selector = document.getElementById("q_mode");
-        const fields_ids = []
         const modes = [
             { /*         query number #0        */
+                author: false,
+                start: false,
+                end: false,
+                number: false
             }, { /*       query number #1        */
 
                 query: () => {
@@ -27,6 +34,12 @@
 
                 query: () => {
                     return `/api/view_authors`;
+                }
+            }
+            , { /*       query number #3        */
+
+                query: () => {
+                    return `/api/view_user_orders?client_id=${cookie.id}`;
                 }
             }
 
