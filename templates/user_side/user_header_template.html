@@ -1,6 +1,7 @@
 {% extends 'html_base.html' %}
 
 {% block body %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
     {% block nav_bar %}
         <div class="nav_bar">
             <a class="active" href="/user_main">Home</a>
