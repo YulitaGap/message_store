@@ -31,8 +31,11 @@ def connect_to_db(func):
             abort(_STATUS_INVALID_PARAMETERS)
         finally:
             # closing database connection.
-            if connection:
-                connection.close()
+            try:
+                if connection:
+                    connection.close()
+            except UnboundLocalError:
+                pass
 
     return res_func
 
@@ -60,7 +63,6 @@ class BaseApiEndpoint(Resource):
         finally:
             cursor.close()
 
-    # TODO Виідалити це і написати нормально (або змиритися)
     @staticmethod
     @connect_to_db
     def data_base_update_select_query(query: str, connection=None) -> dict:
@@ -460,6 +462,7 @@ class AuthorsOrderedTopNetworks(BaseApiEndpoint):
     PARSER.add_argument('end_date', type=str, help='end of search period')
 
 
+# #################### SITE FUNCTIONAL ENDPOINTS ##############################
 class CreateOrder(BaseApiEndpoint):
     """
     Action:
@@ -493,29 +496,33 @@ class CreateOrder(BaseApiEndpoint):
 
         return self.data_base_updating_query(
             sb.create_order(args['account_id'], args['principal_id'],
-                            agent_id[0][0], args['style_id'], float(price[0][0]), args['volume'])), _STATUS_FOUND
+                            agent_id[0][0], args['style_id'],
+                            float(price[0][0]), args['volume'])), _STATUS_FOUND
 
 
 # ------- Endpoints for user -------
 
-class AddAccount(BaseApiEndpoint):
+class AddSocialNetworkAccount(BaseApiEndpoint):
     """
     Action:
-        add_account
+        add_social_network_account
     Desc:
         Покупець додає аккаунт у соц.мережі.
     """
-    ROUTE = "/add_account"
+    ROUTE = "/add_social_network_account"
     PARSER = reqparse.RequestParser()
     PARSER.add_argument('principal_id', type=int, help='id of the client')
-    PARSER.add_argument('social_network_id', type=int, help='id of the social network')
+    PARSER.add_argument('social_network_id', type=int,
+                        help='id of the social network')
     PARSER.add_argument('login', type=str, help='client login')
     PARSER.add_argument('password', type=str, help='client password')
 
     def get(self):
         args = self.PARSER.parse_args(strict=True)
-        self.data_base_updating_query(sb.create_account(args['principal_id'], args['social_network_id'], args['login'],
-                                                        args['password']))
+        self.data_base_updating_query(
+            sb.create_account(args['principal_id'], args['social_network_id'],
+                              args['login'],
+                              args['password']))
 
 
 class ViewAuthors(BaseApiEndpoint):
@@ -593,7 +600,8 @@ class UpdateUserOrder(BaseApiEndpoint):
 
     def get(self):
         args = self.PARSER.parse_args(strict=True)
-        return self.data_base_updating_query(self.SQL_QUERY(args)), _STATUS_FOUND
+        return self.data_base_updating_query(
+            self.SQL_QUERY(args)), _STATUS_FOUND
 
 
 class ViewUserPost(BaseApiEndpoint):
@@ -648,8 +656,10 @@ class GiveAccess(BaseApiEndpoint):
         Дати або забрати доступ
     """
     SQL_QUERY = lambda _self, params: \
-        f""" INSERT INTO access_history(agent_id, account_id, give_access, date)
-VALUES ({params['agent_id']}, {params['account_id']}, {params['give']}, CURRENT_DATE)
+        f""" 
+        INSERT INTO access_history(agent_id, account_id, give_access, date)
+        VALUES ({params['agent_id']}, {params['account_id']}, {params['give']},
+                CURRENT_DATE)
         """
     PARSER = reqparse.RequestParser()
     ROUTE = "/give_access"
@@ -733,20 +743,20 @@ class ViewAuthorPosts(BaseApiEndpoint):
     """
     SQL_QUERY = lambda _self, params: \
         f""" 
-    select posts.text, posts.date, posts.account_id from posts
+    select posts.text, text(posts.date), posts.account_id from posts
     inner join orders on posts.id = orders.post_id
     inner join agent on orders.agent_id = agent.id
     inner join author_agent on agent.id = author_agent.group_id
     inner join author on author_agent.author_id = author.id
     where author.id = {params['author_id']}
     """
-    ROUTE = "/all_posts"
+    ROUTE = "/view_author_posts"
     PARSER = reqparse.RequestParser()
     PARSER.add_argument("author_id", type=int, help="id of the author")
 
     def get(self):
         args = self.PARSER.parse_args(strict=True)
-        return self.data_base_selecting_query(self.SQL_QUERY(args)), _STATUS_FOUND
+        return self.data_base_select_query(self.SQL_QUERY(args)), _STATUS_FOUND
 
 
 class UpdateAuthorPost(BaseApiEndpoint):
@@ -761,7 +771,7 @@ class UpdateAuthorPost(BaseApiEndpoint):
     set text = {params['text']} 
     where id = {params['post_id']}; 
     """
-    ROUTE = "/update_post"
+    ROUTE = "/update_author_post"
     PARSER = reqparse.RequestParser()
     PARSER.add_argument("post_id", type=int, help="id of the post")
     PARSER.add_argument("text", type=str, help="new version of text")
@@ -779,14 +789,14 @@ class StartAuthorDiscount(BaseApiEndpoint):
     SQL_QUERY = lambda self_, params: \
         f"""
     insert into discount (author_id, style_id, sale_to, discount)
-    values {params['author_id']}, {params['style_id']}, date({params['sale_to']}), {params['discount']}
+    values ({params['author_id']}, {params['style_id']}, date({params['sale_to']}), {params['discount']})
     """
     ROUTE = "/start_style_discount"
     PARSER = reqparse.RequestParser()
     PARSER.add_argument("author_id", type=int, help="id of the author")
     PARSER.add_argument("style_id", type=int, help="id of the style")
     PARSER.add_argument("sale_to", type=str, help="date when the discount ends")
-    PARSER.add_argument("discount", type=int, help="the amount of discount")
+    PARSER.add_argument("discount", type=float, help="the amount of discount")
 
     def get(self):
         args = self.PARSER.parse_args(strict=True)
@@ -816,7 +826,7 @@ class SetPriceAuthor(BaseApiEndpoint):
     set price_per_1000 = {params['new_price']}
     where id = {params['author_id']};
     """
-    ROUTE = "/set_price"
+    ROUTE = "/set_price_author"
     PARSER = reqparse.RequestParser()
     PARSER.add_argument("new_price", type=int, help="new price per 1000 symbols")
     PARSER.add_argument("author_id", type=int, help="id of the author")
@@ -838,6 +848,60 @@ class GetAuthorStatistics(BaseApiEndpoint):
     ROUTE = "/get_author_statistics"
 
 
+# ######################### SITE LOGIC ########################################
+class UserAuth(BaseApiEndpoint):
+    """
+    Action:
+            auth
+        Desc:
+            If valid login and password return the account type
+    """
+    SQL_QUERY = lambda _self, params: f"""
+    SELECT id, author FROM authentication
+    WHERE login='{params["login"]}' and password='{params["paswd"]}';
+    """
+    ROUTE = "/auth"
+    PARSER = reqparse.RequestParser()
+    PARSER.add_argument('login', type=str, help='user login')
+    PARSER.add_argument('paswd', type=str, help='user password')
+
+
+class RegisterUser(BaseApiEndpoint):
+    """
+    Action:
+            auth
+        Desc:
+            If valid login and password return the account type
+    """
+    # TODO: write valid insert query
+    SQL_QUERY = lambda _self, params: f"""
+    SELECT id, author FROM authentication
+    WHERE login='{params["login"]}' and password='{params["paswd"]}';
+    """
+    ROUTE = "/register"
+    PARSER = reqparse.RequestParser()
+    PARSER.add_argument('login', type=str, help='user login')
+    PARSER.add_argument('paswd', type=str, help='user password')
+    PARSER.add_argument('name', type=str, help='user password')
+    PARSER.add_argument('is_author', type=bool, help='user password')
+
+
+class FreeLogin(BaseApiEndpoint):
+    """
+    Action:
+            auth
+        Desc:
+            If valid login and password return the account type
+    """
+    SQL_QUERY = lambda _self, params: f"""
+    SELECT id FROM authentication
+    WHERE login='{params["login"]}';
+    """
+    ROUTE = "/free_login"
+    PARSER = reqparse.RequestParser()
+    PARSER.add_argument('login', type=str, help='user login')
+
+
 ENDPOINTS_LIST = [
     ConstantClients,
     ClientUsedAuthors,
@@ -851,7 +915,10 @@ ENDPOINTS_LIST = [
     ClientsHalfDiscountsByStyle,
     OrdersCountByMonths,
     AuthorsOrderedTopNetworks,
+
+    # SITE FUNCTIONAL ENDPOINTS
     CreateOrder,
+    AddSocialNetworkAccount,
     AddAccount,
     ViewAuthors,
     ViewStyles,
@@ -867,5 +934,8 @@ ENDPOINTS_LIST = [
     StartAuthorDiscount,
     StartGeneralAuthorDiscount,
     SetPriceAuthor,
-    GetAuthorStatistics
+    GetAuthorStatistics,
+
+    # SITE LOGIC
+    UserAuth
 ]

@@ -16,6 +16,14 @@ def index():
     return render_template("index.html")
 
 
+@app.route('/login', methods=["GET"])
+def login():
+    """
+    Login processor function
+    """
+    return render_template("main/login.html")
+
+
 # ############################# EXAMPLE CONTENT  ##########################
 # ####### FROM OTHER PROJECT ################
 class AuthTerminal:
@@ -100,9 +108,6 @@ class AuthTerminal:
 auth = AuthTerminal()
 
 
-# #########################################################################
-
-
 @app.route("/register", methods=["GET"])
 def register_get():
     """
@@ -111,7 +116,10 @@ def register_get():
     return render_template("main/register.html")
 
 
-@app.route("/register", methods=["POST"])
+# #########################################################################
+
+
+@app.route("/register_demo", methods=["POST"])
 def register():
     """
     Try to register the user
@@ -141,19 +149,6 @@ def register():
         return redirect(url_for("login", _method="GET"))
     else:
         return redirect(url_for("fail", _method="GET"))
-
-
-@app.route('/login', methods=["POST", "GET"])
-def login():
-    """
-    Login processor function
-    """
-    login = request.args.get("login")
-    pasw = request.args.get("pasw")
-    if login and pasw:
-        return redirect(url_for("auten", login=login, pasw=pasw))
-    tmp_fail = True if request.args.get("fail") else False
-    return render_template("main/login.html", fail=tmp_fail)
 
 
 @app.route('/check_username', methods=["POST"])

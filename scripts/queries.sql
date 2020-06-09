@@ -36,7 +36,7 @@ GROUP BY social_network.name, orders.principal_id, principal.id, orders.date
 HAVING principal.id = 3
    AND count(orders.principal_id) > 0
    AND orders.date > '2020-05-20'
-   AND orders.date < '2020-06-05') as foo;
+   AND orders.date < '2020-06-05';
 --9
 Select (author.name)
 From (Select author_agent.group_id, count(author_agent.group_id)
@@ -59,35 +59,33 @@ WHERE author.name = 'Nelia';
 
 --11
 SELECT count(month), foo.month
-FROM
-    (SELECT
-    (CASE 
-    WHEN EXTRACT(MONTH FROM orders.date) = 5 THEN 
-    'May'
-    WHEN EXTRACT(MONTH FROM orders.date) = 6 THEN
-    'June'
-    WHEN EXTRACT(MONTH FROM orders.date) = 7 THEN
-    'July'
-    WHEN EXTRACT(MONTH FROM orders.date) = 8 THEN
-    'August'
-    WHEN EXTRACT(MONTH FROM orders.date) = 9 THEN
-    'September'
-    WHEN EXTRACT(MONTH FROM orders.date) = 10 THEN
-    'October'
-    WHEN EXTRACT(MONTH FROM orders.date) = 11 THEN
-    'November'
-    WHEN EXTRACT(MONTH FROM orders.date) = 12 THEN
-    'December'
-    WHEN EXTRACT(MONTH FROM orders.date) = 4 THEN
-    'April'
-    WHEN EXTRACT(MONTH FROM orders.date) = 3 THEN
-    'March'
-    WHEN EXTRACT(MONTH FROM orders.date) = 2 THEN
-    'February'
-    ELSE
-    'January'
+FROM (SELECT (CASE
+                  WHEN EXTRACT(MONTH FROM orders.date) = 5 THEN
+                      'May'
+                  WHEN EXTRACT(MONTH FROM orders.date) = 6 THEN
+                      'June'
+                  WHEN EXTRACT(MONTH FROM orders.date) = 7 THEN
+                      'July'
+                  WHEN EXTRACT(MONTH FROM orders.date) = 8 THEN
+                      'August'
+                  WHEN EXTRACT(MONTH FROM orders.date) = 9 THEN
+                      'September'
+                  WHEN EXTRACT(MONTH FROM orders.date) = 10 THEN
+                      'October'
+                  WHEN EXTRACT(MONTH FROM orders.date) = 11 THEN
+                      'November'
+                  WHEN EXTRACT(MONTH FROM orders.date) = 12 THEN
+                      'December'
+                  WHEN EXTRACT(MONTH FROM orders.date) = 4 THEN
+                      'April'
+                  WHEN EXTRACT(MONTH FROM orders.date) = 3 THEN
+                      'March'
+                  WHEN EXTRACT(MONTH FROM orders.date) = 2 THEN
+                      'February'
+                  ELSE
+                      'January'
     END) AS month
-    FROM orders) AS foo
+      FROM orders) AS foo
 GROUP BY foo.month;
 --7
 SELECT author.name
@@ -97,6 +95,6 @@ FROM principal
          INNER JOIN agent ON agent.id = access_history.agent_id
          INNER JOIN author_agent ON agent.id = author_agent.group_id
          INNER JOIN author ON author.id = author_agent.author_id
-GROUP BY author.name, access_history.agent_id, principal.id
+GROUP BY author.name, access_history.agent_id, principal.id, principal.name
 HAVING count(author.name) = 2
    AND principal.name = 'Laurie';

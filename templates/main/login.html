@@ -14,55 +14,61 @@
 {% endblock %}
 
 {% block body %}
-
     <div class="box">
         <form id="form_box">
 
-            <div id="inputs">
-                <label for="username"><input autocomplete="off" class="prompt"
-                                             id="username" name="login"
-                                             placeholder="Username"
-                                             type="text"/></label>
-                <label for="password"><input autocomplete="off" class="prompt"
-                                             id="password" name="pasw"
-                                             placeholder="Password"
-                                             type="password"/></label>
-            </div>
+            <label for="username"><input autocomplete="off" class="prompt"
+                                         id="username" name="login"
+                                         placeholder="Username"
+                                         type="text"/></label>
+            <label for="password"><input autocomplete="off" class="prompt"
+                                         id="password" name="pasw"
+                                         placeholder="Password"
+                                         type="password"/></label>
 
-            <div id="buttons">
-                <button class="button" id="log_in">Log In</button>
-                <button class="button" id="sign_up">Sign Up</button>
-            </div>
+            <button class="button" id="log_in">Log In</button>
         </form>
+        <button class="button" id="sign_up">Sign Up</button>
     </div>
+    <script>
+        function login_handle(event) {
+            event.preventDefault();
+            const login_val = document.getElementById("username").value;
+            const paswd_val = document.getElementById("password").value;
 
-    <div class="big">
-        <h1>My Cup</h1>
-    </div>
+            if (login_val.length === 0 || paswd_val.length === 0) {
+                alert("Login and Password should not be empty!");
+                return false;
+            }
 
-    <script type="text/javascript">
-        const form = document.getElementById('form_box');
-        const username = document.getElementById('username');
-        const pasw = document.getElementById('password');
+            let request = new XMLHttpRequest()
+            request.open('GET', `/api/auth?login=${login_val}&paswd=${paswd_val}`, true)
+            request.onload = function () {
+                // Begin accessing JSON data here
+                let data = JSON.parse(this.response)
 
-        const login = document.getElementById('log_in');
-        login.onclick = function (button) {
-            form.action = '/auten?login=' + username.value() + '&pasw=' + pasw.value();
-            form.method = "post";
-            form.submit();
+                console.log("send")
+                console.log(data)
+                if (request.status >= 200 && request.status < 400 && data.length !== 0) {
+                    if (data[0][1]) {
+                        window.location.replace(`/author?id=${data[0][0]}`);
+                    } else {
+                        window.location.replace(`/user?id=${data[0][0]}`);
+                    }
+                    return true;
+                }
+                window.location.replace("/");
+                alert("INVALID CREDENTIALS!");
+                return false;
+            }
+            request.send()
+        }
+
+        document.getElementById('form_box').addEventListener('submit', login_handle);
+        document.getElementById('sign_up').onclick = () => {
+            window.location.replace("/register");
         };
 
-        const signup = document.getElementById('sign_up');
-        signup.onclick = function (button) {
-            form.action = '/register';
-            form.method = "get";
-            form.submit();
-        };
     </script>
-    {% if fail %}
-        <script>
-            alert("Bead Credentials!");
-        </script>
-    {% endif %}
 
 {% endblock %}

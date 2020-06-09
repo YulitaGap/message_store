@@ -253,7 +253,7 @@ Action:
 Desc:
 Params:
 Sample:
-/api/add_account?principal_id=2&social_network_id=2&login=1&password=password
+/api/add_social_network_account?principal_id=2&social_network_id=2&login=1&password=password
 Result: in JSON
 	{}
 __________________________________ 17 _________________________________________Done
@@ -354,5 +354,45 @@ Desc:
 Params:
 Sample:
 /api/view_author_orders?author_id=30
+Result: in JSON
+	{}
+__________________________________ 27 _________________________________________Done
+
+Action:
+	view_author_posts
+Desc:
+Params:
+Sample:
+/api/view_author_posts?author_id=31
+Result: in JSON
+	{}
+__________________________________ 28 _________________________________________
+
+Action:
+	update_author_post
+Desc:
+Params:
+Sample:
+/api/update_author_post?author_id=30&post_id=1
+Result: in JSON
+	{}
+__________________________________ 29 _________________________________________Done
+
+Action:
+	start_style_discount
+Desc:
+Params:
+Sample:
+/api/start_style_discount?author_id=30&style_id=1&sale_to='2021-01-01'&discount=0.5
+Result: in JSON
+	{}
+__________________________________ 30 _________________________________________Done
+
+Action:
+	set_price_author
+Desc:
+Params:
+Sample:
+/api/set_price_author?author_id=30&new_price=300
 Result: in JSON
 	{}
