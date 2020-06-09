@@ -2,13 +2,15 @@
 
 {% block content %}
     <div class="box">
-        <label for="q_mode">Statistics type</label>
+        <label for="q_mode">Select statistics request: </label>
         <select name="stats" id="q_mode" onfocus="this.selectedIndex = -1;">
             <option value="0">--</option>
-            <option value="1">Volvo</option>
-            <option value="2">Saab</option>
-            <option value="3">Opel</option>
-            <option value="4">Audi</option>
+            <option value="1"> authors selected by user for period  </option>
+            <option value="2"> authors given and closed at least 1 access </option>
+            <option value="3"> all clients who made at least N orders for period</option>
+            <option value="4"> common events for author and client for period</option>
+            <option value="5"> amount of client posts with 50% sale in selected styles for period</option>
+            <option value="6"> amount of orders by months</option>
         </select>
         <form id="form_box">
 
@@ -19,6 +21,7 @@
                        placeholder="Author"
                        type="text"/>
             </div>
+
 
             <div id="start_d" hidden>
                 <label for="start">Start date:</label>
@@ -34,52 +37,85 @@
                        min="2018-01-01" max="2018-12-31"/>
             </div>
 
+            <div id="number_d" hidden>
+                <label for="number"></label>
+                <input autocomplete="off" class="prompt"
+                       id="number"
+                       placeholder="Number"
+                       type="number"/>
+            </div>
+
             <button class="button" id="button" hidden>GET</button>
         </form>
     </div>
     <script>
         const cookie = getCookie();
         let mode_selector = document.getElementById("q_mode");
-        const fields_ids = ["author", "start", "end"]
+        const fields_ids = ["author", "start", "end", "number"];
         const modes = [
-            { /*         query number one #0        */
+            { /*         query number #0        */
                 author: false,
                 start: false,
                 end: false,
-            }, { /*       query number one #1        */
-                author: true,
-                start: true,
-                end: true,
-                // important order as in 'fields' array
-                query: (author, start, end) => {
-                    return `/api/end_point?user=${cookie.id}&`;
-                }
-            }, { /*       query number one #2        */
-                author: true,
-                start: false,
-                end: false,
-                // important order as in 'fields' array
-                query: (author) => {
-                    return `/api/end_point?user=${cookie.id}&`;
-                }
-            }, { /*       query number one #3        */
-                author: true,
-                start: true,
-                end: false,
-                // important order as in 'fields' array
-                query: (author, start) => {
-                    return `/api/end_point?user=${cookie.id}&`;
-                }
-            }, { /*       query number one #4        */
+                number: false
+            }, { /*       query number #1        */
                 author: false,
                 start: true,
                 end: true,
+                number: false,
                 // important order as in 'fields' array
                 query: (start, end) => {
-                    return `/api/end_point?user=${cookie.id}&`;
+                    return `/api/client_used_authors?client_id=${cookie.id}&begin_date=${start}&end_date=${end}`;
                 }
-            },
-        ]
+            }, { /*       query number #2        */
+                author: false,
+                start: false,
+                end: false,
+                number: false,
+                // important order as in 'fields' array
+                query: () => {
+                    return `/api/clients_trusted_authors?client_id=${cookie.id}`;
+                }
+            }, { /*       query number  #3        */
+                author: false,
+                client:false,
+                start: true,
+                end: true,
+                number: true,
+                // important order as in 'fields' array
+                query: (start, end,number) => {
+                    return `/api/popular_clients?order_threshold=${number}&begin_date=${start}1&end_date=${end}`;
+                }
+            }, { /*       query number  #4        */
+                author: true,
+                start: true,
+                end: true,
+                number: false,
+                // important order as in 'fields' array
+                query: (author,start, end) => {
+                    return `/api/client_user_relations?client_id=${cookie.id}&author_id=${author}&begin_date=${start}&end_date=${end}`;
+                }
+            },{ /*       query number  #5        */
+                author: false,
+                start: true,
+                end: true,
+                number: false,
+                // important order as in 'fields' array
+                query: (start, end) => {
+                    return `/api/clients_half_discounts_by_style?client_id=${cookie.id}&begin_date=${start}&end_date=${end}`;
+                }
+            },{ /*       query number  #6        */
+                author: false,
+                start: false,
+                end: false,
+                number: false,
+                // important order as in 'fields' array
+                query: () => {
+                    return `/api/orders_count_by_months`;
+                }
+            }
+
+        ];
 
         mode_selector.onchange = selector_visibility_handle;
         document.getElementById('form_box').addEventListener('submit', submit_handle);
