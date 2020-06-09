@@ -221,7 +221,7 @@ Sample:
 	/api/orders_count_by_months
 Result: in JSON
 	{}
-__________________________________ 15 _________________________________________
+__________________________________ 15 _________________________________________Done
 Action:
 	authors_ordered_top_networks
 Desc:
@@ -233,7 +233,7 @@ Params:
     begin_date=<begin of search period>(yyyy-mm-dd)
     end_date=<end of search period>(yyyy-mm-dd)
 Sample:
-	/api/authors_ordered_top_networks?author_id=1&begin_date=2020-05-01&end_date=2020-05-24
+	/api/authors_ordered_top_networks?author_id=30&begin_date=2019-05-01&end_date=2021-05-24
 Result: in JSON
 	{}
 __________________________________ 16 _________________________________________Done

@@ -437,18 +437,17 @@ class AuthorsOrderedTopNetworks(BaseApiEndpoint):
         перiод (з дати F по дату T).
     """
     SQL_QUERY = lambda _self, params: f"""
-    select a.s as network, a.b as style_id, round(cast(avg(a.countr) as numeric(12,2)), 2) as freq from
-    (select social_network.name as s, posts.style_id as b, count(orders.id) as countr from social_network
-    inner join account on social_network.id = account.social_network_id
-    inner join posts on account.id = posts.account_id
+    select author_agent.author_id, social_network.name,
+    text(count(account.social_network_id) / count(distinct posts.style_id)) as avgcount from posts
+    inner join account on account.id = posts.account_id
+    inner join social_network on social_network.id = account.social_network_id
     inner join orders on posts.id = orders.post_id
-    inner join agent on orders.agent_id = agent.id
-    inner join author_agent on agent.id = author_agent.group_id
-    inner join author on author_agent.author_id = author.id
-    where author.id = {params['author_id']} and posts.date between {params['begin_date']} and {params['end_date']}
-    group by posts.style_id, s
-    order by countr desc) a
-    group by a.s, a.b;
+    inner join author_agent on author_agent.group_id = orders.agent_id
+    where author_id = {params['author_id']}
+    and posts.date >= date('{params['begin_date']}')
+    and posts.date <= date('{params['end_date']}')
+    group by author_agent.author_id, social_network.name
+    order by avgcount
     """
     ROUTE = "/authors_ordered_top_networks"
     PARSER = reqparse.RequestParser()
