@@ -760,7 +760,7 @@ class UpdateAuthorPost(BaseApiEndpoint):
 
     def get(self):
         args = self.PARSER.parse_args(strict=True)
-        self.data_base_updating_query(sb.update_post(args['post_id'], args['text']))
+        self.data_base_updating_query(self.SQL_QUERY(args)), _STATUS_FOUND
 
 
 class StartAuthorDiscount(BaseApiEndpoint):
@@ -782,8 +782,7 @@ class StartAuthorDiscount(BaseApiEndpoint):
 
     def get(self):
         args = self.PARSER.parse_args(strict=True)
-        self.data_base_updating_query(sb.start_style_discount(args['author_id'],
-                                                              args['style_id'], args['sale_to'], args['discount']))
+        self.data_base_updating_query(self.SQL_QUERY(args)), _STATUS_FOUND
 
 
 class StartGeneralAuthorDiscount(BaseApiEndpoint):
@@ -802,7 +801,7 @@ class SetPriceAuthor(BaseApiEndpoint):
     Action:
     Desc:
     """
-    SQL_PRICE = lambda _self, params: \
+    SQL_QUERY = lambda _self, params: \
         f"""
     update author
     set price_per_1000 = {params['new_price']}
@@ -815,7 +814,7 @@ class SetPriceAuthor(BaseApiEndpoint):
 
     def get(self):
         args = self.PARSER.parse_args(strict=True)
-        self.data_base_updating_query(sb.set_price(args['new_price'], args['author_id']))
+        self.data_base_updating_query(self.SQL_QUERY(args)), _STATUS_FOUND
 
 
 class GetAuthorStatistics(BaseApiEndpoint):
