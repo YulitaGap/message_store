@@ -1,32 +1,87 @@
 {% extends 'author_side/author_header_template.html' %}
 
-{# header or includes - can not be overwriten at the same time #}
-{#{% block header %}#}
-{#   Meta info inludes and other... #}
-{#{% endblock %}#}
-
-{#{% block styles_include %}#}
-{#    Style includes in header... #}
-{#{% endblock %}#}
-
-{#{% block code_include %}#}
-{#    JS includes in header... #}
-{#{% endblock %}#}
-
 {% block content %}
-    <div class="header-bar">
-        SOME TEXT
-    </div>
     <div class="box">
+        <label for="q_mode">Statistics type</label>
+        <select name="stats" id="q_mode" onfocus="this.selectedIndex = -1;">
+            <option value="0">--</option>
+            <option value="1">Volvo</option>
+            <option value="2">Saab</option>
+            <option value="3">Opel</option>
+            <option value="4">Audi</option>
+        </select>
         <form id="form_box">
-            <label for="author"><input autocomplete="off" class="prompt"
-                                       id="author" name="author"
-                                       placeholder="Author"
-                                       type="text"/></label>
-            <button class="button" id="stat">GET</button>
+
+            <div id="author_d" hidden>
+                <label for="author"></label>
+                <input autocomplete="off" class="prompt"
+                       id="author"
+                       placeholder="Author"
+                       type="text"/>
+            </div>
+
+            <div id="start_d" hidden>
+                <label for="start">Start date:</label>
+                <input type="date" id="start"
+                       value="2018-07-22"
+                       min="2018-01-01" max="2018-12-31"/>
+            </div>
+
+            <div id="end_d" hidden>
+                <label for="end">End date:</label>
+                <input type="date" id="end"
+                       value="2018-07-22"
+                       min="2018-01-01" max="2018-12-31"/>
+            </div>
+
+            <button class="button" id="button" hidden>GET</button>
         </form>
     </div>
-    <div class="lower-info">
-        SOME TEXT
-    </div>
+    <script>
+        const cookie = getCookie();
+        let mode_selector = document.getElementById("q_mode");
+        const fields_ids = ["author", "start", "end"]
+        const modes = [
+            { /*         query number one #0        */
+                author: false,
+                start: false,
+                end: false,
+            }, { /*       query number one #1        */
+                author: true,
+                start: true,
+                end: true,
+                // important order as in 'fields' array
+                query: (author, start, end) => {
+                    return `/api/end_point?user=${cookie.id}&`;
+                }
+            }, { /*       query number one #2        */
+                author: true,
+                start: false,
+                end: false,
+                // important order as in 'fields' array
+                query: (author) => {
+                    return `/api/end_point?user=${cookie.id}&`;
+                }
+            }, { /*       query number one #3        */
+                author: true,
+                start: true,
+                end: false,
+                // important order as in 'fields' array
+                query: (author, start) => {
+                    return `/api/end_point?user=${cookie.id}&`;
+                }
+            }, { /*       query number one #4        */
+                author: false,
+                start: true,
+                end: true,
+                // important order as in 'fields' array
+                query: (start, end) => {
+                    return `/api/end_point?user=${cookie.id}&`;
+                }
+            },
+        ]
+
+        mode_selector.onchange = selector_visibility_handle;
+        document.getElementById('form_box').addEventListener('submit', submit_handle);
+    </script>
 {% endblock %}

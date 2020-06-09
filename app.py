@@ -70,7 +70,7 @@ def statistics_get():
     return render_template("user_side/user_statistics.html")
 
 
-@app.route('/view_catalogue', methods=['POST'])
+@app.route('/view_catalogue', methods=['POST', 'GET'])
 def catalogue_get():
     """
     render the page to view catalogue
@@ -78,38 +78,38 @@ def catalogue_get():
     return render_template("main/view_template.html",
                            query_index=request.args['index'])
 
-# Author navigation routes
 
+# Author navigation routes
 @app.route('/author_main', methods=['GET'])
 def author_main_get():
-        """
-        render the main author page
-        """
-        return render_template("author_side/author_main.html")
+    """
+    render the main author page
+    """
+    return render_template("author_side/author_main.html")
 
 
 @app.route('/update_price', methods=['GET'])
 def update_price_get():
-        """
-        render the update price page
-        """
-        return render_template("author_side/update_price.html")
+    """
+    render the update price page
+    """
+    return render_template("author_side/update_price.html")
 
 
 @app.route('/start_sale', methods=['GET'])
 def start_sale_get():
-        """
-        render the page for starting page
-        """
-        return render_template("author_side/start_sale.html")
+    """
+    render the page for starting page
+    """
+    return render_template("author_side/start_sale.html")
 
 
 @app.route('/view_author_statistics', methods=['GET'])
 def author_statistics_get():
-        """
-        render the page to view statistics
-        """
-        return render_template("author_side/author_statistics.html")
+    """
+    render the page to view statistics
+    """
+    return render_template("author_side/author_statistics.html")
 
 
 # ############################ END OF EXAMPLE #############################

@@ -51,6 +51,7 @@
                     // SET AUTH COOKIE //
                     let tmp_cookie = getCookie();
                     tmp_cookie.id = data[0][0];
+                    tmp_cookie.query_index = 0;
                     setCookie(tmp_cookie);
                     /////////////////////
                     if (data[0][1]) {
