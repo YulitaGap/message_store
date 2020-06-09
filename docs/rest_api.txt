@@ -416,3 +416,13 @@ Sample:
 /api/principal_info?principal_id=2
 Result: in JSON
 	{}
+__________________________________ 33 _________________________________________Done
+
+Action:
+	author_info
+Desc:
+Params:
+Sample:
+/api/author_info?author_id=30
+Result: in JSON
+	{}

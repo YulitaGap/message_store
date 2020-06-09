@@ -895,6 +895,23 @@ class PrincipalInfo(BaseApiEndpoint):
     PARSER.add_argument("principal_id", type=int, help="id of the principal")
 
 
+class AuthorInfo(BaseApiEndpoint):
+    """
+    Action:
+    Desc:
+    """
+    SQL_QUERY = lambda self_, params: \
+        f"""
+    select authentication.login as user_login, author.name, text(author.price_per_1000), author.active
+    from author
+    inner join authentication on author.id = authentication.id
+    where author.id = {params['author_id']}
+    """
+    ROUTE = "/author_info"
+    PARSER = reqparse.RequestParser()
+    PARSER.add_argument("author_id", type=int, help="id of the author")
+
+
 # ######################### SITE LOGIC ########################################
 
 
@@ -951,6 +968,7 @@ ENDPOINTS_LIST = [
     GetAuthorStatistics,
 
     PrincipalInfo,
+    AuthorInfo,
     # SITE LOGIC
     UserAuth
 ]
