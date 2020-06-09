@@ -17,10 +17,10 @@ def connect_to_db(func):
     def res_func(query):
         try:
             connection = psycopg2.connect(user="postgres",
-                                          password="test",
+                                          password="postgres",
                                           host="127.0.0.1",
                                           port="5432",
-                                          database="message_store_db")
+                                          database="message_store")
 
             # ################## OUTER FUNCTION  ###################
             return func(query, connection)
@@ -743,20 +743,20 @@ class ViewAuthorPosts(BaseApiEndpoint):
     """
     SQL_QUERY = lambda _self, params: \
         f""" 
-    select posts.text, posts.date, posts.account_id from posts
+    select posts.text, text(posts.date), posts.account_id from posts
     inner join orders on posts.id = orders.post_id
     inner join agent on orders.agent_id = agent.id
     inner join author_agent on agent.id = author_agent.group_id
     inner join author on author_agent.author_id = author.id
     where author.id = {params['author_id']}
     """
-    ROUTE = "/all_posts"
+    ROUTE = "/view_author_posts"
     PARSER = reqparse.RequestParser()
     PARSER.add_argument("author_id", type=int, help="id of the author")
 
     def get(self):
         args = self.PARSER.parse_args(strict=True)
-        return self.data_base_selecting_query(self.SQL_QUERY(args)), _STATUS_FOUND
+        return self.data_base_select_query(self.SQL_QUERY(args)), _STATUS_FOUND
 
 
 class UpdateAuthorPost(BaseApiEndpoint):

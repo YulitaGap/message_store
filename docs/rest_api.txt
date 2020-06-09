@@ -356,3 +356,13 @@ Sample:
 /api/view_author_orders?author_id=30
 Result: in JSON
 	{}
+__________________________________ 27 _________________________________________Done
+
+Action:
+	view_author_posts
+Desc:
+Params:
+Sample:
+/api/view_author_posts?author_id=31
+Result: in JSON
+	{}
