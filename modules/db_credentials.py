@@ -8,5 +8,5 @@ class DBInfo:
         self.paswd: str = paswd
 
 
-db_auth = DBInfo("127.0.0.1", "5432", "message_store",
-                 "postgres", "postgres")
+db_auth = DBInfo("127.0.0.1", "5432", "message_store_db",
+                 "postgres", "test")

@@ -2,18 +2,18 @@
 
 CREATE TABLE authentication
 (
-	id serial PRIMARY KEY,
-	login varchar(50) NOT NULL,
-	password varchar(50) NOT NULL,
-	author boolean NOT NULL
+    id       serial PRIMARY KEY,
+    login    varchar(50) NOT NULL,
+    password varchar(50) NOT NULL,
+    author   boolean     NOT NULL
 );
 
 CREATE TABLE author
 (
-    id   integer PRIMARY KEY REFERENCES authentication(id),
-    name varchar(50) NOT NULL,
-	price_per_1000 numeric NOT NULL,
-	active boolean NOT NULL
+    id             integer PRIMARY KEY REFERENCES authentication (id),
+    name           varchar(50) NOT NULL,
+    price_per_1000 numeric     NOT NULL,
+    active         boolean     NOT NULL
 );
 
 CREATE TABLE agent
@@ -30,51 +30,51 @@ CREATE TABLE author_agent
 
 CREATE TABLE style
 (
-    id   serial      PRIMARY KEY,
+    id   serial PRIMARY KEY,
     name varchar(50) NOT NULL
 );
 
 CREATE TABLE principal
 (
-    id   integer PRIMARY KEY REFERENCES authentication(id),
+    id   integer PRIMARY KEY REFERENCES authentication (id),
     name varchar(50) NOT NULL
 );
 
 CREATE TABLE social_network
 (
-    id   serial      PRIMARY KEY,
+    id   serial PRIMARY KEY,
     name varchar(50) NOT NULL
 );
 
 CREATE TABLE account
 (
-    id           serial  PRIMARY KEY,
-    principal_id integer REFERENCES principal (id),
+    id                serial PRIMARY KEY,
+    principal_id      integer REFERENCES principal (id),
     social_network_id integer REFERENCES social_network (id),
-    login varchar(50) NOT NULL,
-    password varchar(50) NOT NULL
+    login             varchar(50) NOT NULL,
+    password          varchar(50) NOT NULL
 );
 
 CREATE TABLE access_history
 (
-    agent_id integer NOT NULL REFERENCES agent (id),
-    account_id integer NOT NULL REFERENCES account (id),
+    agent_id    integer NOT NULL REFERENCES agent (id),
+    account_id  integer NOT NULL REFERENCES account (id),
     give_access boolean NOT NULL,
-    date date
+    date        date
 );
 
 CREATE TABLE discount
 (
-    id       serial  NOT NULL PRIMARY KEY,
+    id        serial  NOT NULL PRIMARY KEY,
     author_id integer NOT NULL REFERENCES author (id),
-    style_id integer NOT NULL REFERENCES style (id),
-    sale_to  date    NULL,
-    discount numeric NULL
+    style_id  integer NOT NULL REFERENCES style (id),
+    sale_to   date    NULL,
+    discount  numeric NULL
 );
 
 CREATE TABLE posts
 (
-    id         serial  PRIMARY KEY,
+    id         serial PRIMARY KEY,
     account_id integer NOT NULL REFERENCES account (id),
     text       text    NOT NULL,
     style_id   integer NOT NULL REFERENCES style (id),
@@ -89,7 +89,7 @@ CREATE TABLE orders
     agent_id     integer     NOT NULL REFERENCES agent (id),
     volume       integer     NOT NULL,
     post_id      integer     NOT NULL REFERENCES posts (id),
-    price        numeric       NOT NULL,
+    price        numeric     NOT NULL,
     date         date        NOT NULL,
     status       varchar(50) NOT NULL
 );

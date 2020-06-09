@@ -12,13 +12,14 @@
         </form>
 
 
-    <script>
-        document.getElementById('button').onclick= function()
-        {
-            let request = new XMLHttpRequest()
-            request.open('GET', `/api/set_price_author?author_id=${getCookie().id}&new_price=${document.getElementById("price")}`, true)
-            window.location.replace("/author_main");
-            }
-    </script>
+        <script>
+            document.getElementById('form_box').addEventListener('submit', function (e) {
+                e.preventDefault();
+                let request = new XMLHttpRequest()
+                request.open('GET', `/api/set_price_author?author_id=${getCookie().id}&new_price=${document.getElementById("price").value}`, true)
+                request.send();
+                window.location.replace("/update_price");
+            });
+        </script>
     </div>
 {% endblock %}

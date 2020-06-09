@@ -6,8 +6,6 @@
     <p id="price"></p>
     <p id="is_active"></p>
     <script>
-        {#author_info#}
-
         let request = new XMLHttpRequest()
         request.open('GET', `/api/author_info?author_id=${getCookie().id}`, true)
         request.onload = function () {
@@ -17,7 +15,7 @@
                     data = data[0]
                     document.getElementById("name").innerHTML = `name=${data[1]}`;
                     document.getElementById("email").innerHTML = `email=${data[0]}`;
-                    document.getElementById("price").innerHTML = `email=${data[2]}`;
+                    document.getElementById("price").innerHTML = `price=${data[2]}`;
                     document.getElementById("is_active").innerHTML = `is_active=${data[3]}`;
                     return true;
                 } else {
@@ -29,7 +27,5 @@
             return false;
         }
         request.send()
-
-
     </script>
 {% endblock %}

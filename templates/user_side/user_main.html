@@ -1,5 +1,51 @@
 {% extends 'user_side/user_header_template.html' %}
 
 {% block content %}
-    {#        Your main content here... #}
+    <p id="name"></p>
+    <p id="email"></p>
+    <div id="table"></div>
+
+    <script>
+        let request = new XMLHttpRequest()
+        request.open('GET', `/api/principal_info?principal_id=${getCookie().id}`, true)
+        request.onload = function () {
+            if (request.status >= 200 && request.status < 400) {
+                let data = JSON.parse(this.response)
+                if (data.length !== 0) {
+                    const email = data[0][0];
+                    const name = data[0][1];
+
+                    document.getElementById("name").innerHTML = `name=${name}`;
+                    document.getElementById("email").innerHTML = `email=${email}`;
+
+                    //////////////////// GENERATE TABLE ////////////////////
+                    let table = document.createElement('table');
+                    let h_row = document.createElement('tr');
+                    ["social_network", "account_id", "account_login"].map((col) => {
+                        let n_col = document.createElement('td');
+                        n_col.innerHTML = col;
+                        h_row.appendChild(n_col);
+                    })
+                    table.appendChild(h_row);
+                    data.map((row) => {
+                        let n_row = document.createElement('tr');
+                        for (let i = 2; i < data[0].length; ++i) {
+                            let n_col = document.createElement('td');
+                            n_col.innerHTML = row[i];
+                            n_row.appendChild(n_col);
+                        }
+                        table.appendChild(n_row);
+                    });
+                    document.getElementById("table").appendChild(table);
+                    return true;
+                } else {
+                    alert(`no user with id ${getCookie().id}`)
+                    return false;
+                }
+            }
+            alert("INVALID CREDENTIALS!");
+            return false;
+        }
+        request.send()
+    </script>
 {% endblock %}

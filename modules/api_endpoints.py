@@ -709,8 +709,8 @@ class CheckAccess(BaseApiEndpoint):
     SQL_QUERY = lambda _self, params: \
         f"""
     select coalesce((select give_access from access_history
-    where agent_id = {params['agent_id']} and account_id = {params['account_id']}
-    limit 1), false)
+    where agent_id = {params['agent_id']} 
+        and account_id = {params['account_id']} limit 1), false)
     """
     ROUTE = "/check_access"
     PARSER = reqparse.RequestParser()
@@ -786,7 +786,6 @@ class ViewAuthorOrders(BaseApiEndpoint):
 class ViewAuthorPosts(BaseApiEndpoint):
     """
     Action: view all the posts for a particular author
-    Desc:
     """
     SQL_QUERY = lambda _self, params: \
         f""" 
@@ -836,7 +835,8 @@ class StartAuthorDiscount(BaseApiEndpoint):
     SQL_QUERY = lambda self_, params: \
         f"""
     insert into discount (author_id, style_id, sale_to, discount)
-    values ({params['author_id']}, {params['style_id']}, date({params['sale_to']}), {params['discount']})
+    values ({params['author_id']}, {params['style_id']}, 
+            date({params['sale_to']}), {params['discount']})
     """
     ROUTE = "/start_style_discount"
     PARSER = reqparse.RequestParser()
@@ -855,7 +855,6 @@ class StartGeneralAuthorDiscount(BaseApiEndpoint):
     """
     Action: start general discount
     Desc: Allows author to start general discount (for all styles)
-    TODO
     """
     SQL_QUERY = lambda self_, params: \
         f"""
@@ -875,10 +874,6 @@ class StartGeneralAuthorDiscount(BaseApiEndpoint):
 
 
 class SetPriceAuthor(BaseApiEndpoint):
-    """
-    Action:
-    Desc:
-    """
     SQL_QUERY = lambda _self, params: \
         f"""
     update author
@@ -896,27 +891,11 @@ class SetPriceAuthor(BaseApiEndpoint):
         self.data_base_updating_query(self.SQL_QUERY(args)), _STATUS_FOUND
 
 
-class GetAuthorStatistics(BaseApiEndpoint):
-    """
-    Action:
-    Desc:
-    TODO
-    """
-    SQL_QUERY = lambda self_, params: \
-        f"""
-    
-    """
-    ROUTE = "/get_author_statistics"
-
-
 class PrincipalInfo(BaseApiEndpoint):
-    """
-    Action:
-    Desc:
-    """
     SQL_QUERY = lambda self_, params: \
         f"""
-    select authentication.login as user_login, principal.name, NULL as social_network,
+    select authentication.login as user_login, principal.name, 
+    NULL as social_network,
     NULL  as account_id, NULL as account_login from principal
     inner join authentication on authentication.id = principal.id
     where principal.id = {params['principal_id']}
@@ -936,10 +915,6 @@ class PrincipalInfo(BaseApiEndpoint):
 
 
 class AuthorInfo(BaseApiEndpoint):
-    """
-    Action:
-    Desc:
-    """
     SQL_QUERY = lambda self_, params: f"""
         select authentication.login as user_login,
                author.name,
@@ -1007,7 +982,6 @@ ENDPOINTS_LIST = [
     StartAuthorDiscount,
     StartGeneralAuthorDiscount,
     SetPriceAuthor,
-    GetAuthorStatistics,
 
     PrincipalInfo,
     AuthorInfo,
