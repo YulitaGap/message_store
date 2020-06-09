@@ -17,10 +17,10 @@ def connect_to_db(func):
     def res_func(query):
         try:
             connection = psycopg2.connect(user="postgres",
-                                          password="test",
+                                          password="postgres",
                                           host="127.0.0.1",
                                           port="5432",
-                                          database="message_store_db")
+                                          database="message_store")
 
             # ################## OUTER FUNCTION  ###################
             return func(query, connection)
@@ -875,6 +875,43 @@ class GetAuthorStatistics(BaseApiEndpoint):
     ROUTE = "/get_author_statistics"
 
 
+class PrincipalInfo(BaseApiEndpoint):
+    """
+    Action:
+    Desc:
+    """
+    SQL_QUERY = lambda self_, params: \
+        f"""
+    select authentication.login as user_login, principal.name,
+    social_network.name as social_network, account.id as account_id,
+    account.login as account_login from principal
+    inner join authentication on authentication.id = principal.id
+    inner join account on account.principal_id = principal.id
+    inner join social_network on social_network.id = account.social_network_id
+    where principal.id = {params['principal_id']}
+    """
+    ROUTE = "/principal_info"
+    PARSER = reqparse.RequestParser()
+    PARSER.add_argument("principal_id", type=int, help="id of the principal")
+
+
+class AuthorInfo(BaseApiEndpoint):
+    """
+    Action:
+    Desc:
+    """
+    SQL_QUERY = lambda self_, params: \
+        f"""
+    select authentication.login as user_login, author.name, text(author.price_per_1000), author.active
+    from author
+    inner join authentication on author.id = authentication.id
+    where author.id = {params['author_id']}
+    """
+    ROUTE = "/author_info"
+    PARSER = reqparse.RequestParser()
+    PARSER.add_argument("author_id", type=int, help="id of the author")
+
+
 # ######################### SITE LOGIC ########################################
 
 
@@ -930,6 +967,8 @@ ENDPOINTS_LIST = [
     SetPriceAuthor,
     GetAuthorStatistics,
 
+    PrincipalInfo,
+    AuthorInfo,
     # SITE LOGIC
     UserAuth
 ]

@@ -406,3 +406,23 @@ Sample:
 /api/start_general_author_discount?author_id=30&sale_to=%272021-02-02%27&discount=0.5
 Result: in JSON
 	{}
+__________________________________ 32 _________________________________________Done
+
+Action:
+	principal_info
+Desc:
+Params:
+Sample:
+/api/principal_info?principal_id=2
+Result: in JSON
+	{}
+__________________________________ 33 _________________________________________Done
+
+Action:
+	author_info
+Desc:
+Params:
+Sample:
+/api/author_info?author_id=30
+Result: in JSON
+	{}
