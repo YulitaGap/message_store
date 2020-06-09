@@ -677,6 +677,158 @@ class CheckAccess(BaseApiEndpoint):
     PARSER.add_argument('account_id', type=int, help='id of the account')
 
 
+# ------- Endpoints for author -------
+
+class AddAuthorAccount(BaseApiEndpoint):
+    """
+    Action: add author account
+    Desc: allows author to add the account
+    """
+    ROUTE = "/add_author_account"
+    PARSER = reqparse.RequestParser()
+    PARSER.add_argument('author_id', type=int, help='id of the author')
+    PARSER.add_argument('login', type=str, help='author login')
+    PARSER.add_argument('password', type=str, help='author password')
+
+    def get(self):
+        args = self.PARSER.parse_args(strict=True)
+        self.data_base_updating_query(sb.add_author_account(args['author_id'], args['login'], args['password']))
+
+
+class ViewAuthorOrders(BaseApiEndpoint):
+    """
+    Action: view all the orders for a particular author
+    Desc:
+    """
+    SQL_QUERY = lambda _self, params: \
+        f"""
+    select orders.id, principal.name as client, orders.price, orders.date, orders.status from orders
+    inner join principal on orders.principal_id = principal.id
+    inner join agent on orders.agent_id = agent.id
+    inner join author_agent on agent.id = author_agent.group_id
+    inner join author on author_agent.author_id = author.id
+    where author.id = {params['author_id']};
+    """
+    ROUTE = "/all_orders"
+    PARSER = reqparse.RequestParser()
+    PARSER.add_argument("author_id", type=int, help="id of the author")
+
+    def get(self):
+        args = self.PARSER.parse_args(strict=True)
+        return self.data_base_selecting_query(self.SQL_QUERY(args)), _STATUS_FOUND
+
+
+class ViewAuthorPosts(BaseApiEndpoint):
+    """
+    Action: view all the posts for a particular author
+    Desc:
+    """
+    SQL_QUERY = lambda _self, params: \
+        f""" 
+    select posts.text, posts.date, posts.account_id from posts
+    inner join orders on posts.id = orders.post_id
+    inner join agent on orders.agent_id = agent.id
+    inner join author_agent on agent.id = author_agent.group_id
+    inner join author on author_agent.author_id = author.id
+    where author.id = {params['author_id']}
+    """
+    ROUTE = "/all_posts"
+    PARSER = reqparse.RequestParser()
+    PARSER.add_argument("author_id", type=int, help="id of the author")
+
+    def get(self):
+        args = self.PARSER.parse_args(strict=True)
+        return self.data_base_selecting_query(self.SQL_QUERY(args)), _STATUS_FOUND
+
+
+class UpdateAuthorPost(BaseApiEndpoint):
+    """
+    Action: update specific post
+    Desc: Allows author to modify the existing post
+    TODO Check if the person is the author, then allow the update
+    """
+    SQL_QUERY = lambda _self, params: \
+        f""" 
+    update posts
+    set text = {params['text']} 
+    where id = {params['post_id']}; 
+    """
+    ROUTE = "/update_post"
+    PARSER = reqparse.RequestParser()
+    PARSER.add_argument("post_id", type=int, help="id of the post")
+    PARSER.add_argument("text", type=str, help="new version of text")
+
+    def get(self):
+        args = self.PARSER.parse_args(strict=True)
+        self.data_base_updating_query(sb.update_post(args['post_id'], args['text']))
+
+
+class StartAuthorDiscount(BaseApiEndpoint):
+    """
+    Action: start discount
+    Desc: Allows author to start the discount for a particular style
+    """
+    SQL_QUERY = lambda self_, params: \
+        f"""
+    insert into discount (author_id, style_id, sale_to, discount)
+    values {params['author_id']}, {params['style_id']}, date({params['sale_to']}), {params['discount']}
+    """
+    ROUTE = "/start_style_discount"
+    PARSER = reqparse.RequestParser()
+    PARSER.add_argument("author_id", type=int, help="id of the author")
+    PARSER.add_argument("style_id", type=int, help="id of the style")
+    PARSER.add_argument("sale_to", type=str, help="date when the discount ends")
+    PARSER.add_argument("discount", type=int, help="the amount of discount")
+
+    def get(self):
+        args = self.PARSER.parse_args(strict=True)
+        self.data_base_updating_query(sb.start_style_discount(args['author_id'],
+                                                              args['style_id'], args['sale_to'], args['discount']))
+
+
+class StartGeneralAuthorDiscount(BaseApiEndpoint):
+    """
+    Action: start general discount
+    Desc: Allows author to start general discount (for all styles)
+    TODO
+    """
+    SQL_QUERY = lambda self_, params: \
+        f"""
+    """
+
+
+class SetPriceAuthor(BaseApiEndpoint):
+    """
+    Action:
+    Desc:
+    """
+    SQL_PRICE = lambda _self, params: \
+        f"""
+    update author
+    set price_per_1000 = {params['new_price']}
+    where id = {params['author_id']};
+    """
+    ROUTE = "/set_price"
+    PARSER = reqparse.RequestParser()
+    PARSER.add_argument("new_price", type=int, help="new price per 1000 symbols")
+    PARSER.add_argument("author_id", type=int, help="id of the author")
+
+    def get(self):
+        args = self.PARSER.parse_args(strict=True)
+        self.data_base_updating_query(sb.set_price(args['new_price'], args['author_id']))
+
+
+class GetAuthorStatistics(BaseApiEndpoint):
+    """
+    Action:
+    Desc:
+    TODO
+    """
+    SQL_QUERY = lambda self_, params: \
+        f"""
+    """
+
+
 ENDPOINTS_LIST = [
     ConstantClients,
     ClientUsedAuthors,
@@ -699,5 +851,12 @@ ENDPOINTS_LIST = [
     ViewUserPost,
     UpdateUserPost,
     GiveAccess,
-    CheckAccess
+    CheckAccess,
+    ViewAuthorOrders,
+    ViewAuthorPosts,
+    UpdateAuthorPost,
+    StartAuthorDiscount,
+    StartGeneralAuthorDiscount,
+    SetPriceAuthor,
+    GetAuthorStatistics
 ]
