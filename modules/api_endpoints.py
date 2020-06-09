@@ -304,19 +304,28 @@ class ClientUserRelations(BaseApiEndpoint):
         (з дати F по дату T)
     """
     SQL_QUERY = lambda _self, params: f"""
-    select case when give_access = true then 'Give access' else 'Reject access' end as event, 
-    text(date) as date from access_history
-    inner join author_agent on (author_agent.group_id = access_history.agent_id)
-    inner join account on (access_history.account_id = account.id)
-    where author_agent.author_id = {params['author_id']} and account.principal_id = {params['client_id']}
-    and access_history.date >= date('{params['begin_date']}')
-    and access_history.date <= date('{params['end_date']}') 
+    select case
+               when give_access = true then 'Give access'
+               else 'Reject access' end as event,
+           text(date)                   as date
+    from access_history
+             inner join author_agent
+                        on (author_agent.group_id = access_history.agent_id)
+             inner join account on (access_history.account_id = account.id)
+    where author_agent.author_id = {params['author_id']}
+      and account.principal_id = {params['client_id']}
+      and access_history.date >= date('{params[' begin_date ']}')
+      and access_history.date <= date('{params[' end_date ']}')
     union
-    select concat('Ordered message, id: ', text(orders.id)) as event, text(orders.date) as date from orders
-    inner join author_agent on (author_agent.group_id = orders.agent_id)
-    where author_agent.author_id = 30 and orders.principal_id = 1
-    and orders.date >= date('{params['begin_date']}')
-    and orders.date <= date('{params['end_date']}') 
+    select concat('Ordered message, id: ', text(orders.id)) as event,
+           text(orders.date)                                as date
+    from orders
+             inner join author_agent on 
+                                     (author_agent.group_id = orders.agent_id)
+    where author_agent.author_id = 30
+      and orders.principal_id = 1
+      and orders.date >= date('{params['begin_date']}')
+      and orders.date <= date('{params['end_date']}')
     order by date
     """
     ROUTE = "/client_user_relations"
@@ -379,16 +388,17 @@ class ClientsHalfDiscountsByStyle(BaseApiEndpoint):
         отримали 50% знижку.
     """
     SQL_QUERY = lambda _self, params: f"""
-    select style.name, count(discount.discount) FILTER (WHERE discount.discount = 0.5)  
+    select style.name,
+           count(discount.discount) FILTER (WHERE discount.discount = 0.5)
     from orders
-    inner join posts on posts.id = orders.post_id
-    inner join style on style.id = posts.style_id
-    inner join author_agent on orders.agent_id = author_agent.group_id
-    inner join discount on discount.author_id = author_agent.author_id
+             inner join posts on posts.id = orders.post_id
+             inner join style on style.id = posts.style_id
+             inner join author_agent on orders.agent_id = author_agent.group_id
+             inner join discount on discount.author_id = author_agent.author_id
     where orders.principal_id = {params['client_id']}
-    and sale_to >= orders.date
-    and sale_to >= date('{params['begin_date']}')
-    and sale_to <= date('{params['end_date']}')
+      and sale_to >= orders.date
+      and sale_to >= date('{params[' begin_date ']}')
+      and sale_to <= date('{params[' end_date ']}')
     group by style.name
     """
     ROUTE = "/clients_half_discounts_by_style"
@@ -407,37 +417,35 @@ class OrdersCountByMonths(BaseApiEndpoint):
         Знайти сумарну кiлькiсть замовлень по мiсяцях.
     """
     SQL_QUERY = lambda _self, params: f"""
-    SELECT count(month), foo.month
-    FROM
-    (SELECT
-    (CASE 
-    WHEN EXTRACT(MONTH FROM orders.date) = 5 THEN 
-    'May'
-    WHEN EXTRACT(MONTH FROM orders.date) = 6 THEN
-    'June'
-    WHEN EXTRACT(MONTH FROM orders.date) = 7 THEN
-    'July'
-    WHEN EXTRACT(MONTH FROM orders.date) = 8 THEN
-    'August'
-    WHEN EXTRACT(MONTH FROM orders.date) = 9 THEN
-    'September'
-    WHEN EXTRACT(MONTH FROM orders.date) = 10 THEN
-    'October'
-    WHEN EXTRACT(MONTH FROM orders.date) = 11 THEN
-    'November'
-    WHEN EXTRACT(MONTH FROM orders.date) = 12 THEN
-    'December'
-    WHEN EXTRACT(MONTH FROM orders.date) = 4 THEN
-    'April'
-    WHEN EXTRACT(MONTH FROM orders.date) = 3 THEN
-    'March'
-    WHEN EXTRACT(MONTH FROM orders.date) = 2 THEN
-    'February'
-    ELSE
-    'January'
-    END) AS month
-    FROM orders) AS foo
-    GROUP BY foo.month;
+        SELECT count(month), foo.month
+        FROM (SELECT (CASE
+                          WHEN EXTRACT(MONTH FROM orders.date) = 5 THEN
+                              'May'
+                          WHEN EXTRACT(MONTH FROM orders.date) = 6 THEN
+                              'June'
+                          WHEN EXTRACT(MONTH FROM orders.date) = 7 THEN
+                              'July'
+                          WHEN EXTRACT(MONTH FROM orders.date) = 8 THEN
+                              'August'
+                          WHEN EXTRACT(MONTH FROM orders.date) = 9 THEN
+                              'September'
+                          WHEN EXTRACT(MONTH FROM orders.date) = 10 THEN
+                              'October'
+                          WHEN EXTRACT(MONTH FROM orders.date) = 11 THEN
+                              'November'
+                          WHEN EXTRACT(MONTH FROM orders.date) = 12 THEN
+                              'December'
+                          WHEN EXTRACT(MONTH FROM orders.date) = 4 THEN
+                              'April'
+                          WHEN EXTRACT(MONTH FROM orders.date) = 3 THEN
+                              'March'
+                          WHEN EXTRACT(MONTH FROM orders.date) = 2 THEN
+                              'February'
+                          ELSE
+                              'January'
+            END) AS month
+              FROM orders) AS foo
+        GROUP BY foo.month;
     """
     ROUTE = "/orders_count_by_months"
     PARSER = reqparse.RequestParser()
@@ -454,15 +462,19 @@ class AuthorsOrderedTopNetworks(BaseApiEndpoint):
         перiод (з дати F по дату T).
     """
     SQL_QUERY = lambda _self, params: f"""
-    select author_agent.author_id, social_network.name,
-    text(count(account.social_network_id) / count(distinct posts.style_id)) as avgcount from posts
-    inner join account on account.id = posts.account_id
-    inner join social_network on social_network.id = account.social_network_id
-    inner join orders on posts.id = orders.post_id
-    inner join author_agent on author_agent.group_id = orders.agent_id
+    select author_agent.author_id,
+           social_network.name,
+           text(count(account.social_network_id) /
+                count(distinct posts.style_id)) as avgcount
+    from posts
+             inner join account on account.id = posts.account_id
+             inner join social_network
+                        on social_network.id = account.social_network_id
+             inner join orders on posts.id = orders.post_id
+             inner join author_agent on author_agent.group_id = orders.agent_id
     where author_id = {params['author_id']}
-    and posts.date >= date('{params['begin_date']}')
-    and posts.date <= date('{params['end_date']}')
+      and posts.date >= date('{params[' begin_date ']}')
+      and posts.date <= date('{params[' end_date ']}')
     group by author_agent.author_id, social_network.name
     order by avgcount
     """
@@ -602,7 +614,8 @@ class UpdateUserOrder(BaseApiEndpoint):
     """
     SQL_QUERY = lambda _self, params: \
         f"""
-        update orders set status = '{params['status']}' where id = {params['order_id']} ;
+        update orders set status = '{params['status']}' 
+        where id = {params['order_id']} ;
         """
     ROUTE = "/update_user_order"
     PARSER = reqparse.RequestParser()
@@ -626,7 +639,8 @@ class ViewUserPost(BaseApiEndpoint):
         f"""
         select orders.id, posts.text, posts.style_id from posts
         inner join orders on posts.id = orders.post_id
-        where orders.principal_id = {params['principal_id']} and orders.status != 'closed'
+        where orders.principal_id = {params['principal_id']} 
+            and orders.status != 'closed'
         """
     PARSER = reqparse.RequestParser()
     ROUTE = "/view_user_post"
@@ -748,12 +762,17 @@ class ViewAuthorOrders(BaseApiEndpoint):
     """
     SQL_QUERY = lambda _self, params: \
         f"""
-    select orders.id, principal.name as client, text(orders.price), text(orders.date), orders.status from orders
-    inner join principal on orders.principal_id = principal.id
-    inner join agent on orders.agent_id = agent.id
-    inner join author_agent on agent.id = author_agent.group_id
-    inner join author on author_agent.author_id = author.id
-    where author.id = {params['author_id']};
+        select orders.id,
+               principal.name as client,
+               text(orders.price),
+               text(orders.date),
+               orders.status
+        from orders
+                 inner join principal on orders.principal_id = principal.id
+                 inner join agent on orders.agent_id = agent.id
+                 inner join author_agent on agent.id = author_agent.group_id
+                 inner join author on author_agent.author_id = author.id
+        where author.id = {params['author_id']};
     """
     ROUTE = "/view_author_orders"
     PARSER = reqparse.RequestParser()
@@ -771,12 +790,13 @@ class ViewAuthorPosts(BaseApiEndpoint):
     """
     SQL_QUERY = lambda _self, params: \
         f""" 
-    select posts.text, text(posts.date), posts.account_id from posts
-    inner join orders on posts.id = orders.post_id
-    inner join agent on orders.agent_id = agent.id
-    inner join author_agent on agent.id = author_agent.group_id
-    inner join author on author_agent.author_id = author.id
-    where author.id = {params['author_id']}
+        select posts.text, text(posts.date), posts.account_id
+        from posts
+                 inner join orders on posts.id = orders.post_id
+                 inner join agent on orders.agent_id = agent.id
+                 inner join author_agent on agent.id = author_agent.group_id
+                 inner join author on author_agent.author_id = author.id
+        where author.id = {params['author_id']}
     """
     ROUTE = "/view_author_posts"
     PARSER = reqparse.RequestParser()
@@ -791,7 +811,6 @@ class UpdateAuthorPost(BaseApiEndpoint):
     """
     Action: update specific post
     Desc: Allows author to modify the existing post
-    TODO Check if the person is the author, then allow the update
     """
     SQL_QUERY = lambda _self, params: \
         f""" 
@@ -915,12 +934,14 @@ class AuthorInfo(BaseApiEndpoint):
     Action:
     Desc:
     """
-    SQL_QUERY = lambda self_, params: \
-        f"""
-    select authentication.login as user_login, author.name, text(author.price_per_1000), author.active
-    from author
-    inner join authentication on author.id = authentication.id
-    where author.id = {params['author_id']}
+    SQL_QUERY = lambda self_, params: f"""
+        select authentication.login as user_login,
+               author.name,
+               text(author.price_per_1000),
+               author.active
+        from author
+                 inner join authentication on author.id = authentication.id
+        where author.id = {params['author_id']}
     """
     ROUTE = "/author_info"
     PARSER = reqparse.RequestParser()

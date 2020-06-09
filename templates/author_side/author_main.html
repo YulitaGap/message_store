@@ -1,16 +1,35 @@
 {% extends 'author_side/author_header_template.html' %}
 
 {% block content %}
-    SOME TEXT
-    <div class="info">
-        <div class="photo">
-            <img href="">
-        </div>
-        <div class="text">
-            SOME INFO
-         </div>
-    </div>
-    <div class="lower-info">
-    SOME TEXT
-    </div>
+    <p id="name"></p>
+    <p id="email"></p>
+    <p id="price"></p>
+    <p id="is_active"></p>
+    <script>
+        {#author_info#}
+
+        let request = new XMLHttpRequest()
+        request.open('GET', `/api/author_info?author_id=${getCookie().id}`, true)
+        request.onload = function () {
+            if (request.status >= 200 && request.status < 400) {
+                let data = JSON.parse(this.response)
+                if (data.length !== 0) {
+                    data = data[0]
+                    document.getElementById("name").innerHTML = `name=${data[1]}`;
+                    document.getElementById("email").innerHTML = `email=${data[0]}`;
+                    document.getElementById("price").innerHTML = `email=${data[2]}`;
+                    document.getElementById("is_active").innerHTML = `is_active=${data[3]}`;
+                    return true;
+                } else {
+                    alert(`no user with id ${getCookie().id}`)
+                    return false;
+                }
+            }
+            alert("INVALID CREDENTIALS!");
+            return false;
+        }
+        request.send()
+
+
+    </script>
 {% endblock %}
