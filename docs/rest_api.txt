@@ -253,7 +253,7 @@ Action:
 Desc:
 Params:
 Sample:
-/api/add_account?principal_id=2&social_network_id=2&login=1&password=password
+/api/add_social_network_account?principal_id=2&social_network_id=2&login=1&password=password
 Result: in JSON
 	{}
 __________________________________ 17 _________________________________________Done
@@ -336,14 +336,14 @@ Sample:
 /api/check_access?agent_id=2&account_id=2
 Result: in JSON
 	{}
-__________________________________ 25 _________________________________________
+__________________________________ 25 _________________________________________Done
 
 Action:
-	add_author_account
+	add_account
 Desc:
 Params:
 Sample:
-/api/check_access?agent_id=2&account_id=2
+api/add_account?name=newwerosafdne3&login=loawersfgidnff&password=password&author=0
 Result: in JSON
 	{}
 __________________________________ 26 _________________________________________Done
