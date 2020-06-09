@@ -138,3 +138,18 @@ def create_account(principal_id, social_network_id, login, password):
     VALUES ({},{},'{}','{}');
     """.format(principal_id, social_network_id, login, password)
     return query
+
+
+def add_author_account(author_id, login, password):
+    """
+    Creates an account for author
+    :param author_id:
+    :param login:
+    :param password:
+    :return:
+    """
+    query = f"""
+    insert into authentication(id, login, password, author)
+    values ({author_id}, {login}, {password}, {True})
+    """
+    return query
