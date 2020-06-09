@@ -710,7 +710,24 @@ class AddAccount(BaseApiEndpoint):
     def get(self):
         args = self.PARSER.parse_args(strict=True)
         self.data_base_updating_query(
-            sb.add_account(args['name'], args['login'], args['password'], args['author']))
+            sb.add_account(args['name'], args['login'], args['password'],
+                           args['author']))
+
+
+class FreeLogin(BaseApiEndpoint):
+    """
+    Action:
+            auth
+        Desc:
+            If valid login and password return the account type
+    """
+    SQL_QUERY = lambda _self, params: f"""
+    SELECT id FROM authentication
+    WHERE login='{params["login"]}';
+    """
+    ROUTE = "/free_login"
+    PARSER = reqparse.RequestParser()
+    PARSER.add_argument('login', type=str, help='user login')
 
 
 class ViewAuthorOrders(BaseApiEndpoint):
@@ -846,9 +863,9 @@ class GetAuthorStatistics(BaseApiEndpoint):
         f"""
     """
     ROUTE = "/get_author_statistics"
-
-
 # ######################### SITE LOGIC ########################################
+
+
 class UserAuth(BaseApiEndpoint):
     """
     Action:
@@ -864,42 +881,6 @@ class UserAuth(BaseApiEndpoint):
     PARSER = reqparse.RequestParser()
     PARSER.add_argument('login', type=str, help='user login')
     PARSER.add_argument('paswd', type=str, help='user password')
-
-
-class RegisterUser(BaseApiEndpoint):
-    """
-    Action:
-            auth
-        Desc:
-            If valid login and password return the account type
-    """
-    # TODO: write valid insert query
-    SQL_QUERY = lambda _self, params: f"""
-    SELECT id, author FROM authentication
-    WHERE login='{params["login"]}' and password='{params["paswd"]}';
-    """
-    ROUTE = "/register"
-    PARSER = reqparse.RequestParser()
-    PARSER.add_argument('login', type=str, help='user login')
-    PARSER.add_argument('paswd', type=str, help='user password')
-    PARSER.add_argument('name', type=str, help='user password')
-    PARSER.add_argument('is_author', type=bool, help='user password')
-
-
-class FreeLogin(BaseApiEndpoint):
-    """
-    Action:
-            auth
-        Desc:
-            If valid login and password return the account type
-    """
-    SQL_QUERY = lambda _self, params: f"""
-    SELECT id FROM authentication
-    WHERE login='{params["login"]}';
-    """
-    ROUTE = "/free_login"
-    PARSER = reqparse.RequestParser()
-    PARSER.add_argument('login', type=str, help='user login')
 
 
 ENDPOINTS_LIST = [
@@ -920,6 +901,7 @@ ENDPOINTS_LIST = [
     CreateOrder,
     AddSocialNetworkAccount,
     AddAccount,
+    FreeLogin,
     ViewAuthors,
     ViewStyles,
     ViewUserOrders,

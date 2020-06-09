@@ -16,7 +16,7 @@ def index():
     return render_template("index.html")
 
 
-@app.route('/login', methods=["GET"])
+@app.route('/login', methods=["POST", "GET"])
 def login():
     """
     Login processor function
@@ -24,91 +24,7 @@ def login():
     return render_template("main/login.html")
 
 
-# ############################# EXAMPLE CONTENT  ##########################
-# ####### FROM OTHER PROJECT ################
-class AuthTerminal:
-    """ Authentication terminal for working with "users" database """
-
-    def __init__(self, f_name="database/users.json"):
-        """
-        The init method. Set the basic parameters of the object.
-        Parses the file for users.
-        :param f_name: str - by default "users.json"
-        """
-        pass
-
-    def verify(self, login, pasw):
-        """
-        Verify the user credentials
-        :param login: str
-        :param pasw: str
-        :return: bool
-        """
-        try:
-            return self.data[login]["pasw"] == pasw
-        except KeyError:
-            return False
-
-    def user_permission(self, login, pasw):
-        """
-        Return user permission ("mdoer" or "admin").
-        :param login: str
-        :param pasw: str
-        :return: bool
-        """
-        if self.verify(login, pasw):
-            return self.data[login]["type"]
-        else:
-            return False
-
-    def is_login_free(self, login):
-        """
-        Return if the login is not used
-        :param login: str
-        :return: bool
-        """
-        return login not in self.data
-
-    def register(self, form):
-        """
-        Register new user if the form value is OK. Return the success of the
-        operation.
-        :param form: dict
-        :return: bool
-        """
-        login = form["login"]
-        del form["login"]
-        if self.is_login_free(login) and form["type"] == "moder":
-            self.data[login] = form
-            self.up_to_date = False
-            return True
-        else:
-            return False
-
-    def confirm_access(self, login, pasw, m_id):
-        """
-        Validate access of the user to location modification.
-        :param login: str
-        :param pasw: str
-        :param m_id: int
-        :return: bool
-        """
-        if self.verify(login, pasw) and (self.data[login]["access"] == m_id or
-                                         self.data[login]["type"] == "admin"):
-            return True
-        else:
-            return False
-
-    @staticmethod
-    # TODO: delete this method
-    def get_new_id():
-        return 1
-
-
-auth = AuthTerminal()
-
-
-@app.route("/register", methods=["GET"])
+@app.route("/register", methods=["POST", "GET"])
 def register_get():
     """
     render the register page

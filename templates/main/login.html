@@ -17,14 +17,16 @@
     <div class="box">
         <form id="form_box">
 
-            <label for="username"><input autocomplete="off" class="prompt"
-                                         id="username" name="login"
-                                         placeholder="Username"
-                                         type="text"/></label>
-            <label for="password"><input autocomplete="off" class="prompt"
-                                         id="password" name="pasw"
-                                         placeholder="Password"
-                                         type="password"/></label>
+            <label for="username"></label>
+            <input autocomplete="off" class="prompt"
+                   id="username" name="login"
+                   placeholder="Username"
+                   type="text"/>
+            <label for="password"></label>
+            <input autocomplete="off" class="prompt"
+                   id="password" name="pasw"
+                   placeholder="Password"
+                   type="password"/>
 
             <button class="button" id="log_in">Log In</button>
         </form>
@@ -57,7 +59,6 @@
                     }
                     return true;
                 }
-                window.location.replace("/");
                 alert("INVALID CREDENTIALS!");
                 return false;
             }

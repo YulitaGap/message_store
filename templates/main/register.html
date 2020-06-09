@@ -17,25 +17,25 @@
     <div class="container">
         <h1 class="container__head2">Enter the data to register</h1>
         <form id='register_form' class="container__form">
-            <label for="name">
-                <input autocomplete="off" class="container__input"
-                       id="name" placeholder="Full Name" type="text"/>
-            </label>
+            <label for="name">name</label>
+            <input autocomplete="off" class="container__input"
+                   id="name" placeholder="Full Name" type="text"/>
 
-            <label for='username'>
-                <input autocomplete="off" id='username'
-                       class="container__input"
-                       placeholder="Username" type="text"/>
-            </label>
-            <label for='password'>
-                <input autocomplete="off" id='password'
-                       class="container__input"
-                       placeholder="Password" type="text"/>
-            </label>
-            <label for="is_author">
-                <input id="is_author" type="checkbox" value="terms"
-                       class="checkbox">
-            </label>
+
+            <label for='username'>login</label>
+            <input autocomplete="off" id='username'
+                   class="container__input"
+                   placeholder="Username" type="text"/>
+
+            <label for='password'>password</label>
+            <input autocomplete="off" id='password'
+                   class="container__input"
+                   placeholder="Password" type="text"/>
+
+            <label for="is_author">is_author</label>
+            <input id="is_author" type="checkbox" value="terms"
+                   class="checkbox">
+
             <button class="container__button" type="submit">Sign Up</button>
         </form>
     </div>
@@ -46,7 +46,7 @@
             const name_val = document.getElementById("name").value;
             const login_val = document.getElementById("username").value;
             const paswd_val = document.getElementById("password").value;
-            const author_val = document.getElementById("is_author").checked;
+            const author_val = document.getElementById("is_author").checked ? '1' : '0';
 
             if (login_val.length === 0 || paswd_val.length === 0) {
                 alert("Login and Password should not be empty!");
@@ -66,17 +66,12 @@
             let check_request = new XMLHttpRequest()
             check_request.open('GET', `/api/free_login?login=${login_val}`, true)
             check_request.onload = function () {
-                // Begin accessing JSON data here
                 let data = JSON.parse(this.response)
-
-                console.log("send")
-                console.log(data)
-                if (check_request.status >= 200 && check_request.status < 400 && data.length !== 0) {
+                if (check_request.status >= 200 && check_request.status < 400 && data.length === 0) {
                     let reg_request = new XMLHttpRequest()
-                    reg_request.open('GET', `/api/register?login=${login_val}&paswd=${paswd_val}&author=${author_val}&name=${name_val}`, true)
+                    reg_request.open('GET', `/api/add_account?login=${login_val}&password=${paswd_val}&author=${author_val}&name=${name_val}`, true)
                     reg_request.onload = register_handle;
                     reg_request.send()
-                    window.location.replace(`/login`);
                     return true;
                 }
                 alert("Username is reserved!")
