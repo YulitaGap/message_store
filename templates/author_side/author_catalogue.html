@@ -27,18 +27,20 @@
                 end: false,
                 number: false
             }, { /*       query number #1        */
+
                 query: () => {
                     return `/api/view_styles`;
                 }
             }, { /*       query number #2        */
+
                 query: () => {
                     return `/api/view_authors`;
                 }
             }
-            , { /*       query number #3        */
+            , { /*       query number #2        */
 
                 query: () => {
-                    return `/api/view_user_orders?client_id=${cookie.id}`;
+                    return `/api/view_author_orders?author_id=${cookie.id}`;
                 }
             }
 
