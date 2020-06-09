@@ -826,7 +826,7 @@ class SetPriceAuthor(BaseApiEndpoint):
     set price_per_1000 = {params['new_price']}
     where id = {params['author_id']};
     """
-    ROUTE = "/set_price"
+    ROUTE = "/set_price_author"
     PARSER = reqparse.RequestParser()
     PARSER.add_argument("new_price", type=int, help="new price per 1000 symbols")
     PARSER.add_argument("author_id", type=int, help="id of the author")
