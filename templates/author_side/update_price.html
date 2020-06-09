@@ -10,5 +10,15 @@
 
             <button class="button" id="change">CHANGE</button>
         </form>
+
+
+    <script>
+        document.getElementById('button').onclick= function()
+        {
+            let request = new XMLHttpRequest()
+            request.open('GET', `/api/set_price_author?author_id=${getCookie().id}&new_price=${document.getElementById("price")}`, true)
+            window.location.replace("/author_main");
+            }
+    </script>
     </div>
 {% endblock %}
