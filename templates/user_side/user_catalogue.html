@@ -1,0 +1,44 @@
+{% extends 'user_side/user_header_template.html' %}
+
+{% block content %}
+    <div class="box">
+        <label for="q_mode">Select statistics request: </label>
+        <select name="stats" id="q_mode" onfocus="this.selectedIndex = -1;">
+            <option value="0">--</option>
+            <option value="1"> styles  </option>
+            <option value="2"> authors </option>
+        </select>
+        <form id="form_box">
+
+
+
+            <button class="button" id="button" hidden>GET</button>
+        </form>
+    </div>
+    <script>
+        const cookie = getCookie();
+        let mode_selector = document.getElementById("q_mode");
+        const modes = [
+            { /*         query number #0        */
+                author: false,
+                start: false,
+                end: false,
+                number: false
+            }, { /*       query number #1        */
+
+                query: () => {
+                    return `/api/view_styles`;
+                }
+            }, { /*       query number #2        */
+
+                query: () => {
+                    return `/api/view_authors`;
+                }
+            }
+
+        ];
+
+        mode_selector.onchange = selector_visibility_handle;
+        document.getElementById('form_box').addEventListener('submit', submit_handle);
+    </script>
+{% endblock %}
