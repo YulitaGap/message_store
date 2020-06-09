@@ -75,7 +75,7 @@ def catalogue_get():
     """
     render the page to view catalogue
     """
-    return render_template("user_side/user_catalogue")
+    return render_template("user_side/user_catalogue.html")
 
 
 # Author navigation routes
