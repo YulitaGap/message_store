@@ -16,78 +16,75 @@
 {% block body %}
     <div class="container">
         <h1 class="container__head2">Enter the data to register</h1>
-        <form id='register_form' method="post" class="container__form"
-              action='/register'>
-            <label>
-                <input autocomplete="off" class="container__input" name="name"
-                       placeholder="Full Name" type="text"/>
-            </label>
-            <label>
-                <input autocomplete="off" class="container__input" name="email"
-                       placeholder="E-mail" type="text"/>
-            </label>
-            <label>
-                <input autocomplete="off" class="container__input" name="phone"
-                       placeholder="Mobile phone" type="text"/>
-            </label>
-            <label>
+        <form id='register_form' class="container__form">
+            <label for="name">
                 <input autocomplete="off" class="container__input"
-                       name="company"
-                       placeholder="Company" type="text"/>
+                       id="name" placeholder="Full Name" type="text"/>
             </label>
+
             <label for='username'>
                 <input autocomplete="off" id='username'
                        class="container__input"
-                       name="login" placeholder="Username" type="text"/>
+                       placeholder="Username" type="text"/>
             </label>
             <label for='password'>
                 <input autocomplete="off" id='password'
                        class="container__input"
-                       name="pasw" placeholder="Password" type="text"/>
+                       placeholder="Password" type="text"/>
+            </label>
+            <label for="is_author">
+                <input id="is_author" type="checkbox" value="terms"
+                       class="checkbox">
             </label>
             <button class="container__button" type="submit">Sign Up</button>
         </form>
     </div>
 
     <script type="text/javascript">
-        const form = document.getElementById('register_form');
-        const username = document.getElementById('username');
-        const password = document.getElementById('password');
-        let check = false;
+        function register_handle(event) {
+            event.preventDefault();
+            const name_val = document.getElementById("name").value;
+            const login_val = document.getElementById("username").value;
+            const paswd_val = document.getElementById("password").value;
+            const author_val = document.getElementById("is_author").checked;
 
-        form.onsubmit = () => {
-            if (!username.value) {
+            if (login_val.length === 0 || paswd_val.length === 0) {
+                alert("Login and Password should not be empty!");
                 return false;
             }
 
-            let http = new XMLHttpRequest();
-            let params = 'username=' + username.value;
-            console.log(params);
-            http.open('POST', '/check_username?' + params, true);
 
-            //Send the proper header information along with the request
-            http.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
-
-            http.onreadystatechange = function () { //Call a function when the state changes.
-                if (http.readyState == 4 && http.status == 200) {
-                    if (http.responseText == '0') {
-                        username.classList.add('container__input-error');
-                    } else {
-                        username.classList.remove('container__input-error');
-
-                        if (password.value.length < 6) {
-                            password.classList.add('container__input-error');
-                        } else {
-                            check = true;
-                            form.submit();
-                        }
-                    }
+            function register_handle() {
+                if (this.status >= 200 && this.status < 400) {
+                    window.location.replace(`/login`);
+                    return true;
                 }
-            };
-            http.send();
+                alert("Invalid register attempt!");
+                return false;
+            }
 
-            return check;
-        };
-        // username
+            let check_request = new XMLHttpRequest()
+            check_request.open('GET', `/api/free_login?login=${login_val}`, true)
+            check_request.onload = function () {
+                // Begin accessing JSON data here
+                let data = JSON.parse(this.response)
+
+                console.log("send")
+                console.log(data)
+                if (check_request.status >= 200 && check_request.status < 400 && data.length !== 0) {
+                    let reg_request = new XMLHttpRequest()
+                    reg_request.open('GET', `/api/register?login=${login_val}&paswd=${paswd_val}&author=${author_val}&name=${name_val}`, true)
+                    reg_request.onload = register_handle;
+                    reg_request.send()
+                    window.location.replace(`/login`);
+                    return true;
+                }
+                alert("Username is reserved!")
+                return false;
+            }
+            check_request.send()
+        }
+
+        document.getElementById('register_form').addEventListener('submit', register_handle);
     </script>
 {% endblock %}

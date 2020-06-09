@@ -17,10 +17,10 @@ def connect_to_db(func):
     def res_func(query):
         try:
             connection = psycopg2.connect(user="postgres",
-                                          password="postgres",
+                                          password="test",
                                           host="127.0.0.1",
                                           port="5432",
-                                          database="message_store")
+                                          database="message_store_db")
 
             # ################## OUTER FUNCTION  ###################
             return func(query, connection)
@@ -31,8 +31,11 @@ def connect_to_db(func):
             abort(_STATUS_INVALID_PARAMETERS)
         finally:
             # closing database connection.
-            if connection:
-                connection.close()
+            try:
+                if connection:
+                    connection.close()
+            except UnboundLocalError:
+                pass
 
     return res_func
 
@@ -60,7 +63,6 @@ class BaseApiEndpoint(Resource):
         finally:
             cursor.close()
 
-    # TODO Виідалити це і написати нормально (або змиритися)
     @staticmethod
     @connect_to_db
     def data_base_update_select_query(query: str, connection=None) -> dict:
@@ -460,6 +462,7 @@ class AuthorsOrderedTopNetworks(BaseApiEndpoint):
     PARSER.add_argument('end_date', type=str, help='end of search period')
 
 
+# #################### SITE FUNCTIONAL ENDPOINTS ##############################
 class CreateOrder(BaseApiEndpoint):
     """
     Action:
@@ -493,7 +496,8 @@ class CreateOrder(BaseApiEndpoint):
 
         return self.data_base_updating_query(
             sb.create_order(args['account_id'], args['principal_id'],
-                            agent_id[0][0], args['style_id'], float(price[0][0]), args['volume'])), _STATUS_FOUND
+                            agent_id[0][0], args['style_id'],
+                            float(price[0][0]), args['volume'])), _STATUS_FOUND
 
 
 # ------- Endpoints for user -------
@@ -508,14 +512,17 @@ class AddAccount(BaseApiEndpoint):
     ROUTE = "/add_account"
     PARSER = reqparse.RequestParser()
     PARSER.add_argument('principal_id', type=int, help='id of the client')
-    PARSER.add_argument('social_network_id', type=int, help='id of the social network')
+    PARSER.add_argument('social_network_id', type=int,
+                        help='id of the social network')
     PARSER.add_argument('login', type=str, help='client login')
     PARSER.add_argument('password', type=str, help='client password')
 
     def get(self):
         args = self.PARSER.parse_args(strict=True)
-        self.data_base_updating_query(sb.create_account(args['principal_id'], args['social_network_id'], args['login'],
-                                                        args['password']))
+        self.data_base_updating_query(
+            sb.create_account(args['principal_id'], args['social_network_id'],
+                              args['login'],
+                              args['password']))
 
 
 class ViewAuthors(BaseApiEndpoint):
@@ -593,7 +600,8 @@ class UpdateUserOrder(BaseApiEndpoint):
 
     def get(self):
         args = self.PARSER.parse_args(strict=True)
-        return self.data_base_updating_query(self.SQL_QUERY(args)), _STATUS_FOUND
+        return self.data_base_updating_query(
+            self.SQL_QUERY(args)), _STATUS_FOUND
 
 
 class ViewUserPost(BaseApiEndpoint):
@@ -648,8 +656,10 @@ class GiveAccess(BaseApiEndpoint):
         Дати або забрати доступ
     """
     SQL_QUERY = lambda _self, params: \
-        f""" INSERT INTO access_history(agent_id, account_id, give_access, date)
-VALUES ({params['agent_id']}, {params['account_id']}, {params['give']}, CURRENT_DATE)
+        f""" 
+        INSERT INTO access_history(agent_id, account_id, give_access, date)
+        VALUES ({params['agent_id']}, {params['account_id']}, {params['give']},
+                CURRENT_DATE)
         """
     PARSER = reqparse.RequestParser()
     ROUTE = "/give_access"
@@ -836,6 +846,60 @@ class GetAuthorStatistics(BaseApiEndpoint):
     ROUTE = "/get_author_statistics"
 
 
+# ######################### SITE LOGIC ########################################
+class UserAuth(BaseApiEndpoint):
+    """
+    Action:
+            auth
+        Desc:
+            If valid login and password return the account type
+    """
+    SQL_QUERY = lambda _self, params: f"""
+    SELECT id, author FROM authentication
+    WHERE login='{params["login"]}' and password='{params["paswd"]}';
+    """
+    ROUTE = "/auth"
+    PARSER = reqparse.RequestParser()
+    PARSER.add_argument('login', type=str, help='user login')
+    PARSER.add_argument('paswd', type=str, help='user password')
+
+
+class RegisterUser(BaseApiEndpoint):
+    """
+    Action:
+            auth
+        Desc:
+            If valid login and password return the account type
+    """
+    # TODO: write valid insert query
+    SQL_QUERY = lambda _self, params: f"""
+    SELECT id, author FROM authentication
+    WHERE login='{params["login"]}' and password='{params["paswd"]}';
+    """
+    ROUTE = "/register"
+    PARSER = reqparse.RequestParser()
+    PARSER.add_argument('login', type=str, help='user login')
+    PARSER.add_argument('paswd', type=str, help='user password')
+    PARSER.add_argument('name', type=str, help='user password')
+    PARSER.add_argument('is_author', type=bool, help='user password')
+
+
+class FreeLogin(BaseApiEndpoint):
+    """
+    Action:
+            auth
+        Desc:
+            If valid login and password return the account type
+    """
+    SQL_QUERY = lambda _self, params: f"""
+    SELECT id FROM authentication
+    WHERE login='{params["login"]}';
+    """
+    ROUTE = "/free_login"
+    PARSER = reqparse.RequestParser()
+    PARSER.add_argument('login', type=str, help='user login')
+
+
 ENDPOINTS_LIST = [
     ConstantClients,
     ClientUsedAuthors,
@@ -849,6 +913,8 @@ ENDPOINTS_LIST = [
     ClientsHalfDiscountsByStyle,
     OrdersCountByMonths,
     AuthorsOrderedTopNetworks,
+
+    # SITE FUNCTIONAL ENDPOINTS
     CreateOrder,
     AddAccount,
     ViewAuthors,
@@ -865,5 +931,8 @@ ENDPOINTS_LIST = [
     StartAuthorDiscount,
     StartGeneralAuthorDiscount,
     SetPriceAuthor,
-    GetAuthorStatistics
+    GetAuthorStatistics,
+
+    # SITE LOGIC
+    UserAuth
 ]
