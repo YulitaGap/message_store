@@ -140,7 +140,7 @@ def create_account(principal_id, social_network_id, login, password):
     return query
 
 
-def add_author_account(author_id, login, password):
+def add_author_account(login, password):
     """
     Creates an account for author
     :param author_id:
@@ -149,7 +149,7 @@ def add_author_account(author_id, login, password):
     :return:
     """
     query = f"""
-    insert into authentication(id, login, password, author)
-    values ({author_id}, {login}, {password}, {True})
+    insert into authentication(login, password, author)
+    values ('{login}', '{password}', {True});
     """
     return query

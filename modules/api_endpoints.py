@@ -686,13 +686,13 @@ class AddAuthorAccount(BaseApiEndpoint):
     """
     ROUTE = "/add_author_account"
     PARSER = reqparse.RequestParser()
-    PARSER.add_argument('author_id', type=int, help='id of the author')
+    # PARSER.add_argument('author_id', type=int, help='id of the author')
     PARSER.add_argument('login', type=str, help='author login')
     PARSER.add_argument('password', type=str, help='author password')
 
     def get(self):
         args = self.PARSER.parse_args(strict=True)
-        self.data_base_updating_query(sb.add_author_account(args['author_id'], args['login'], args['password']))
+        self.data_base_updating_query(sb.add_author_account(args['login'], args['password']))
 
 
 class ViewAuthorOrders(BaseApiEndpoint):
@@ -792,7 +792,7 @@ class StartGeneralAuthorDiscount(BaseApiEndpoint):
     TODO
     """
     SQL_QUERY = lambda self_, params: \
-        f"""
+    f"""
     """
 
 
@@ -824,7 +824,7 @@ class GetAuthorStatistics(BaseApiEndpoint):
     TODO
     """
     SQL_QUERY = lambda self_, params: \
-        f"""
+    f"""
     """
 
 
@@ -855,7 +855,8 @@ ENDPOINTS_LIST = [
     ViewAuthorPosts,
     UpdateAuthorPost,
     StartAuthorDiscount,
-    StartGeneralAuthorDiscount,
+    AddAuthorAccount,
+    # StartGeneralAuthorDiscount,
     SetPriceAuthor,
-    GetAuthorStatistics
+    # GetAuthorStatistics
 ]
