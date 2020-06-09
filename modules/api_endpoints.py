@@ -708,20 +708,20 @@ class ViewAuthorOrders(BaseApiEndpoint):
     """
     SQL_QUERY = lambda _self, params: \
         f"""
-    select orders.id, principal.name as client, orders.price, orders.date, orders.status from orders
+    select orders.id, principal.name as client, text(orders.price), text(orders.date), orders.status from orders
     inner join principal on orders.principal_id = principal.id
     inner join agent on orders.agent_id = agent.id
     inner join author_agent on agent.id = author_agent.group_id
     inner join author on author_agent.author_id = author.id
     where author.id = {params['author_id']};
     """
-    ROUTE = "/all_orders"
+    ROUTE = "/view_author_orders"
     PARSER = reqparse.RequestParser()
     PARSER.add_argument("author_id", type=int, help="id of the author")
 
     def get(self):
         args = self.PARSER.parse_args(strict=True)
-        return self.data_base_selecting_query(self.SQL_QUERY(args)), _STATUS_FOUND
+        return self.data_base_select_query(self.SQL_QUERY(args)), _STATUS_FOUND
 
 
 class ViewAuthorPosts(BaseApiEndpoint):

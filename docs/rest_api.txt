@@ -336,3 +336,23 @@ Sample:
 /api/check_access?agent_id=2&account_id=2
 Result: in JSON
 	{}
+__________________________________ 25 _________________________________________
+
+Action:
+	add_author_account
+Desc:
+Params:
+Sample:
+/api/check_access?agent_id=2&account_id=2
+Result: in JSON
+	{}
+__________________________________ 26 _________________________________________Done
+
+Action:
+	view_author_orders
+Desc:
+Params:
+Sample:
+/api/view_author_orders?author_id=30
+Result: in JSON
+	{}
