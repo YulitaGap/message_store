@@ -14,7 +14,23 @@
 {% endblock %}
 
 {% block body %}
-    {% block content %}
-        {#        Your main content here... #}
-    {% endblock %}
+    <div class="header-bar">
+    SOME TEXT
+    </div>
+    <div class="box">
+        <form id="form_box">
+            <label for="post"><input autocomplete="off" class="prompt"
+                                         id="post" name="post"
+                                         placeholder="Post"
+                                         type="text"/></label>
+            <label for="price"><input autocomplete="off" class="prompt"
+                                         id="price" name="price"
+                                         placeholder="New Price"
+                                         type="text"/></label>
+            <button class="button" id="change">CHANGE</button>
+        </form>
+    </div>
+    <div class="lower-info">
+    SOME TEXT
+    </div>
 {% endblock %}

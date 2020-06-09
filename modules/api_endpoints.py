@@ -17,10 +17,10 @@ def connect_to_db(func):
     def res_func(query):
         try:
             connection = psycopg2.connect(user="postgres",
-                                          password="postgres",
+                                          password="test",
                                           host="127.0.0.1",
                                           port="5432",
-                                          database="AENDPOINTTESTS")
+                                          database="message_store_db")
 
             # ################## OUTER FUNCTION  ###################
             return func(query, connection)

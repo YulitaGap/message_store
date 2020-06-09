@@ -1,17 +1,18 @@
 {% extends 'user_side/user_header_template.html' %}
 
 {# header or includes - can not be overwriten at the same time #}
-{% block header %}
-    {#   Meta info inludes and other... #}
-{% endblock %}
-
-{% block styles_include %}
-    {#    Style includes in header... #}
-{% endblock %}
-
-{% block code_include %}
-    {#    JS includes in header... #}
-{% endblock %}
+{#{% block header %}#}
+{#   Meta info inludes and other... #}
+    {% include 'user_side/user_header_template.html' %}
+{#{% endblock %}#}
+{##}
+{#{% block styles_include %}#}
+{#    Style includes in header... #}
+{#{% endblock %}#}
+{##}
+{#{% block code_include %}#}
+{#    JS includes in header... #}
+{#{% endblock %}#}
 
 {% block body %}
     {% block content %}
