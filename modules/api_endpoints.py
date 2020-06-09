@@ -336,11 +336,11 @@ class AuthorTeamWorksByNetwork(BaseApiEndpoint):
                    INNER JOIN social_network
                               ON account.principal_id = social_network.id
           WHERE orders.date
-               > date('{params['begin_date']}')
+               >= date('{params['begin_date']}')
              AND orders.date
-               < date('{params['end_date']}')
+               <= date('{params['end_date']}')
           GROUP BY social_network.id, author_agent.group_id
-          HAVING count(social_network.id) > {params['limit']}) AS foo
+          HAVING count(social_network.id) >= {params['limit']}) AS foo
              INNER JOIN agent ON agent.id = foo.group_id
              INNER JOIN author_agent ON agent.id = author_agent.group_id
              INNER JOIN author ON author.id = author_agent.author_id
@@ -366,13 +366,17 @@ class ClientsHalfDiscountsByStyle(BaseApiEndpoint):
         отримали 50% знижку.
     """
     SQL_QUERY = lambda _self, params: f"""
-    select orders.principal_id as client, style.name as style, count(orders.id) from orders
-    inner join posts on orders.post_id = posts.id
-    inner join style on posts.style_id = style.id
-    inner join discount on style.id = discount.style_id
-    where principal_id = {params['client_id']} and discount = 0.5
-    and orders.date between date('{params['begin_date']}') and date('{params['end_date']}')
-    group by style.name, orders.principal_id;
+    select style.name, count(discount.discount) FILTER (WHERE discount.discount = 0.5)  
+    from orders
+    inner join posts on posts.id = orders.post_id
+    inner join style on style.id = posts.style_id
+    inner join author_agent on orders.agent_id = author_agent.group_id
+    inner join discount on discount.author_id = author_agent.author_id
+    where orders.principal_id = {params['client_id']}
+    and sale_to >= orders.date
+    and sale_to >= date('{params['begin_date']}')
+    and sale_to <= date('{params['end_date']}')
+    group by style.name
     """
     ROUTE = "/clients_half_discounts_by_style"
     PARSER = reqparse.RequestParser()
@@ -491,6 +495,8 @@ class CreateOrder(BaseApiEndpoint):
             sb.create_order(args['account_id'], args['principal_id'],
                             agent_id[0][0], args['style_id'], float(price[0][0]), args['volume'])), _STATUS_FOUND
 
+
+# ------- Endpoints for user -------
 
 class AddAccount(BaseApiEndpoint):
     """
@@ -679,20 +685,22 @@ class CheckAccess(BaseApiEndpoint):
 
 # ------- Endpoints for author -------
 
-class AddAuthorAccount(BaseApiEndpoint):
+class AddAccount(BaseApiEndpoint):
     """
-    Action: add author account
-    Desc: allows author to add the account
+    Action: add account
+    Desc: Adds account user or author
     """
-    ROUTE = "/add_author_account"
+    ROUTE = "/add_account"
     PARSER = reqparse.RequestParser()
-    # PARSER.add_argument('author_id', type=int, help='id of the author')
+    PARSER.add_argument('name', type=str, help='name of a new user')
     PARSER.add_argument('login', type=str, help='author login')
     PARSER.add_argument('password', type=str, help='author password')
+    PARSER.add_argument('author', type=int, help='whether author or not')
 
     def get(self):
         args = self.PARSER.parse_args(strict=True)
-        self.data_base_updating_query(sb.add_author_account(args['login'], args['password']))
+        self.data_base_updating_query(
+            sb.add_account(args['name'], args['login'], args['password'], args['author']))
 
 
 class ViewAuthorOrders(BaseApiEndpoint):
@@ -702,20 +710,20 @@ class ViewAuthorOrders(BaseApiEndpoint):
     """
     SQL_QUERY = lambda _self, params: \
         f"""
-    select orders.id, principal.name as client, orders.price, orders.date, orders.status from orders
+    select orders.id, principal.name as client, text(orders.price), text(orders.date), orders.status from orders
     inner join principal on orders.principal_id = principal.id
     inner join agent on orders.agent_id = agent.id
     inner join author_agent on agent.id = author_agent.group_id
     inner join author on author_agent.author_id = author.id
     where author.id = {params['author_id']};
     """
-    ROUTE = "/all_orders"
+    ROUTE = "/view_author_orders"
     PARSER = reqparse.RequestParser()
     PARSER.add_argument("author_id", type=int, help="id of the author")
 
     def get(self):
         args = self.PARSER.parse_args(strict=True)
-        return self.data_base_selecting_query(self.SQL_QUERY(args)), _STATUS_FOUND
+        return self.data_base_select_query(self.SQL_QUERY(args)), _STATUS_FOUND
 
 
 class ViewAuthorPosts(BaseApiEndpoint):
@@ -792,8 +800,9 @@ class StartGeneralAuthorDiscount(BaseApiEndpoint):
     TODO
     """
     SQL_QUERY = lambda self_, params: \
-    f"""
+        f"""
     """
+    ROUTE = "/start_general_author_discount"
 
 
 class SetPriceAuthor(BaseApiEndpoint):
@@ -824,8 +833,9 @@ class GetAuthorStatistics(BaseApiEndpoint):
     TODO
     """
     SQL_QUERY = lambda self_, params: \
-    f"""
+        f"""
     """
+    ROUTE = "/get_author_statistics"
 
 
 ENDPOINTS_LIST = [
@@ -855,8 +865,7 @@ ENDPOINTS_LIST = [
     ViewAuthorPosts,
     UpdateAuthorPost,
     StartAuthorDiscount,
-    AddAuthorAccount,
-    # StartGeneralAuthorDiscount,
+    StartGeneralAuthorDiscount,
     SetPriceAuthor,
-    # GetAuthorStatistics
+    GetAuthorStatistics
 ]

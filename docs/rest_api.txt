@@ -180,7 +180,7 @@ Sample:
 	/api/client_user_relations?client_id=1&author_id=30&begin_date=2019-05-01&end_date=2021-05-24
 Result: in JSON
 	{}
-__________________________________ 12 _________________________________________
+__________________________________ 12 _________________________________________Done
 Action:
 	author_team_works_by_network
 Desc:
@@ -195,7 +195,7 @@ Sample:
 	/api/author_team_works_by_network?author_id=30&begin_date=2019-05-01&end_date=2021-05-24&limit=1
 Result: in JSON
 	{}
-__________________________________ 13 _________________________________________
+__________________________________ 13 _________________________________________Done
 Action:
 	clients_half_discounts_by_style
 Desc:
@@ -207,7 +207,7 @@ Params:
     begin_date=<begin of search period>(yyyy-mm-dd)
     end_date=<end of search period>(yyyy-mm-dd)
 Sample:
-	/api/clients_half_discounts_by_style?client_id=1&begin_date=2020-05-01&end_date=2020-05-24
+	/api/clients_half_discounts_by_style?client_id=2&begin_date=2019-05-01&end_date=2022-05-24
 Result: in JSON
 	{}
 __________________________________ 14 _________________________________________Done
@@ -334,5 +334,25 @@ Desc:
 Params:
 Sample:
 /api/check_access?agent_id=2&account_id=2
+Result: in JSON
+	{}
+__________________________________ 25 _________________________________________Done
+
+Action:
+	add_account
+Desc:
+Params:
+Sample:
+api/add_account?name=newwerosafdne3&login=loawersfgidnff&password=password&author=0
+Result: in JSON
+	{}
+__________________________________ 26 _________________________________________Done
+
+Action:
+	view_author_orders
+Desc:
+Params:
+Sample:
+/api/view_author_orders?author_id=30
 Result: in JSON
 	{}
