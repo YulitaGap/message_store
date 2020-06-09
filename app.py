@@ -75,29 +75,38 @@ def catalogue_get():
         """
         return render_template("main/view_template.html")
 
+# Author navigation routes
 
-@app.route("/add_account", methods=["POST"])
-def add_acc():
-    """
-    Try to add the account
-    """
-    login = request.form.get("login")
-    pasw = request.form.get("pasw")
-    social_network_id = request.form.get("social_network_id")
+@app.route('/author_main', methods=['GET'])
+def author_main_get():
+        """
+        render the main author page
+        """
+        return render_template("author_side/author_main.html")
 
-    if not login or not pasw or not  social_network_id:
-        return redirect(url_for("fail", _method="GET"))
-    query = {
-        "principal_id": "",
-        "social_network_id": social_network_id,
-        "login": login,
-        "password": pasw
 
-    }
-    if AddSocialNetworkAccount(query):
-        return redirect(url_for("create_order", _method="GET"))
-    else:
-        return redirect(url_for("fail", _method="GET"))
+@app.route('/update_price', methods=['GET'])
+def update_price_get():
+        """
+        render the update price page
+        """
+        return render_template("author_side/update_price.html")
+
+
+@app.route('/start_sale', methods=['GET'])
+def start_sale_get():
+        """
+        render the page for starting page
+        """
+        return render_template("author_side/start_sale.html")
+
+
+@app.route('/view_author_statistics', methods=['GET'])
+def author_statistics_get():
+        """
+        render the page to view statistics
+        """
+        return render_template("author_side/author_statistics.html")
 
 
 # ############################ END OF EXAMPLE #############################
