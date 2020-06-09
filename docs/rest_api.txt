@@ -339,11 +339,11 @@ Result: in JSON
 __________________________________ 25 _________________________________________
 
 Action:
-	add_author_account
+	add_account
 Desc:
 Params:
 Sample:
-/api/check_access?agent_id=2&account_id=2
+api/add_account?name=newwerosafdne3&login=loawersfgidnff&password=password&author=0
 Result: in JSON
 	{}
 __________________________________ 26 _________________________________________Done

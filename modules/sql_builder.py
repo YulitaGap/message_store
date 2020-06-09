@@ -140,16 +140,36 @@ def create_account(principal_id, social_network_id, login, password):
     return query
 
 
-def add_author_account(author_id, login, password):
+def add_account(name, login, password, author):
     """
     Creates an account for author
-    :param author_id:
+    :param name:
     :param login:
     :param password:
+    :param author:
     :return:
     """
-    query = f"""
-    insert into authentication(id, login, password, author)
-    values ({author_id}, {login}, {password}, {True})
-    """
+    if author == 1:
+        query = f"""
+            insert into authentication(login, password, author)
+            values ('{login}', '{password}', true);
+            
+            INSERT INTO author(id, name, price_per_1000, active)
+            VALUES ((select id from authentication
+            where login = '{login}'
+            and password = '{password}' 
+            and author = true),  '{name}', 500, FALSE);
+            """
+    else:
+        query = f"""
+            insert into authentication(login, password, author)
+            values ('{login}', '{password}', false);
+
+            INSERT INTO principal(id, name)
+            VALUES ((select id from authentication
+            where login = '{login}'
+            and password = '{password}' 
+            and author = false),  '{name}');
+            """
+
     return query

@@ -685,20 +685,22 @@ class CheckAccess(BaseApiEndpoint):
 
 # ------- Endpoints for author -------
 
-class AddAuthorAccount(BaseApiEndpoint):
+class AddAccount(BaseApiEndpoint):
     """
-    Action: add author account
-    Desc: allows author to add the account
+    Action: add account
+    Desc: Adds account user or author
     """
-    ROUTE = "/add_author_account"
+    ROUTE = "/add_account"
     PARSER = reqparse.RequestParser()
-    PARSER.add_argument('author_id', type=int, help='id of the author')
+    PARSER.add_argument('name', type=str, help='name of a new user')
     PARSER.add_argument('login', type=str, help='author login')
     PARSER.add_argument('password', type=str, help='author password')
+    PARSER.add_argument('author', type=int, help='whether author or not')
 
     def get(self):
         args = self.PARSER.parse_args(strict=True)
-        self.data_base_updating_query(sb.add_author_account(args['author_id'], args['login'], args['password']))
+        self.data_base_updating_query(
+            sb.add_account(args['name'], args['login'], args['password'], args['author']))
 
 
 class ViewAuthorOrders(BaseApiEndpoint):
