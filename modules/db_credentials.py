@@ -1,14 +1,11 @@
 #!/usr/bin/python3
-from dataclasses import dataclass
-
-
-@dataclass
 class DBInfo:
-    ip: str
-    port: str
-    db_name: str
-    user: str
-    paswd: str
+    def __init__(self, ip, port, db_name, user, paswd):
+        self.ip: str = ip
+        self.port: str = port
+        self.db_name: str = db_name
+        self.user: str = user
+        self.paswd: str = paswd
 
 
 db_auth = DBInfo("127.0.0.1", "5432", "message_store_db",
