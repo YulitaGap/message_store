@@ -46,12 +46,9 @@
             let request = new XMLHttpRequest()
             request.open('GET', `/api/auth?login=${login_val}&paswd=${paswd_val}`, true)
             request.onload = function () {
-                // Begin accessing JSON data here
                 let data = JSON.parse(this.response)
-
-                console.log("send")
-                console.log(data)
                 if (request.status >= 200 && request.status < 400 && data.length !== 0) {
+
                     if (data[0][1]) {
                         window.location.replace(`/author?id=${data[0][0]}`);
                     } else {
