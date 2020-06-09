@@ -498,14 +498,14 @@ class CreateOrder(BaseApiEndpoint):
 
 # ------- Endpoints for user -------
 
-class AddAccount(BaseApiEndpoint):
+class AddSocialNetworkAccount(BaseApiEndpoint):
     """
     Action:
-        add_account
+        add_social_network_account
     Desc:
         Покупець додає аккаунт у соц.мережі.
     """
-    ROUTE = "/add_account"
+    ROUTE = "/add_social_network_account"
     PARSER = reqparse.RequestParser()
     PARSER.add_argument('principal_id', type=int, help='id of the client')
     PARSER.add_argument('social_network_id', type=int, help='id of the social network')
@@ -852,6 +852,7 @@ ENDPOINTS_LIST = [
     OrdersCountByMonths,
     AuthorsOrderedTopNetworks,
     CreateOrder,
+    AddSocialNetworkAccount,
     AddAccount,
     ViewAuthors,
     ViewStyles,

@@ -253,7 +253,7 @@ Action:
 Desc:
 Params:
 Sample:
-/api/add_account?principal_id=2&social_network_id=2&login=1&password=password
+/api/add_social_network_account?principal_id=2&social_network_id=2&login=1&password=password
 Result: in JSON
 	{}
 __________________________________ 17 _________________________________________Done
