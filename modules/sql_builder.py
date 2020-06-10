@@ -156,12 +156,12 @@ def add_account(name, login, password, author):
                      from authentication
                      where login = '{login}'
                        and password = '{password}'
-                       and author = true), '{name}', 500, FALSE);
+                       and author = true), '{name}', 500, TRUE);
         """
     else:
         return f"""
             insert into authentication(login, password, author)
-            values ('{login}', '{password}', true);
+            values ('{login}', '{password}', false);
             
             INSERT INTO principal(id, name)
             VALUES ((select id
