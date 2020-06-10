@@ -1,4 +1,4 @@
--- CREATE DATABASE message_store_db;
+-- CREATE DATABASE message_store;
 
 CREATE TABLE authentication
 (

@@ -836,7 +836,7 @@ class StartAuthorDiscount(BaseApiEndpoint):
         f"""
     insert into discount (author_id, style_id, sale_to, discount)
     values ({params['author_id']}, {params['style_id']}, 
-            date({params['sale_to']}), {params['discount']})
+            date('{params['sale_to']}'), {params['discount']})
     """
     ROUTE = "/start_style_discount"
     PARSER = reqparse.RequestParser()

@@ -1,15 +1,26 @@
 {% extends 'author_side/author_header_template.html' %}
 
 {% block content %}
+    <h1 id='main_head'>Statistics</h1>
     <div class="box">
         <label for="q_mode">Statistics type</label>
         <select name="stats" id="q_mode" onfocus="this.selectedIndex = -1;">
             <option value="0">--</option>
-            <option value="1">all clients that ordered at least N times for period</option>
-            <option value="2">all authors that had at least N orders from different clients for period</option>
-            <option value="3">all soc.network accounts with access received for period</option>
-            <option value="4">all common events for author and client for period</option>
-            <option value="5">amount of posts written by author in group of at least N authors for each social network for period</option>
+            <option value="1">all clients that ordered at least N times for
+                period
+            </option>
+            <option value="2">all authors that had at least N orders from
+                different clients for period
+            </option>
+            <option value="3">all soc.network accounts with access received for
+                period
+            </option>
+            <option value="4">all common events for author and client for
+                period
+            </option>
+            <option value="5">amount of posts written by author in group of at
+                least N authors for each social network for period
+            </option>
             <option value="6"> amount of orders by months</option>
             <option value="7">all social media sorted in descending order of amount posts written for period </option>
         </select>

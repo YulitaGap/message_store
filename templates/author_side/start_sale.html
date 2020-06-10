@@ -1,12 +1,17 @@
 {% extends 'author_side/author_header_template.html' %}
 
 {% block content %}
+    <h1 id='main_head'>Sales</h1>
     <div class="box">
         <form id="form_box">
 
             <label for="date">date</label>
             <input autocomplete="off" id="date" name="date"
                    placeholder="Date" type="date"/>
+
+            <label for="discount">discount</label>
+            <input autocomplete="off" id="discount" name="discount"
+                   placeholder="Discount" type="text"/>
 
             <label for="style">style</label>
             <input autocomplete="off" id="style" name="style"
@@ -15,4 +20,14 @@
             <button class="button" id="sale">SALE</button>
         </form>
     </div>
+    <script>
+        document.getElementById('form_box').addEventListener('submit', function (e) {
+            e.preventDefault();
+            let request = new XMLHttpRequest()
+            request.open('GET', `/api/start_style_discount?author_id=${getCookie().id}&style_id=${document.getElementById("style").value}&sale_to=${document.getElementById("date").value}&discount=${document.getElementById("discount").value}`, true)
+            request.send();
+            window.location.replace("/start_sale");
+        });
+
+    </script>
 {% endblock %}

@@ -1,16 +1,16 @@
 {% extends 'author_side/author_header_template.html' %}
 
 {% block content %}
+    <h1 id='main_head'>Catalogue</h1>
     <div class="box">
         <label for="q_mode">Select option to view: </label>
         <select name="stats" id="q_mode" onfocus="this.selectedIndex = -1;">
             <option value="0">--</option>
-            <option value="1"> styles  </option>
-            <option value="2"> authors </option>
-            <option value="3"> my orders </option>
+            <option value="1"> styles</option>
+            <option value="2"> authors</option>
+            <option value="3"> my orders</option>
         </select>
         <form id="form_box">
-
 
 
             <button class="button" id="button" hidden>GET</button>
