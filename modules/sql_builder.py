@@ -161,7 +161,7 @@ def add_account(name, login, password, author):
     else:
         return f"""
             insert into authentication(login, password, author)
-            values ('{login}', '{password}', false);
+            values ('{login}', '{password}', true);
             
             INSERT INTO principal(id, name)
             VALUES ((select id
