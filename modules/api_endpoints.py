@@ -17,11 +17,10 @@ _STATUS_INVALID_PARAMETERS = 400
 def connect_to_db(func):
     def res_func(query):
         try:
-            connection = psycopg2.connect(user=db_auth.user,
-                                          password=db_auth.paswd,
-                                          host=db_auth.ip,
-                                          port=db_auth.port,
-                                          database=db_auth.db_name)
+            connection = psycopg2.connect(user="addfwygsxdsdzj",
+                              password="8e566a32011ee8f4f71f74c99566f556709b5f7b98887067ee0e9a1328d8f329",
+                              host="ec2-54-81-37-115.compute-1.amazonaws.com",
+                              database="dc8g798pcq5b7e")
 
             # ################## OUTER FUNCTION  ###################
             return func(query, connection)
